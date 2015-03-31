@@ -4,13 +4,14 @@ curl -O https://download.elasticsearch.org/logstash/logstash/logstash-1.4.2.tar.
 
 tar zxvf logstash-1.4.2.tar.gz
 
-./before-install.sh
+sudo ./before-install.sh
 
 sudo cp -r /home/\$USER/Downloads/logstash-1.4.2 /opt/logstash
 
 sudo mkdir /var/log/logstash
+sudo mkdir /var/lib/logstash
 
-./after-install.sh
+sudo ./after-install.sh
 
 if ! [ $(echo $PATH | grep -c /opt/logstah) -eq 0 ] 
 then 
