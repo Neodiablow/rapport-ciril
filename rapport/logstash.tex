@@ -1,0 +1,31 @@
+\section{Installation}
+Sur debian il n'existe pas de paquet deb déjà fait, et le seul prérequis 
+est d'avoir une version de java > 1.7.0_45
+Pour télécharger et installer
+curl -O https://download.elasticsearch.org/logstash/logstash/logstash-1.4.2.tar.gz
+
+tar zxvf logstash-1.4.2.tar.gz
+
+script before-install.sh
+
+sudo cp -r /home/\$USER/Downloads/logstash-1.4.2 /opt/logstash
+
+sudo mkdir /var/log/logstash
+
+script after-install.sh
+
+cd logstash-1.4.2
+
+
+D'autres méthodes d'installation
+
+TODO
+%Ensuite un simple git clone https://github.com/elastic/logstash.git
+%nous permet de récupérer le dépot stable le plus récent.
+%Enfin des scripts d'installation sont disponible
+%dans logstash/pkg/debian
+
+
+
+
+\section{Utilisation basique}
