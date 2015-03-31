@@ -15,7 +15,7 @@ sudo ./after-install.sh
 
 if ! [ $(echo $PATH | grep -c /opt/logstah) -eq 0 ] 
 then 
-    export PATH+=:/opt/logstash
+    export PATH+=:/opt/logstash/bin
     echo PATH+=:/opt/logstash >> .bashrc
     source ~/.bashrc
 fi
