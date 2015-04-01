@@ -1,6 +1,14 @@
+\section{Pourquoi Logstash?}
+Logstash parce que, bien qu'un adminsys compétent soit capable d'analyser
+de façon rapide et efficace les logs d'une machine (perl+awk+sed+tail+grep)
+Face à des dizaines/milliers de hosts cette méthode ne fonctionne souffre pas
+le passage à l'échelle.
+De plus il est fréquent, actuellement (cloud, application multicouche) que
+que les logs d'une machine ne suffise plus à diagnostiquer un problème.
+
 \section{Installation}
 Sur debian il n'existe pas de paquet deb déjà fait, et le seul prérequis 
-est d'avoir une version de java > 1.7.0_45
+est d'avoir une version de java > 1.7.0\_45
 Pour télécharger et installer
 curl -O https://download.elasticsearch.org/logstash/logstash/logstash-1.4.2.tar.gz
 
