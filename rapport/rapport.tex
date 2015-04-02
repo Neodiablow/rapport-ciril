@@ -4,14 +4,18 @@
 %en francais
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
+\usepackage[scaled]{helvet}
 \usepackage[utf8]{inputenc}
 \usepackage[francais]{babel}
 
 
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amssymb}
 \usepackage{eurosym}
 \usepackage{geometry}
+%\usepackage[top=2.5cm,bottom=2.5cm,left=2.5cm,right=2.5cm]{geometry}
 \usepackage{graphicx}
-\usepackage{url}
 \usepackage[acronym]{glossaries}
 \usepackage[hidelinks]{hyperref}
 \usepackage{float}
@@ -20,9 +24,8 @@
 \usepackage{listings}
 \usepackage{pdfpages}
 %\usepackage{titlesec}
+\usepackage{url}
 \usepackage{wrapfig}
-%\usepackage[top=2.5cm,bottom=2.5cm,left=2.5cm,right=2.5cm]{geometry}
-%\hypersetup{pdfborder=0}
 
 \graphicspath{ {../images/} } % dossier img
 
@@ -60,26 +63,25 @@ linewidth=0.9\linewidth,
 xleftmargin=0.1\linewidth
 }
 
-
-%GABRIEL
-\usepackage{amsmath}
-\usepackage{amsfonts}
-\usepackage{amssymb}
+\newcommand{\selv}{%
+\fontfamily{phv}\fontseries{b}\fontsize{8}{20}\selectfont}
+\newcommand{\belv}{%
+\fontfamily{phv}\fontseries{b}\fontsize{10}{22}\selectfont}
 
 
 %%% header & footer
 % \leftmark : afficher nom section
 \usepackage{fancyhdr}
 \pagestyle{fancy}
-\renewcommand{\headrulewidth}{0pt}
-\fancyhead[C]{\footnotesize\emph{\leftmark}}
-\fancyhead[L]{\footnotesize ELK}
-\fancyhead[R]{\footnotesize Équipe réseau Lothaire}%\includegraphics[width=60px]{openstack-logo.png}}
+\renewcommand{\headrulewidth}{1pt}
+\fancyhead[C]{\selv\leftmark}
+\fancyhead[L]{\selv ELK}
+\fancyhead[R]{\selv Équipe réseau Lothaire}%\includegraphics[width=60px]{openstack-logo.png}}
 
-\renewcommand{\footrulewidth}{1pt}
-\fancyfoot[C]{Page \thepage/\pageref{LastPage}} 
-\fancyfoot[L]{elastic logo}
-\fancyfoot[R]{François Dupont}
+\renewcommand{\footrulewidth}{0pt}
+\fancyfoot[C]{\belv Page \thepage\hspace{2px} / \pageref{LastPage}} 
+\fancyfoot[L]{\includegraphics[height=20px]{elasticmini.png}}
+\fancyfoot[R]{\belv François \textsc{Dupont}}
 
 
 
@@ -120,6 +122,7 @@ Remerciment 3
 \section{Problématique}
 \lipsum
 \section{Nos objectifs}
+\lipsum
 \chapter{Présentation des notions}
 \chapter{Définitions}
 \part{Annexes}
