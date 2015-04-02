@@ -1,113 +1,116 @@
 
-\newglossaryentry{BGP}{name={BGP},
-                             description={BGP, Border Gateway Protocle, est un protocole d'échange de routes utilisé sur internet, il permet aux AS (autonomous systems) d'échanger leurs informations.\\
-                             Le plus connu des mauvais usages de BGP s'est produit en février 2008 lorsque Pakistan Telecom a mal appliqué une demande de censure de YouTube, le rendant indisponible pour le monde entier pendant plusieurs heures.\\
-                             Le black-holing BGP est une technique d'endiguement de DDOS souvent utilisée en dernier recours. Pour protéger l'infrastructure réseau (d'un FAI par exemple), on décide que tous les accès à une IP/un range d'IP seront redirigés vers NULL. }}
-\newglossaryentry{CLI}
-{
-	name={CLI},
-	description={Command Line Interface: interface en ligne de commande, se dit d'un programme auquel on accède par l'intermédiaire d'un shell (terminal en ligne de commande). Ces programmes sont en général légers puisqu'ils sont entièrement textuels.}
-}
-
-\newglossaryentry{DDOS}{name={DDOS},
-                        description={Distributed Denial Of Service ou attaque par déni de service distribué. Attaque informatique ayant pour objectif de rendre indisponible un service, un site web etc... en saturant le serveur qui l'héberge (il existe de nombreux type de DDOS différents)}}
-
-\newglossaryentry{firewall}{name={firewall},
-                             description={Pare-feu : système de protection réseau pour un ordinateur ou un réseau d'ordinateur, dans ce projet nous parlerons essentiellement de pare-feu logiciel}}
-
-\newglossaryentry{failover}
-{
-	name={failover},
-	description={Un failover, traduit par passer outre à la panne, est la capacité d'un équipement à basculer automatiquement vers un réseau alternatif ou en veille.}
-}
-
-\newglossaryentry{jumbo frames}{ name={jumbo frames},
-                                description={En réseau, des jumbos frames sont des trames Ethernet dont la longueur dépasse 1500 octets. En général, les jumbo frames peuvent avoir une longueur allant jusqu'à 9000 environ octets.}
-}
-
-\newglossaryentry{hash}
-{
-	name={hash},
-	description={On nomme fonction de hachage une fonction particulière qui, à partir d'une donnée fournie en entrée, calcule une empreinte servant à identifier rapidement, bien qu'incomplètement, la donnée initiale. Les fonctions de hachage sont utilisées en informatique et en cryptographie.}
-}
-
-\newglossaryentry{load balancer}{ name={load balancer},
-                                description={Un répartisseur de charge, ou load balancer, est un ensemble de techniques permettant de distribuer la charge de travail entre plusieurs ordinateurs d'un groupe}
-}
-
-\newglossaryentry{naxsi}
-{
-	name={naxsi},
-	description={Un type de firewall}
-}
-
-\newglossaryentry{OSI}{ name={OSI},
-                                description={Open System Interconnection model est un modèle conceptuel qui caractérise et standardise les communications sur internet. Ce modèle a été standardisé dans l'ISO/IEC 7498-1 (International Organization for Standardization). Il possède 7 couches. 
-                                Réparties comme suit :\\
-    \begin{tabular}{|c|c|c|}
-        \hline
-        Numéro& Couche       & Exemple de protocole\\
-        \hline
-        7&      Applications &  HTTP, NFS, DHCP, BGP, DNS etc... \\
-        \hline
-        6&      Présentation &  MIME, SSL\\ 
-        \hline
-        5&      Session      &  Sockets, SOCKS, NetBIOS\\
-        \hline
-        4&      Transport    & TCP, UDP\\
-        \hline
-        3&      Réseau       & IP4/6, IPsec\\
-        \hline
-        2&      Liaison      & PPP, Token Ring, CRC,\\
-        \hline
-        1&      Physique     & Wifi, Ethernet, CAN, RS-232\\
-        \hline
-    \end{tabular}
-                                }
-}
-
-\newglossaryentry{overhead}
-{
-	name={overhead},
-	description={Coût supplémentaire engendré pour atteindre un but (cette définition est agnostique à la méthode ou la technologie).\\
-    Exemple : Envoyer "Bonjour" à un correspondant par internet (disons sur un chat en ligne), ici la charge utile est "Bonjour"\\
-    Une fois le message enregistré il va être encapsulé de nombreuses fois (TCP, HTTP, conversion en binaire pour la couche physique, etc..)
-    pour être affiché chez notre correspondant. Tout cela prend du temps de calcul, du temps de transport, de la "place" (envoyer toutes
-    ces en-têtes multiplie plusieurs fois la taille du message original). La différence entre le payload (la charge utile originale) et le
-    résultat final est appelé overhead.
-    }
-}
-
-\newglossaryentry{scalabiliser}{ name={scalabiliser},
-                                description={Scalabiliser est un anglicisme courant signifiant mettre à l'échelle. On parle de mise à l'échelle lorsqu'une infrastructure a la capacité de démultiplier sa capacité de traitement. On attend en général que cette mise à l'échelle soit rapide, voire automatisée.}
-}
-
-\newglossaryentry{SSL}
-{
-	name={SSL},
-	description={Secure Socket Layer est un protocole de sécurité SSL qui fonctionne suivant un mode client-serveur. Il permet de satisfaire aux objectifs de sécurité suivants :\begin{itemize}
-	\item l'authentification du serveur.
-	\item la confidentialité des données échangées (ou session chiffrée).
-	\item l'intégrité des données échangées.
-	\end{itemize}
-    voir aussi \gls{TLS}}
-}
-
-\newglossaryentry{TLS}
-{
-	name={TLS},
-	description={Transport Layer Security est une évolution du protocole SSL : cf \gls{SSL}}
-}
-
-\newglossaryentry{wireshark}
-{
-	name={wireshark},
-	description={Wireshark est un analyseur de paquets libre utilisé dans le dépannage et l'analyse de réseaux informatiques, le développement de protocoles, l'éducation et la rétro-ingénierie. Wireshark permet d'analyser les paquets qui transitent sur un réseau en les interceptant.}
-}
-
-
-
-
-
-
-parser
+\newglossaryentry{logs}{name={logs},
+                             description={Un log c'est une buche !
+}}
+%\newglossaryentry{BGP}{name={BGP},
+%                             description={BGP, Border Gateway Protocle, est un protocole d'échange de routes utilisé sur internet, il permet aux AS (autonomous systems) d'échanger leurs informations.\\
+%                             Le plus connu des mauvais usages de BGP s'est produit en février 2008 lorsque Pakistan Telecom a mal appliqué une demande de censure de YouTube, le rendant indisponible pour le monde entier pendant plusieurs heures.\\
+%                             Le black-holing BGP est une technique d'endiguement de DDOS souvent utilisée en dernier recours. Pour protéger l'infrastructure réseau (d'un FAI par exemple), on décide que tous les accès à une IP/un range d'IP seront redirigés vers NULL. }}
+%\newglossaryentry{CLI}
+%{
+%	name={CLI},
+%	description={Command Line Interface: interface en ligne de commande, se dit d'un programme auquel on accède par l'intermédiaire d'un shell (terminal en ligne de commande). Ces programmes sont en général légers puisqu'ils sont entièrement textuels.}
+%}
+%
+%\newglossaryentry{DDOS}{name={DDOS},
+%                        description={Distributed Denial Of Service ou attaque par déni de service distribué. Attaque informatique ayant pour objectif de rendre indisponible un service, un site web etc... en saturant le serveur qui l'héberge (il existe de nombreux type de DDOS différents)}}
+%
+%\newglossaryentry{firewall}{name={firewall},
+%                             description={Pare-feu : système de protection réseau pour un ordinateur ou un réseau d'ordinateur, dans ce projet nous parlerons essentiellement de pare-feu logiciel}}
+%
+%\newglossaryentry{failover}
+%{
+%	name={failover},
+%	description={Un failover, traduit par passer outre à la panne, est la capacité d'un équipement à basculer automatiquement vers un réseau alternatif ou en veille.}
+%}
+%
+%\newglossaryentry{jumbo frames}{ name={jumbo frames},
+%                                description={En réseau, des jumbos frames sont des trames Ethernet dont la longueur dépasse 1500 octets. En général, les jumbo frames peuvent avoir une longueur allant jusqu'à 9000 environ octets.}
+%}
+%
+%\newglossaryentry{hash}
+%{
+%	name={hash},
+%	description={On nomme fonction de hachage une fonction particulière qui, à partir d'une donnée fournie en entrée, calcule une empreinte servant à identifier rapidement, bien qu'incomplètement, la donnée initiale. Les fonctions de hachage sont utilisées en informatique et en cryptographie.}
+%}
+%
+%\newglossaryentry{load balancer}{ name={load balancer},
+%                                description={Un répartisseur de charge, ou load balancer, est un ensemble de techniques permettant de distribuer la charge de travail entre plusieurs ordinateurs d'un groupe}
+%}
+%
+%\newglossaryentry{naxsi}
+%{
+%	name={naxsi},
+%	description={Un type de firewall}
+%}
+%
+%\newglossaryentry{OSI}{ name={OSI},
+%                                description={Open System Interconnection model est un modèle conceptuel qui caractérise et standardise les communications sur internet. Ce modèle a été standardisé dans l'ISO/IEC 7498-1 (International Organization for Standardization). Il possède 7 couches. 
+%                                Réparties comme suit :\\
+%    \begin{tabular}{|c|c|c|}
+%        \hline
+%        Numéro& Couche       & Exemple de protocole\\
+%        \hline
+%        7&      Applications &  HTTP, NFS, DHCP, BGP, DNS etc... \\
+%        \hline
+%        6&      Présentation &  MIME, SSL\\ 
+%        \hline
+%        5&      Session      &  Sockets, SOCKS, NetBIOS\\
+%        \hline
+%        4&      Transport    & TCP, UDP\\
+%        \hline
+%        3&      Réseau       & IP4/6, IPsec\\
+%        \hline
+%        2&      Liaison      & PPP, Token Ring, CRC,\\
+%        \hline
+%        1&      Physique     & Wifi, Ethernet, CAN, RS-232\\
+%        \hline
+%    \end{tabular}
+%                                }
+%}
+%
+%\newglossaryentry{overhead}
+%{
+%	name={overhead},
+%	description={Coût supplémentaire engendré pour atteindre un but (cette définition est agnostique à la méthode ou la technologie).\\
+%    Exemple : Envoyer "Bonjour" à un correspondant par internet (disons sur un chat en ligne), ici la charge utile est "Bonjour"\\
+%    Une fois le message enregistré il va être encapsulé de nombreuses fois (TCP, HTTP, conversion en binaire pour la couche physique, etc..)
+%    pour être affiché chez notre correspondant. Tout cela prend du temps de calcul, du temps de transport, de la "place" (envoyer toutes
+%    ces en-têtes multiplie plusieurs fois la taille du message original). La différence entre le payload (la charge utile originale) et le
+%    résultat final est appelé overhead.
+%    }
+%}
+%
+%\newglossaryentry{scalabiliser}{ name={scalabiliser},
+%                                description={Scalabiliser est un anglicisme courant signifiant mettre à l'échelle. On parle de mise à l'échelle lorsqu'une infrastructure a la capacité de démultiplier sa capacité de traitement. On attend en général que cette mise à l'échelle soit rapide, voire automatisée.}
+%}
+%
+%\newglossaryentry{SSL}
+%{
+%	name={SSL},
+%	description={Secure Socket Layer est un protocole de sécurité SSL qui fonctionne suivant un mode client-serveur. Il permet de satisfaire aux objectifs de sécurité suivants :\begin{itemize}
+%	\item l'authentification du serveur.
+%	\item la confidentialité des données échangées (ou session chiffrée).
+%	\item l'intégrité des données échangées.
+%	\end{itemize}
+%    voir aussi \gls{TLS}}
+%}
+%
+%\newglossaryentry{TLS}
+%{
+%	name={TLS},
+%	description={Transport Layer Security est une évolution du protocole SSL : cf \gls{SSL}}
+%}
+%
+%\newglossaryentry{wireshark}
+%{
+%	name={wireshark},
+%	description={Wireshark est un analyseur de paquets libre utilisé dans le dépannage et l'analyse de réseaux informatiques, le développement de protocoles, l'éducation et la rétro-ingénierie. Wireshark permet d'analyser les paquets qui transitent sur un réseau en les interceptant.}
+%}
+%
+%
+%
+%
+%
+%
+%parser

@@ -13,12 +13,12 @@
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{eurosym}
+\usepackage{float}
 \usepackage{geometry}
 %\usepackage[top=2.5cm,bottom=2.5cm,left=2.5cm,right=2.5cm]{geometry}
 \usepackage{graphicx}
 \usepackage[acronym]{glossaries}
 \usepackage[hidelinks]{hyperref}
-\usepackage{float}
 \usepackage{lipsum}
 \usepackage{lastpage}
 \usepackage{listings}
@@ -91,9 +91,9 @@ xleftmargin=0.1\linewidth
 %\date{Lundi 23 Mars 2015}
 
 
-%\input{./glossaire.tex}
+\input{./glossaire.tex}
 %
-%\makeglossaries
+\makeglossaries
 
 \begin{document}
 
@@ -118,18 +118,49 @@ Remerciment 3
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Introduction
 \part{Introduction}
-\chapter{Gestion de projet}
+
 \section{Problématique}
+La gestion de \gls{logs} est une problématique commune à presque tous les services informatique,
+tous les fournisseurs de services, toutes personnes gérant une infrastructure informatique.
+
+Les logs sont un outils indispensable aux dépanages et à l'anticipation de problèmes 
+inhérant à l'exploitation d'une infrastructure informatique\footnote{ici la définition
+d'infrastructure informatique est particulièrement vaste, tout ensemble de machine
+produisant des logs}.
+Il est encore courant dans de nombreuses structures d'analyser plus ou moins "à la
+main" les logs qu'ils proviennent de hard ou de software.
+
+La tendance est cependant (et depuis longtemps) à l'automatisation et à la centralisation
+des fichiers pour facilité leur accès et leur analyse.
+
+\chapter{La gestion de log}
+
+\lipsum
+\chapter{Les clusters}
+
+\lipsum
+
+\chapter{MoM}
+
+\lipsum
+\lipsum
+
+\chapter{Gestion de projet}
 \lipsum
 \section{Nos objectifs}
 \lipsum
 \chapter{Présentation des notions}
 \chapter{Définitions}
+
+\part{Les logiciels}
+
+
+
 \part{Annexes}
 \chapter{Sources/Webographie/Bibliographie}
 \input{sources.tex}
 
 
-%\printglossaries
+\printglossaries
 
 \end{document}
