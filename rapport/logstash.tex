@@ -43,9 +43,12 @@ que les logs d'une machine ne suffise plus à diagnostiquer un problème.
 
 
 Sur Debian jessie il n'existe pas de paquet officiel logstash maintenu. Il existe 
-en revanche un paquet tierce chez l'éditeur du logiciel. Le dit paquet n'est pas 
-de très bonne facture  puisqu'il nécessite l'ajout de dépendances manuelles ainsi
-qu'un rechargement de la configuration de services  \emph{systemctl daemon-reload}.
+en revanche un paquet tierce\footnote{https://download.elastic.co/logstash/logstash/packages/debian/logstash\_1.4.2-1-2c0f5a1\_all.deb} 
+chez l'éditeur du logiciel. Le dit paquet n'est pas de très bonne facture  puisqu'il 
+nécessite l'ajout de dépendances manuelles ainsi qu'un rechargement de la configuration 
+des services : \emph{systemctl daemon-reload}.
+
+
 
 Les dépendances nécessaires sont \emph{jruby} et \emph{openjdk-7-jre} les mêmes 
 que pour elasticsearch.

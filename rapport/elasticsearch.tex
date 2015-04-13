@@ -3,7 +3,16 @@ Avant même de regarder les différentes dépendances nécessaires à l'utilisat
 elasticsearch il est recommandé devérifier que l'on utilise bien la même version
 que son compère logstash (vérifier la documentation).
 
-Elasticsearch requiert lui aussi l'utilisation de java donc il faut utiliser JDK
+Son installation est sensiblement la même que son comparse logstash puisque ce logiciel 
+nécessite également l'installation des dépendances \emph{jruby} et \emph{openjdk-7-jre}
+à noter qu'il fonctionne également sur openjdk-8-jre.
+
+Là aussi les paquets debian officiels n'existant pas on utilisera celui fourni par 
+elastic.co\footnote{https://download.elastic.co/elasticsearch/elasticsearch/elasticsearch-1.5.1.deb}.
+Et ici aussi le paquet est un peu approximatif puisqu'il faut rajouter certains chemin, et ajouter des droits.
+
+
+
 
 Acompleter et revoir
 p24-26
