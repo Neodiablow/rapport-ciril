@@ -66,8 +66,36 @@ wget -qO - https://packages.elasticsearch.org/GPG-KEY-elasticsearch | sudo apt-k
 
 \section{Utilisation basique}
 
+\subsection{Vocabulaire}
+L'utilisation de logstash s'articule autour de 3 \emph{blocs}.
+\begin{itemize}
+    \item   Le bloc : \emph{Inputs} gère l'entrée des évènements dans logstash
+    \item   Le bloc : \emph{Filters} s'occupe de la manipulation, modification, mutation, ...
+    des évènements dans logstash
+    \item   Le bloc : \emph{Outputs} gère la sortie des évènements de logstash
+\end{itemize}
+
+Cette façon de fonctionner ressemble un peu à celle utilisée par les tables de 
+\emph{iptables}.
+
+On considèrera chaque \emph{log} qui arrive à logstash comme un évènement (event).
+
+Chaque bloc est composé d'une multitude de plugins. Ce sont des modules indépendants
+qui peuvent également fonctionner en conjonction les uns des autres.
+
+Il est possible de configure le bloc \emph{inputs} pour utiliser plusieurs fois 
+le plugin file (pour des cas d'utilisation différents par exemple) et de se servir 
+dans le même temps du plugin stdin qui prendra typiquement en entrée le clavier.
 
 
+Il est possible de créer un nouveau module qui conviendra à un cas d'utilisation 
+particulier, pour cela il faut utiliser le langage ruby.
+
+
+Il existe également un pseudo-bloc qui peut s'insérer dans les autres, ce bloc, \emph{codec} 
+permet la de gérer la \textit{représentation des données} c'est à dire qu'un codec
+est capable de lire ou d'écrire dans une syntaxe particulière comme par exemple 
+rubydebug, collectd ou bien plus intéressant pour nous netflow.
 \section{Mon serveur central}
 
 
