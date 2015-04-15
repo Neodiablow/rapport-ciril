@@ -8,6 +8,47 @@ le passage à l'échelle.
 De plus il est fréquent, actuellement (cloud, application multicouche) que
 que les logs d'une machine ne suffise plus à diagnostiquer un problème.
 
+\subsection{Fonctionnement interne}
+L'utilisation de logstash est un pipeline qui s'articule autour de 3 \emph{blocs} 
+également appelés \emph{stages} (phase).
+\begin{itemize}
+    \item   Le bloc : \emph{Inputs} génère des événements à partir des informations reçues
+    par logstash en entrée.
+    \item   Le bloc : \emph{Filters} modifie, manipule, ces évènements dans logstash
+    \item   Le bloc : \emph{Outputs} envoie les évènements de logstash vers leur 
+    prochaine destination.
+\end{itemize}
+
+Cette façon de fonctionner peut faire penser à \emph{iptables}.
+
+Logstash est un logiciel développé en ruby. Le passage d'une phase à l'autre est 
+implémenté via les \emph{SizedQueue}. Elles sont dimensionnées pour contenir 20 
+éléments\footnote{appelés messages lorsqu'on parle de queues/fils, on parle bien 
+ici des événements logstash, éventuellement encore au stade \textit{d'informations} 
+pour la queue pré inputs},% vérifier l'implementation de la queue pré input
+ce n'est pas paramétrable c'est un choix délibéré, ces queues ne sont pas conçues 
+pour stocker des données à long terme. On verra plus tard que ce la justifie l'utilisation
+d'un \textit{buffer}, comme \emph{Redis}.
+
+
+Chaque bloc est composé d'une multitude de plugins. Ce sont des modules indépendants
+qui peuvent également fonctionner en conjonction les uns des autres.
+
+Il est possible de configure le bloc \emph{inputs} pour utiliser plusieurs fois 
+le plugin file (pour des cas d'utilisation différents par exemple) et de se servir 
+dans le même temps du plugin stdin qui prendra typiquement en entrée le clavier.
+
+
+Il est possible de créer un nouveau module qui conviendra à un cas d'utilisation 
+particulier, pour cela il faut utiliser le langage ruby.
+
+
+Il existe également un pseudo-bloc qui peut s'insérer dans les autres, ce bloc, \emph{codec} 
+permet la de gérer la \textit{représentation des données} c'est à dire qu'un codec
+est capable de lire ou d'écrire dans une syntaxe particulière comme par exemple 
+rubydebug, collectd ou bien plus intéressant pour nous netflow.
+
+
 \section{Installation}
 %Sur debian il n'existe pas de paquet deb déjà fait, et le seul prérequis 
 %est d'avoir une version de java > 1.7.0\_45
@@ -66,36 +107,6 @@ wget -qO - https://packages.elasticsearch.org/GPG-KEY-elasticsearch | sudo apt-k
 
 \section{Utilisation basique}
 
-\subsection{Vocabulaire}
-L'utilisation de logstash s'articule autour de 3 \emph{blocs}.
-\begin{itemize}
-    \item   Le bloc : \emph{Inputs} gère l'entrée des évènements dans logstash
-    \item   Le bloc : \emph{Filters} s'occupe de la manipulation, modification, mutation, ...
-    des évènements dans logstash
-    \item   Le bloc : \emph{Outputs} gère la sortie des évènements de logstash
-\end{itemize}
-
-Cette façon de fonctionner ressemble un peu à celle utilisée par les tables de 
-\emph{iptables}.
-
-On considèrera chaque \emph{log} qui arrive à logstash comme un évènement (event).
-
-Chaque bloc est composé d'une multitude de plugins. Ce sont des modules indépendants
-qui peuvent également fonctionner en conjonction les uns des autres.
-
-Il est possible de configure le bloc \emph{inputs} pour utiliser plusieurs fois 
-le plugin file (pour des cas d'utilisation différents par exemple) et de se servir 
-dans le même temps du plugin stdin qui prendra typiquement en entrée le clavier.
-
-
-Il est possible de créer un nouveau module qui conviendra à un cas d'utilisation 
-particulier, pour cela il faut utiliser le langage ruby.
-
-
-Il existe également un pseudo-bloc qui peut s'insérer dans les autres, ce bloc, \emph{codec} 
-permet la de gérer la \textit{représentation des données} c'est à dire qu'un codec
-est capable de lire ou d'écrire dans une syntaxe particulière comme par exemple 
-rubydebug, collectd ou bien plus intéressant pour nous netflow.
 \section{Mon serveur central}
 
 
