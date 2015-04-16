@@ -36,7 +36,7 @@ Chaque bloc est composé d'une multitude de plugins. Ce sont des modules indépe
 qui peuvent également fonctionner en conjonction les uns des autres.
 
 Il est, par exemple, possible de configure le bloc \emph{inputs} pour utiliser 
-plusieurs fois le plugin file (on imagine pour des cas d'utilisation différents) 
+plusieurs fois le plugin "file" (on imagine pour des cas d'utilisation différents) 
 et de se servir dans le même temps d'un autre plugin du bloc \emph{inputs} : stdin 
 qui prendra typiquement en entrée le clavier.
 
@@ -44,10 +44,16 @@ qui prendra typiquement en entrée le clavier.
 Il est possible d'implémenter de nouveaux plugins en ruby afin de les ajouter à
 notre logstash.
 
-Il existe également un pseudo-bloc qui peut s'insérer dans les autres, ce bloc, \emph{codec} 
+Il existe également un \textit{pseudo-bloc} qui peut s'insérer dans les autres, ce bloc, \emph{codec} 
 permet la de gérer la \textit{représentation des données} c'est à dire qu'un codec
 est capable de lire ou d'écrire dans une syntaxe particulière comme par exemple 
 rubydebug, collectd ou bien plus intéressant pour nous netflow.
+
+%wtf why?
+%et les types ??
+
+
+%Explications supplémentaires sur les filtres
 
 \subsubsection{Tolérance de pannes}
 Vos logs sont \textbf{importants}, c'est la raison d'être de Logstash, il ne souhaite 
