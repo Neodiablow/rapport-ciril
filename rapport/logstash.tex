@@ -21,32 +21,68 @@ L'utilisation de logstash est un pipeline qui s'articule autour de 3 \emph{blocs
 
 Cette façon de fonctionner peut faire penser à \emph{iptables}.
 
-Logstash est un logiciel développé en ruby. Le passage d'une phase à l'autre est 
-implémenté via les \emph{SizedQueue}. Elles sont dimensionnées pour contenir 20 
-éléments\footnote{appelés messages lorsqu'on parle de queues/fils, on parle bien 
-ici des événements logstash, éventuellement encore au stade \textit{d'informations} 
-pour la queue pré inputs},% vérifier l'implementation de la queue pré input
-ce n'est pas paramétrable c'est un choix délibéré, ces queues ne sont pas conçues 
+Logstash est un logiciel développé en Jruby\footnote{sauf mention contraire, on supposera
+de le reste de ce rapport que logstash est développé en ruby}. Le passage d'une phase 
+à l'autre est implémenté via les \emph{SizedQueue} de ruby. Elles sont dimensionnées 
+pour contenir 20 éléments\footnote{appelés messages lorsqu'on parle de queues, 
+on parle bien ici des \textbf{événements} logstash}, ce n'est pas paramétrable sans 
+modifier le code source, c'est un choix délibéré. Ces queues ne sont pas conçues 
 pour stocker des données à long terme. On verra plus tard que ce la justifie l'utilisation
-d'un \textit{buffer}, comme \emph{Redis}.
+d'un \textit{buffer}, comme \emph{Redis}\footnote{voir la sous partie sur la tolérence
+de pannes ainsi que le chapitre consacré à Redis}.
 
 
 Chaque bloc est composé d'une multitude de plugins. Ce sont des modules indépendants
 qui peuvent également fonctionner en conjonction les uns des autres.
 
-Il est possible de configure le bloc \emph{inputs} pour utiliser plusieurs fois 
-le plugin file (pour des cas d'utilisation différents par exemple) et de se servir 
-dans le même temps du plugin stdin qui prendra typiquement en entrée le clavier.
+Il est, par exemple, possible de configure le bloc \emph{inputs} pour utiliser 
+plusieurs fois le plugin file (on imagine pour des cas d'utilisation différents) 
+et de se servir dans le même temps d'un autre plugin du bloc \emph{inputs} : stdin 
+qui prendra typiquement en entrée le clavier.
 
 
-Il est possible de créer un nouveau module qui conviendra à un cas d'utilisation 
-particulier, pour cela il faut utiliser le langage ruby.
-
+Il est possible d'implémenter de nouveaux plugins en ruby afin de les ajouter à
+notre logstash.
 
 Il existe également un pseudo-bloc qui peut s'insérer dans les autres, ce bloc, \emph{codec} 
 permet la de gérer la \textit{représentation des données} c'est à dire qu'un codec
 est capable de lire ou d'écrire dans une syntaxe particulière comme par exemple 
 rubydebug, collectd ou bien plus intéressant pour nous netflow.
+
+\subsubsection{Tolérance de pannes}
+Vos logs sont \textbf{importants}, c'est la raison d'être de Logstash, il ne souhaite 
+pas que vous en perdiez le moindre à cause d'un problème réseau ou d'une défaillance
+quelconque rendant la destination indisponible.
+%cf pipeline.rb et base.rb dans github
+Lors d'une indisponibilité, les plugins outputs tentent de renvoyer les événements 
+vers leur destination. Si ce n'est pas possible le plugin arrête de lire sa queue 
+tant que le message n'a pas pu être envoyé. Par effet domino, une fois la queue 
+\textit{filtre => output} remplie, le bloc filtre, ne pouvant plus envoyer de nouveaux 
+messages à la queue \textit{FO}. Le plugin du bloc filtre va également retenter 
+d'envoyer ses messages, et refuser en attendant de lire les nouveaux arrivant dans 
+la queue \textit{input => filtre}.
+Si cette dernière venait à se remplir c'est le Logstash tout entier qui refuserait de 
+traiter de nouvelles informations. Dans le meilleur des mondes, les expéditeurs de
+données se comporterais comme logstash et attendraient patiemment que le problème
+se résolve, malheureusement cela n'est pas toujours possible, particulièrement dans
+nos problématiques d'où l'importance d'un Redis en amont (ou en aval) afin de 
+faire tampon.\footnote{Il existe d'autres outils que Redis, (dont ce n'est pas la fonction
+principale) pour réaliser ce travail, ilssont plus adapté mais aussi moins documenté
+dans leur utilisation avec logstash.}
+
+\subsubsection{Multithread}
+Attention ces informations sont pour le moment, \date{Jeudi 16 Avril}, correctes 
+mais sont amenées à changer, notamment concernant les outputs.
+
+Chaque plugin utilise input un \gls{thread}, cela permet d'éviter les engorgements si  
+certaines entrées sont plus longues à traiter que d'autres.
+
+En le bloc filtre entier n'utilise par défaut qu'un seul thread, mais il est possible 
+d'augmenter le nombre de threads affectés au traitement des filtres avec le \gls{flag}
+-w lors du démarrage de Logstash.
+
+À l'heure actuelle le bloc output de logstash ne peut utiliser qu'un seul thread.
+Il lit donc sa queue de façon séquentielle.
 
 
 \section{Installation}
