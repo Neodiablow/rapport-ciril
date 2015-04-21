@@ -131,7 +131,7 @@ des fichiers pour facilité leur accès et leur analyse.
 \chapter{Définitions}
 
 \part{Les logiciels}
-
+\input{logstash.tex}
 
 
 \part{Annexes}
@@ -143,8 +143,22 @@ des fichiers pour facilité leur accès et leur analyse.
 CREATE USER 'root'@'192.168.1.28' IDENTIFIED BY 'pomme';
 CREATE USER 'root'@'192.168.1.28' IDENTIFIED BY 'pomme';
 CREATE USER 'root'@'192.168.1.28' IDENTIFIED BY 'pomme';CREATE USER 'root'@'192.168.1.28' IDENTIFIED BY 'pomme';
+Pommeeee carton pate
+IO pome IO la pomee de'io
 \end{lstlisting}
 
+pommeepompompomo
+
+\begin{lstlisting}[style=code]
+#!/usr/bin/ruby
+
+sfile=ARGV[0]
+dfile=ARGV[1]
+
+IO.readlines(sfile).each {|line|
+`echo "#{line}" >> #{dfile}`
+}
+\end{lstlisting}
 
 \printglossaries
 
