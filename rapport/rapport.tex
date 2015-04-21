@@ -3,10 +3,13 @@
 
 %en francais
 \usepackage[T1]{fontenc}
-\usepackage{lmodern}
-\usepackage[scaled]{helvet}
 \usepackage[utf8]{inputenc}
 \usepackage[francais]{babel}
+%fonts
+\usepackage{lmodern}
+\usepackage[scaled]{helvet}
+\usepackage{fourier}
+\usepackage{inconsolata}
 
 
 \usepackage{amsfonts}
@@ -29,44 +32,18 @@
 
 \graphicspath{ {../images/} } % dossier img
 
-\lstdefinestyle{python}
-{
-language=python,
-numbers=left,
-numberstyle=\tiny,
-backgroundcolor=\color{yellow!20},
-keywordstyle=\color{blue!50!green!50}\bfseries,
-commentstyle=\color{black},
-stringstyle=\color{red},
-showstringspaces=false,
-basicstyle=\small\color{blue},
-captionpos=b,
-tabsize=2,
-frame=tb,
-breaklines=true
-columns=fullflexible,
-linewidth=0.9\linewidth,
-xleftmargin=0.1\linewidth
-}
+%lstdefines etc....
+\input{codeconf.tex}
 
-\lstdefinestyle{code}{
-language=bash,
-basicstyle=\small\sffamily,
-numbers=left,
-numberstyle=\tiny,
-numbersep=3pt,
-frame=tb,
-breaklines=true
-columns=fullflexible,
-backgroundcolor=\color{yellow!20},
-linewidth=0.9\linewidth,
-xleftmargin=0.1\linewidth
-}
+\renewcommand{\familydefault}{phv}
+%\renewcommand{\familydefault}{\ttdefault}
 
 \newcommand{\selv}{%
 \fontfamily{phv}\fontseries{b}\fontsize{8}{20}\selectfont}
 \newcommand{\belv}{%
 \fontfamily{phv}\fontseries{b}\fontsize{10}{22}\selectfont}
+\newcommand{\inco}{%
+\fontfamily{\ttdefault}\fontseries{b}\fontsize{10}{10}\selectfont}
 
 
 %%% header & footer
@@ -160,6 +137,13 @@ des fichiers pour facilité leur accès et leur analyse.
 \part{Annexes}
 \chapter{Sources/Webographie/Bibliographie}
 \input{sources.tex}
+
+
+\begin{lstlisting}[style=code]
+CREATE USER 'root'@'192.168.1.28' IDENTIFIED BY 'pomme';
+CREATE USER 'root'@'192.168.1.28' IDENTIFIED BY 'pomme';
+CREATE USER 'root'@'192.168.1.28' IDENTIFIED BY 'pomme';CREATE USER 'root'@'192.168.1.28' IDENTIFIED BY 'pomme';
+\end{lstlisting}
 
 
 \printglossaries
