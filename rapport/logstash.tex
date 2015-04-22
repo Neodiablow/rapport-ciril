@@ -22,7 +22,7 @@ L'utilisation de logstash est un pipeline qui s'articule autour de 3 \emph{blocs
 Cette façon de fonctionner peut faire penser à \emph{iptables}.
 
 Logstash est un logiciel développé en Jruby\footnote{sauf mention contraire, on supposera
-de le reste de ce rapport que logstash est développé en ruby}. Le passage d'une phase 
+dans ce rapport que logstash est développé en ruby}. Le passage d'une phase 
 à l'autre est implémenté via les \emph{SizedQueue} de ruby. Elles sont dimensionnées 
 pour contenir 20 éléments\footnote{appelés messages lorsqu'on parle de queues, 
 on parle bien ici des \textbf{événements} logstash}, ce n'est pas paramétrable sans 
@@ -47,7 +47,7 @@ notre logstash.
 Il existe également un \textit{pseudo-bloc} qui peut s'insérer dans les autres, ce 
 bloc, \emph{codec} permet la de gérer la \textit{représentation des données} c'est 
 à dire qu'un codec est capable de lire ou d'écrire dans une syntaxe particulière 
-comme par exemple rubydebug, collectd ou bien plus intéressant pour nous, netflow.
+comme par exemple rubydebug, collectd, ou, bien plus intéressant pour nous, netflow.
 
 %wtf why?
 %et les types ??
@@ -127,7 +127,7 @@ Il lit donc sa queue de façon séquentielle.
 
 
 Sur Debian jessie il n'existe pas de paquet officiel logstash maintenu. Il existe 
-en revanche un paquet tiers\footnote{https://download.elastic.co/logstash/logstash/packages/debian/logstash\_1.4.2-1-2c0f5a1\_all.deb} 
+en revanche un paquet tiers\footnote{\url{https://download.elastic.co/logstash/logstash/packages/debian/logstash\_1.4.2-1-2c0f5a1\_all.deb}} 
 chez l'éditeur du logiciel. Le dit paquet n'est pas de très bonne facture  puisqu'il 
 nécessite l'ajout de dépendances manuelles ainsi qu'un rechargement de la configuration 
 des services : \emph{systemctl daemon-reload}.
@@ -146,8 +146,45 @@ et évidemment la clef qui va bien\footnote{blablabla une clé ça sert à balba
 
 wget -qO - https://packages.elasticsearch.org/GPG-KEY-elasticsearch | sudo apt-key add -
 
+\subsection{Configurations}
+Il est d'usage dans une installation \textit{propre} de créer un utilisateur spécifique
+à notre utilisation. C'est également le cas dans notre paquet. L'administrateur 
+système doit donner à cet utilisateur, nouvellement créer les droits nécessaire 
+pour qu'il puisse faire son travail correctement correctement. Dans le cadre de 
+l'analyse de log faire de l'utilisateur logstash un membre du groupe \emph{adm}, 
+le groupe d'administration de Debian lui permettra par exemple d'avoir accès en 
+lecture à la plupart des fichiers de \ipath{/var/log/}.
+
+\subsubsection{Set Capabilities}
+Cependant cette façon de faire peut ne pas être suffisante.
+Notre utilisation de logstash consiste, entre autre, à centraliser les \gls{logs}. 
+Ces derniers sont généralement envoyés par l'intermédiaire de syslog (RFC 5244).
+Par défaut syslog utilise le port 514, ce port est inférieur à 1024, et donc \textit{privilégiés}.
+Aussi seul \emph{root} à le droit d'écouter ces ports. Ajouter notre utilisateur 
+logstash au groupe root enlèverait le bénéfice de sécurité obtenu en isolant les 
+utilisateurs en fonction de leurs besoins. Nous allons plutôt utiliser les 
+\emph{capabilities}\footnote{\url{http://man7.org/linux/man-pages/man7/capabilities.7.html}} 
+et la commande \emph{setcap}\footnote{\url{https://github.com/elastic/logstash/issues/1587}}
+\begin{lstlisting}[style=code,label={lst:setcapabilities}]
+setcap cap\_net\_bind\_service=+epi /usr/lib/jvm/java-7-openjdk-amd64/jre/bin/java
+setcap cap\_net\_bind\_service=+epi /usr/lib/jvm/java-1.7.0-openjdk-amd64/jre/bin/java
+\end{lstlisting}
+qui permettent à un processus (thread en faite) de ne pas se soumettre à certaines 
+vérifications de sécurité du noyau.
+
+cap\_net\_bind\_service permet à un utilisateur non privilégié (non root) d'écouter
+sur les ports privilégiés.
+\begin{lstlisting}[style=code,label={lst:unsetcapabilities}]
+setcap cap\_net\_bind\_service=-epi /usr/lib/jvm/java-1.7.0-openjdk-amd64/jre/bin/java
+\end{lstlisting}
+Pour les enlever.
+
+
+
+
 \subsection{Installation de plugins tiers}
 Procédure pour l'installation d'un plugin tiers
+
 
 
 \section{Grammaire et conjugaison}
@@ -166,9 +203,4 @@ Les fichiers de confs et leurs fonctionnement + interaction entre plugins et etc
 
 
 
-WORKAROUND 
-setcap cap\_net\_bind\_service=+epi /usr/lib/jvm/java-7-openjdk-amd64/jre/bin/java
-setcap cap\_net\_bind\_service=+epi /usr/lib/jvm/java-1.7.0-openjdk-amd64/jre/bin/java
 
-
-https://github.com/elastic/logstash/issues/1587
