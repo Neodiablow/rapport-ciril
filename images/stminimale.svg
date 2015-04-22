@@ -15,7 +15,10 @@
    id="svg5164"
    version="1.1"
    inkscape:version="0.48.5 r10040"
-   sodipodi:docname="New document 1">
+   sodipodi:docname="stminimale.svg"
+   inkscape:export-filename="/home/neodiablow/git/rapport-ciril/images/stminimale.png"
+   inkscape:export-xdpi="100"
+   inkscape:export-ydpi="100">
   <defs
      id="defs5166">
     <radialGradient
@@ -3789,7 +3792,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.98994949"
-     inkscape:cx="375"
+     inkscape:cx="195.69792"
      inkscape:cy="762.43661"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
@@ -3816,7 +3819,7 @@
      inkscape:groupmode="layer"
      id="layer1">
     <rect
-       style="fill:#ff0000;fill-opacity:1;stroke:none"
+       style="fill:#e20000;fill-opacity:1;stroke:none"
        id="rect2990-4"
        width="311.90475"
        height="165.12605"
