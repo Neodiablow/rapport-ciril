@@ -1,12 +1,12 @@
 \section{Présentation de Logstash}
 
 \subsection{Pourquoi Logstash?}
-Logstash parce que, bien qu'un adminsys compétent soit capable d'analyser
-de façon rapide et efficace les logs d'une machine (perl+awk+sed+tail+grep)
-Face à des dizaines/milliers de hosts cette méthode ne fonctionne souffre pas
-le passage à l'échelle.
-De plus il est fréquent, actuellement (cloud, application multicouche) que
-que les logs d'une machine ne suffise plus à diagnostiquer un problème.
+Bien qu'un administrateur système compétent soit capable d'analyser de façon rapide 
+et efficace les logs d'une machine (à l'aide deperl+awk+sed+tail+grep), cette méthode
+est fastidieuse. De plus, face à des dizaines/milliers de machines (virtuelles aussi), 
+cette méthode n'est plus applicable, elle ne peut pas passer à l'échelle.
+Il est actuellement fréquent (cloud, applications multicouche, \ldots) que les logs 
+d'une seule machine ne suffise plus à diagnostiquer le problème auquel on est confronté.
 
 \subsection{Fonctionnement interne}
 L'utilisation de logstash est un pipeline qui s'articule autour de 3 \emph{blocs} 
@@ -175,11 +175,18 @@ vérifications de sécurité du noyau.
 
 \textbf{cap\_net\_bind\_service} permet à un utilisateur non privilégié (non root) 
 d'écouter sur les ports privilégiés.
+
+Les informations concernants les autres capabilities existants sont disponible dans
+la page de manuel correspondante : \emph{man capabilities}.
+
 \begin{lstlisting}[style=code,label={lst:unsetcapabilities}]
 setcap cap_net_bind_service=-epi /usr/lib/jvm/java-1.7.0-openjdk-amd64/jre/bin/java
 \end{lstlisting}
 Pour les enlever.
 
+Enfin, pour rendre le changement permanent, il faut modifier le fichier 
+
+\ipath{/etc/security/capability.conf}.
 
 \subsection{Installation de plugins tiers}
 Procédure pour l'installation d'un plugin tiers
