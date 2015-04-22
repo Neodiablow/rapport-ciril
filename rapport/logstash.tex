@@ -110,12 +110,9 @@ Il lit donc sa queue de façon séquentielle.
 %
 %cd logstash-1.4.2
 %
-%
 %Création du path
 %
 %export PATH+=:/opt/logstash
-%
-%
 %
 %Dautres méthodes d'installation
 
@@ -166,8 +163,8 @@ utilisateurs en fonction de leurs besoins. Nous allons plutôt utiliser les
 \emph{capabilities}\footnote{\url{http://man7.org/linux/man-pages/man7/capabilities.7.html}} 
 et la commande \emph{setcap}\footnote{\url{https://github.com/elastic/logstash/issues/1587}}
 \begin{lstlisting}[style=code,label={lst:setcapabilities}]
-setcap cap\_net\_bind\_service=+epi /usr/lib/jvm/java-7-openjdk-amd64/jre/bin/java
-setcap cap\_net\_bind\_service=+epi /usr/lib/jvm/java-1.7.0-openjdk-amd64/jre/bin/java
+setcap cap_net_bind_service=+epi /usr/lib/jvm/java-7-openjdk-amd64/jre/bin/java
+setcap cap_net_bind_service=+epi /usr/lib/jvm/java-1.7.0-openjdk-amd64/jre/bin/java
 \end{lstlisting}
 qui permettent à un processus (thread en faite) de ne pas se soumettre à certaines 
 vérifications de sécurité du noyau.
@@ -175,11 +172,9 @@ vérifications de sécurité du noyau.
 cap\_net\_bind\_service permet à un utilisateur non privilégié (non root) d'écouter
 sur les ports privilégiés.
 \begin{lstlisting}[style=code,label={lst:unsetcapabilities}]
-setcap cap\_net\_bind\_service=-epi /usr/lib/jvm/java-1.7.0-openjdk-amd64/jre/bin/java
+setcap cap_net_bind_service=-epi /usr/lib/jvm/java-1.7.0-openjdk-amd64/jre/bin/java
 \end{lstlisting}
 Pour les enlever.
-
-
 
 
 \subsection{Installation de plugins tiers}
