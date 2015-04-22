@@ -156,7 +156,7 @@ lecture à la plupart des fichiers de \ipath{/var/log/}.
 Cependant cette façon de faire peut ne pas être suffisante.
 Notre utilisation de logstash consiste, entre autre, à centraliser les \gls{logs}. 
 Ces derniers sont généralement envoyés par l'intermédiaire de syslog (RFC 5244).
-Par défaut syslog utilise le port 514, ce port est inférieur à 1024, et donc \textit{privilégiés}.
+Par défaut syslog utilise le port 514, ce port est inférieur à 1024, et donc \textit{privilégié}.
 Aussi seul \emph{root} à le droit d'écouter ces ports. Ajouter notre utilisateur 
 logstash au groupe root enlèverait le bénéfice de sécurité obtenu en isolant les 
 utilisateurs en fonction de leurs besoins. Nous allons plutôt utiliser les 
@@ -169,8 +169,8 @@ setcap cap_net_bind_service=+epi /usr/lib/jvm/java-1.7.0-openjdk-amd64/jre/bin/j
 qui permettent à un processus (thread en faite) de ne pas se soumettre à certaines 
 vérifications de sécurité du noyau.
 
-cap\_net\_bind\_service permet à un utilisateur non privilégié (non root) d'écouter
-sur les ports privilégiés.
+\textbf{cap\_net\_bind\_service} permet à un utilisateur non privilégié (non root) 
+d'écouter sur les ports privilégiés.
 \begin{lstlisting}[style=code,label={lst:unsetcapabilities}]
 setcap cap_net_bind_service=-epi /usr/lib/jvm/java-1.7.0-openjdk-amd64/jre/bin/java
 \end{lstlisting}
