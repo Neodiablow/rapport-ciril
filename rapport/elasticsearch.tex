@@ -1,3 +1,6 @@
+\section{Présentation de Elasticsearch}
+
+
 \section{Installation}
 Avant même de regarder les différentes dépendances nécessaires à l'utilisation de
 elasticsearch il est recommandé devérifier que l'on utilise bien la même version
@@ -20,8 +23,25 @@ p24-26
 
 
 \section{Sense}
-Sense est un module permettant de faire 
+Sense est un module chrome développé par Boaz Leskes, il sert de front-end à ElasticSearch.
+Le développement (public) de ce module est maintenant arrêté. Il fait parti de 
+\emph{Marvel} le logiciel de monitoring et d'optimisation, vendu\footnote{voir bas 
+de page : \url{https://www.elastic.co/products/marvel/signup.html}} 
+par la société \emph{elastic}.
+
 
 \subsection{Installation}
-récupérer le module https://github.com/bleskes/sense puis l'activer dans chromium
-chrome://extension developper mode
+Installer ce logiciel est simple comme installer une extension Chrome\footnote{testé sur chromium}
+tierce.
+Tout d'abord : récupérer le module à l'agresse  https://github.com/bleskes/sense 
+en utilisant par exemple : 
+\begin{lstlisting}[style=code]
+git clone https://github.com/bleskes/sense.git
+\end{lstlisting}
+
+Il suffit ensuite de l'activer dans chromium :\\ 
+chrome://extension => Developer mode => Load unpacked extension.
+
+Et voilà !
+
+\subsection{Utilisation de Sense}
