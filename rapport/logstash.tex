@@ -179,6 +179,12 @@ d'écouter sur les ports privilégiés.
 Les informations concernants les autres capabilities existants sont disponible dans
 la page de manuel correspondante : \emph{man capabilities}.
 
+\textbf{=+epi} signifie que l'on ajoute une \emph{capapbility} à un fichier. Plus 
+précisement \textbf{=+} signifie que l'on écrase les droits précédents pour les remplacer
+par les nouveaux. \textbf{e, p} et \textbf{i} sont la gradation de droits que l'on peut 
+attribuer à un fichier avec les capabilities. Le droit \textbf{effective} 
+\footnote{\url{https://www.kernel.org/pub/linux/libs/security/linux-privs/kernel-2.2/capfaq-0.2.txt}}
+
 \begin{lstlisting}[style=code,label={lst:unsetcapabilities}]
 setcap cap_net_bind_service=-epi /usr/lib/jvm/java-1.7.0-openjdk-amd64/jre/bin/java
 \end{lstlisting}
