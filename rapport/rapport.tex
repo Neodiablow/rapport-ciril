@@ -97,19 +97,33 @@ Remerciment 3
 
 \section{Problématique}
 La gestion de \gls{logs} est une problématique commune à presque tous les services informatique,
-tous les fournisseurs de services, toutes personnes gérant une infrastructure informatisée.
+tous les fournisseurs de services et plus globalement, toutes personnes gérant une infrastructure 
+informatisée.
 
-Les logs sont un outils indispensable aux dépanages et à l'anticipation de problèmes 
-inhérant à l'exploitation d'une infrastructure informatique\footnote{ici la définition
-d'infrastructure informatique est particulièrement vaste, tout ensemble de machine
-produisant des logs}.
-Il est encore courant dans de nombreuses structures d'analyser plus ou moins "à la
-main" les logs qu'ils proviennent de hard ou de software.
+Les \gls{logs} sont précieux car ils sont un des éléments indispensable au dépanage, au monitoring,
+à l'anticipation de problèmes inhérant à l'exploitation d'une infrastructure informatique.
+\footnote{terme volontairement très vaste}
+\emph{De nombreuses structures continuent encore aujourd'hui d'analyser plus ou moins "manuellement" leurs
+\emph{\gls{logs}}, qu'ils proviennent de \emph{hardware, ou de software}}.
 
-La tendance est cependant (et depuis longtemps) à l'automatisation et à la centralisation
-des fichiers pour facilité leur accès et leur analyse.
+L'objectif de ce projet est de répondre à la problématique de la gestion et de l'analyse de log, en utilisant
+la stack ELK\footnote{Elasticsearch Logstash Kibana}.
+Dans ce rapport nous expliquerons de façon plus précise en quoi consiste la gestion de log,
+les fonctions et fonctionnement des outils dont nous ferons usage, enfin, nous détaillerons notre 
+architecture et ses évolutions possibles.
 
-\chapter{La gestion de log}
+
+
+\chapter{La gestion de logs}
+
+La gestion des \gls{logs} est un problème presque aussi vieux que l'informatique.
+Au commencement 
+
+La tendance est cependant (et depuis longtemps) à la centralisation de ces fichiers afin de faciliter 
+leur accès et leur analyse ultérieur. Cela permet également une sauvegarde plus facile de ces derniers 
+dans le cas où cela est nécessaire. Il est fréquent d'avoir des scripts analysant 
+quotidiennement ces \gls{logs} afin de pouvoir détécter un comportement suspect.
+
 
 \lipsum
 \chapter{Les clusters}
