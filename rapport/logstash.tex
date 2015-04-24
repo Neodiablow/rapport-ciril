@@ -124,7 +124,7 @@ Il lit donc sa queue de façon séquentielle.
 
 
 Sur Debian jessie il n'existe pas de paquet officiel logstash maintenu. Il existe 
-en revanche un paquet tiers\footnote{\url{https://download.elastic.co/logstash/logstash/packages/debian/logstash\_1.4.2-1-2c0f5a1\_all.deb}} 
+en revanche un paquet tiers\fnu{https://download.elastic.co/logstash/logstash/packages/debian/logstash\_1.4.2-1-2c0f5a1\_all.deb}
 fourni par l'éditeur du logiciel. Le dit paquet n'est pas de très bonne facture  
 puisqu'il nécessite l'ajout de dépendances manuelles\footnote{wget paquet, 
 dpkg -i paquet, apt-get install -f} ainsi qu'un rechargement de 
@@ -164,8 +164,8 @@ Par défaut syslog utilise le port 514, ce port est inférieur à 1024, et donc 
 Aussi seul \emph{root} à le droit d'écouter ces ports. Ajouter notre utilisateur 
 logstash au groupe root enlèverait le bénéfice de sécurité obtenu en isolant les 
 utilisateurs en fonction de leurs besoins. Nous allons plutôt utiliser les 
-\emph{capabilities}\footnote{\url{http://man7.org/linux/man-pages/man7/capabilities.7.html}} 
-et la commande \emph{setcap}\footnote{\url{https://github.com/elastic/logstash/issues/1587}}
+\emph{capabilities}\fnu{http://man7.org/linux/man-pages/man7/capabilities.7.html} 
+et la commande \emph{setcap}\fnu{https://github.com/elastic/logstash/issues/1587}
 \begin{lstlisting}[style=code,label={lst:setcapabilities}]
 setcap cap_net_bind_service=+epi /usr/lib/jvm/java-7-openjdk-amd64/jre/bin/java
 setcap cap_net_bind_service=+epi /usr/lib/jvm/java-1.7.0-openjdk-amd64/jre/bin/java
@@ -183,7 +183,7 @@ la page de manuel correspondante : \emph{man capabilities}.
 précisement \textbf{=+} signifie que l'on écrase les droits précédents pour les remplacer
 par les nouveaux. \textbf{e, p} et \textbf{i} sont la gradation de droits que l'on peut 
 attribuer à un fichier avec les capabilities. Le droit \textbf{effective} 
-\footnote{\url{https://www.kernel.org/pub/linux/libs/security/linux-privs/kernel-2.2/capfaq-0.2.txt}}
+\fnu{https://www.kernel.org/pub/linux/libs/security/linux-privs/kernel-2.2/capfaq-0.2.txt}
 
 \begin{lstlisting}[style=code,label={lst:unsetcapabilities}]
 setcap cap_net_bind_service=-epi /usr/lib/jvm/java-1.7.0-openjdk-amd64/jre/bin/java
