@@ -65,3 +65,30 @@ backgroundcolor=\color{black},
 %linewidth=0.9\linewidth,
 %xleftmargin=0.1\linewidth
 }
+
+
+\definecolor{blocs}{HTML}{0066FF}
+\definecolor{plugins}{HTML}{CC0000}
+\definecolor{special}{HTML}{CCFF33}
+
+\lstdefinestyle{logstash}{
+language=bash,
+numbers=left,
+numberstyle=\tiny\color{black},
+basicstyle=\inco\color{white},
+%basicstyle=\inco\color{black},%for printing
+backgroundcolor=\color{black},
+%backgroundcolor=\color{white},%for printing
+keywordstyle=\color{blocs},
+keywordstyle=[2]\color{plugins},
+keywordstyle=[3]\color{special},
+numbersep=3pt,
+frame=tb,
+breaklines=true
+columns=fullflexible,
+morekeywords={input,filter,output},
+morekeywords=[2]{stdin,stdout,grok,syslog},
+morekeywords=[3]{fromage},
+commentstyle=\color{purple},
+captionpos=b
+}
