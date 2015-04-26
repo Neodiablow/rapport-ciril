@@ -187,16 +187,32 @@ la page de manuel correspondante : \emph{man capabilities}.
 \textbf{=+epi} signifie que l'on ajoute une \emph{capapbility} à un fichier. Plus 
 précisement \textbf{=+} signifie que l'on écrase les droits précédents pour les remplacer
 par les nouveaux. \textbf{e, p} et \textbf{i} sont la gradation de droits que l'on peut 
-attribuer à un fichier avec les capabilities. Le droit \textbf{effective} 
-\fnu{https://www.kernel.org/pub/linux/libs/security/linux-privs/kernel-2.2/capfaq-0.2.txt}
+attribuer à un fichier avec les capabilities\fnu{https://www.kernel.org/pub/linux/libs/security/linux-privs/kernel-2.2/capfaq-0.2.txt}. 
 
+\begin{itemize}
+    \item \textbf{effective}: indique si la capability est utilisé actuellement
+    \item \textbf{permited}: définit quelles capabilities sont autorisé pour un 
+    processus donné
+    \item \textbf{inherited}: permet de transmettre la capability à un autre programme
+\end{itemize}
+\textbf{Note}: par défaut, changer le propriétaire d'un fichier de root, à non root enlève
+les capabilities associées à ce dernier\footnote{\scriptsize{http://stackoverflow.com/questions/17743062/changing-user-ids-for-assigning-additional-capabilities}}.
+
+Pour vérifier les \textit{capabilities} d'un binaire on utilise la commande 
+\emph{getcap}.
+
+\begin{lstlisting}[style=code,label={lst:getcapabilities}]
+    getcap /bin/ping
+    /bin/ping = cap_net_raw+ep
+\end{lstlisting}
+
+Pour les enlever les capabilities il faut utiliser la commande suivante.
 \begin{lstlisting}[style=code,label={lst:unsetcapabilities}]
 setcap cap_net_bind_service=-epi /usr/lib/jvm/java-1.7.0-openjdk-amd64/jre/bin/java
 \end{lstlisting}
-Pour les enlever.
 
-Enfin, pour rendre le changement permanent, il faut modifier le fichier 
-
+Enfin, il est possible, de donner le droit à un utilisateur non root, l'autorisation
+de modifier certaines capabilities. Pour ce faire, il faut modifier le fichier \\[1mm]
 \ipath{/etc/security/capability.conf}.
 
 \subsection{Installation de plugins tiers}
@@ -205,8 +221,44 @@ Procédure pour l'installation d'un plugin tiers
 
 
 \section{Grammaire et conjugaison}
+Dans cette section nous allons brièvement expliquer le fonctionnement du langage 
+du fichier de configuration de Logstash.\fnu{http ://logstash.net/docs/1.4.2/configuration}
+
+Le ou les fichiers de configuration comportent deux ou trois parties, représentant 
+les blocs dont nous avons parlé au préalable. Le bloc \emph{filter} est optionnel
+et il est important de noter que, si il est possible de répartir sa configuration
+dans plusieurs fichiers, cette dernière sera concaténer, attention aux boucles infinies
+dans ce cas là.
+
+\begin{lstlisting}[style=logstash,label={lst:conflogstashminimale},caption={Configuration minimale}]
+input {
+    stdin{}#ceci est un plugin
+}
+
+#filter {
+#}#on peut également commenter en fin de ligne
+
+output {
+    stdout{}#ceci est un autre plugin
+}
+\end{lstlisting}
+
+Ici on constate l'utilisation des plugins stdin et stdout, stdin. Comme leur nom 
+et leur emplacement dans le fichier de configuration peut le laisser supposer.
+Ici Logstash collecte en entrée tout ce qui vient de l'entrée standard, typiquement
+le clavier, et l'envoie sur la sortie standard, typiquement, un terminal.
+Pour pouvoir recevoir l'output, il est d'ailleurs conseillé d'utiliser, le flag -f
+et de ne pas lancer logstash en mode daemon.
+
+\subsection{Les flags}
+
+
+
+
 
 Les fichiers de confs et leurs fonctionnement + interaction entre plugins et etc...
+
+
 
 
 
