@@ -221,7 +221,7 @@ Procédure pour l'installation d'un plugin tiers
 
 
 \section{Grammaire et conjugaison}
-Dans cette section nous allons brièvement expliquer le fonctionnement du langage 
+Dans cette section nous allons brièvement expliquer le fonctionnement de la syntaxe 
 du fichier de configuration de Logstash.\fnu{http ://logstash.net/docs/1.4.2/configuration}
 
 Le ou les fichiers de configuration comportent deux ou trois parties, représentant 
@@ -251,7 +251,21 @@ Pour pouvoir recevoir l'output, il est d'ailleurs conseillé d'utiliser, le flag
 et de ne pas lancer logstash en mode daemon.
 
 \subsection{Les flags}
+Les \emph{flags} sont les noms donnés aux paramètres que l'on peut donner au binaire
+de Logstash.
 
+\begin{itemize}
+    \item -f : file, désigne le fichier de configuration à utiliser
+    \item -e : permet d'utiliser une chaine de caractères (depuis la console) pour
+    pour configurer Logstash, à utiliser pour faire des tests de configuration simple.
+    \item -w : filterworkers, comme expliqué plus haut, permet d'affecter plusieurs
+    threads à la gestion des filtres. (par défaut 1)
+    \item - -configtest : associé à -f \ipath{path/to/conffile} vérifie la syntaxe 
+    du fichier de configuration.
+\end{itemize}
+
+Par défaut Logstash utilisera les fichiers de configuration présents dans \\ \ipath{
+/etc/logstash/conf.d/}, ils seront ouverts par ordre alphabétique.
 
 
 
