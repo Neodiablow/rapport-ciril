@@ -250,6 +250,109 @@ le clavier, et l'envoie sur la sortie standard, typiquement, un terminal.
 Pour pouvoir recevoir l'output, il est d'ailleurs conseillé d'utiliser, le flag -f
 et de ne pas lancer logstash en mode daemon.
 
+Dans ce second exemple, plus complexe, nous allons présenter une utilisation plus
+vaste des plugins et la logique sous-jacente à leur utilisation.
+
+\begin{lstlisting}[style=logstash,label={lst:conflogstashiniteloop},caption={Infinite loop}]
+#mail.conf
+input {
+    file {
+        path => ["/home/fdupont/testmail"]
+    }
+}
+
+filter{
+    throttle{
+        before_count => 2
+        after_count => 4
+        period => 120
+        key => "%{message}"
+        add_tag => "contenu"
+    }
+}
+
+output {
+    stdout{ }
+    if "contenu" not in [tags]{
+        email{
+            to => "fdupont@localhost"
+            from => "logstash@%{host}"
+            subject => "%{message}"
+            body => "Ceci est un test sur l'hote %{host}\n avec pour message : %{message}"
+        }
+    }
+}
+
+#shipping.conf
+input {
+    file {
+        path => ["/var/log/secure", "/var/log/messages", "/var/log/*.log","/var/mail/fdupont"]
+        exclude => ["*.gz"]
+    }
+    file {
+        path => ["/var/mail/ldidry"]
+    }
+}
+
+
+output {
+    stdout{ }
+    redis {
+        host => "100.127.255.1"
+        data_type => "list"
+        key => "logstash"
+    }
+}
+\end{lstlisting}
+
+Cet exemple de code n'est pas à utiliser dans la mesure ou c'est une boucle infinie.
+Il permet en revanche d'expliquer de nombreux points de fonctionnement de la syntaxe
+du fichier de configuration de Logstash.
+Ce code représente en faite {\bfseries 2 fichiers}, mail.conf et shipping.conf, tout
+deux situés dans le répertoire par défaut des fichiers de configuration de Logstash
+\ipath{/etc/logstash/conf.d/}. Ils sont lus par ordre alphabétique et concaténés 
+(comprendre que les inputs ainsi que les outputs sont fusionnés, il faut donc être
+rigoureux dans leur écriture afin de ne pas créer d'effets de bord indésirables).
+Une bonne pratique consiste, à utiliser la convention de nommage suivante : \textit{00-description,
+01-description} etc \ldots
+
+
+Chacun possède un bloc input, output et l'un d'entre eux : filter.
+Dans chacun des blocs on trouve un ou plusieurs {\bfseries plugins} comme email, 
+file, redis ou d'autres. 
+Chacun de ces plugins possède sa propre son propre paramétrage,
+réalisable au travers de directives, mais avec une syntaxe commune.
+
+
+\begin{lstlisting}[style=logstash,label={lst:conflogstashsyntaxe1},caption={Syntaxe}]
+    directive => int
+    directive => "string"
+    directive => ["membre", "de", "l'array"]
+\end{lstlisting}
+
+La plupart des directives se comportent ainsi, ce n'est pas le cas pour toutes, nous
+verrons quelques exemples dans des configurations plus avancées. Dans tout les cas 
+est indispensable de référer à la documentation pour toute primo utilisation d'un
+plugin.
+
+
+Comme montré dans le code \ref{lst:conflogstashsyntaxe1} il est également possible 
+d'utiliser des structures conditionnelles (les if, else, else if, en faite).
+De nombreux opérateurs sont également supportés: ==, !=, <, >, <=, >=, mais aussi
+les expressions régulières (syntaxe ruby) =$\sim$, $\sim$! et enfin : in, not in,and,nand,
+or,xor et !. 
+
+Dans notre exemple de code \ref{lst:conflogstashiniteloop}, la structure conditionnelle
+est utilisé pour faire le trie en utilisant les \emph{tags}.
+
+
+
+
+
+
+
+
+
 \subsection{Les flags}
 Les \emph{flags} sont les noms donnés aux paramètres que l'on peut donner au binaire
 de Logstash.
@@ -271,10 +374,6 @@ Par défaut Logstash utilisera les fichiers de configuration présents dans \\ \
 
 
 Les fichiers de confs et leurs fonctionnement + interaction entre plugins et etc...
-
-
-
-
 
 \section{Utilisation basique}
 
