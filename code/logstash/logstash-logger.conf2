@@ -1,0 +1,94 @@
+input{
+	stdin{}
+
+	tcp{
+		port => 514
+		type => syslog
+	}
+	
+	udp{
+		port => 514
+		type => syslog
+	}
+}
+
+filter{
+    grok{
+    #    match => [ "message", "%{SYSLOGBASE}" ]
+         match => [ "message", "%{SYSLOGTIMESTAMP:timestamp} (?:%{SYSLOGFACILITY:facility} )?%{SYSLOGHOST:logsource} %{GREEDYDATA:reste}" ]
+    }
+
+
+#suppression des informations pas interessantes pour firewall
+    if "-302014:" in [reste] or "-302016:" in [reste]{
+        drop{}
+    }
+    
+    if "FWSM" in [reste]{
+#    if [program] =~ /.+FWSM.+/{
+        grok{
+            match => [ "reste", "%{PROG:program}: (?<operation>[a-z,A-Z, ]+) (?<numero>\d+) %{DATA} inside:%{IP:IPinside}/(?<portin>\d+) \(%{IP:IPnat}/(?<portnat>\d+)\) %{DATA} outside:%{IP:IPoutside}/(?<portout>\d+) %{DATA}" ]#bug? \w fonctionne pas ??
+        }
+        mutate{
+            add_field => {"firewall" => true
+            }
+            remove_field => ["reste", "timestamp"]
+        }
+	grok{
+		match => [ "@timestamp", "%{TIMESTAMP_ISO8601:timestamp}"]
+	}
+    }
+    else{
+	grok{
+		 match => [ "reste", "(?<chiffre>\d+):\ (?<uptime>([1-9][0-9]?(d|w|y))([1-9][0-9]?(d|w|y))?:\ )?((?<datetest>(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?) (?:(?:0[1-9])|(?:[12][0-9])|(?:3[01])|[1-9]) (?:2[0123]|[01]?[0-9]):(?:[0-5][0-9]):(?:(?:[0-5]?[0-9]|60)(?:[:.,][0-9]+)?)):\ )?(?<action>[\w._\/%-]+):\ %{GREEDYDATA:information}" ] # attention aux espaces 
+	}
+	if "_grokparsefailure" in [tags]{
+		
+		throttle{
+			before_count => 2
+			after_count => 4
+			period => 600
+			key => "%{message}"
+			add_tag => "mail"
+		}
+	}
+        mutate{
+            add_field => {"firewall" => false}
+            remove_field => ["reste"]
+        }
+    }
+}
+
+output{
+#	stdout{codec => rubydebug}
+#	file{
+#		path => "/home/fdupont/tester"
+#	}
+	
+#	if [firewall]=="false"{
+#		stdout{codec => rubydebug}	
+#	}
+	if [firewall]=="true"{
+		redis {
+			host => "100.127.255.1"
+			data_type => "list"
+			key => "firewall"
+		}
+	}	
+	else{
+		redis {
+			host => "100.127.255.1"
+			data_type => "list"
+			key => "state"
+		}
+	}
+	if "mail" in [tags]{
+		email{
+			to => "fdupont@localhost"
+			from => "logstashfail@%{host}"
+			subject => "%{@timestamp} _grokparsefailure"
+			body => "Logstash n'a pas pu parser un log contenant :\n %{message}\n Ce meessage requiert votre attention, car il est souvent synonyme d'un probleme reseau quelconque"
+		}
+		
+	}
+}
