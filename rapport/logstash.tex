@@ -221,6 +221,7 @@ Procédure pour l'installation d'un plugin tiers
 
 
 \section{Grammaire et conjugaison}
+\subsection{Généralités}
 Dans cette section nous allons brièvement expliquer le fonctionnement de la syntaxe 
 du fichier de configuration de Logstash.\fnu{http ://logstash.net/docs/1.4.2/configuration}
 
@@ -305,7 +306,7 @@ output {
 }
 \end{lstlisting}
 
-Cet exemple de code n'est pas à utiliser dans la mesure ou c'est une boucle infinie.
+Cet exemple de code ne dois pas être utilisé : c'est une boucle infinie.
 Il permet en revanche d'expliquer de nombreux points de fonctionnement de la syntaxe
 du fichier de configuration de Logstash.
 Ce code représente en faite {\bfseries 2 fichiers}, mail.conf et shipping.conf, tout
@@ -320,8 +321,8 @@ Une bonne pratique consiste, à utiliser la convention de nommage suivante : \te
 Chacun possède un bloc input, output et l'un d'entre eux : filter.
 Dans chacun des blocs on trouve un ou plusieurs {\bfseries plugins} comme email, 
 file, redis ou d'autres. 
-Chacun de ces plugins possède sa propre son propre paramétrage,
-réalisable au travers de directives, mais avec une syntaxe commune.
+Chacun de ces plugins possède son propre paramétrage, réglable au travers de 
+directives, mais avec une syntaxe commune.
 
 
 \begin{lstlisting}[style=logstash,label={lst:conflogstashsyntaxe1},caption={Syntaxe}]
@@ -330,7 +331,7 @@ réalisable au travers de directives, mais avec une syntaxe commune.
     directive => ["membre", "de", "l'array"]
 \end{lstlisting}
 
-La plupart des directives se comportent ainsi, ce n'est pas le cas pour toutes, nous
+La plupart des directives de plugins se comportent ainsi, pas toutes, nous
 verrons quelques exemples dans des configurations plus avancées. Dans tout les cas 
 est indispensable de référer à la documentation pour toute primo utilisation d'un
 plugin.
@@ -345,12 +346,72 @@ or,xor et !.
 Dans notre exemple de code \ref{lst:conflogstashiniteloop}, la structure conditionnelle
 est utilisé pour faire le trie en utilisant les \emph{tags}.
 
+\subsubsection{Autopsie d'une la boucle infinie}
+La configuration \ref{lst:conflogstashiniteloop}, qui ne fonctionne pas
+correctement n'a pas été mise là par hasard. Cette erreur, permet de bien comprendre 
+le fonctionnement des fichiers de configuration de Logstash.
+
+Rappels : Il y a dans cette configuration, 2 fichiers de configuration. Les fichiers,
+sont concaténés au lancement de Logstash de telle sorte que virtuellement cela donnerait 
+un résultat similaire à :
 
 
+\begin{lstlisting}[style=logstash,label={lst:conflogstashiniteloop2},caption={Infinite loop concaténé}]
+#mail.conf
+input {
+    file {
+        path => ["/home/fdupont/testmail"]
+    }
+    file {
+        path => ["/var/log/secure", "/var/log/messages", "/var/log/*.log","/var/mail/fdupont"]
+        exclude => ["*.gz"]
+    }
+    file {
+        path => ["/var/mail/ldidry"]
+    }
+}
 
+filter{
+    throttle{
+        before_count => 2
+        after_count => 4
+        period => 120
+        key => "%{message}"
+        add_tag => "contenu"
+    }
+}
 
+output {
+    stdout{ }
+    if "contenu" not in [tags]{
+        email{
+            to => "fdupont@localhost"
+            from => "logstash@%{host}"
+            subject => "%{message}"
+            body => "Ceci est un test sur l'hote %{host}\n avec pour message : %{message}"
+        }
+    }
+    redis {
+        host => "100.127.255.1"
+        data_type => "list"
+        key => "logstash"
+    }
+}
+\end{lstlisting}
 
+Ici le problème semble plus évident l'output et l'input sont "liés". Des messages
+peuvent être détectés et envoyés par mail à l'adresse \ipath{fdupont@localhost} (soit
+l'équivalent de \ipath{/var/mail/fdupont}). Ce fichier est également écouté, ainsi que la 
+plupart de fichiers de logs, voilà la source des boucles infinies, assez facilement
+reproductible si l'on n'est pas suffisamment rigoureux, et surtout si l'on travail 
+sur plusieurs fichiers à la fois.
 
+L'autre erreur majeur de ce fichier se situe à la ligne 27. Si le terme contenu 
+n'est pas présent dans "tags" alors on envoie un mail. Le fonctionnement est l'inverse 
+de celui suggérer par throttle. Ici un mail est envoyé dès qu'un événement se produit
+dans un fichier de log. Ce mail envoyé dans /var/mail/fdupont sera renvoyé dans cette
+même adresse, le contenu de l'événement se modifiera en permanence puisque le message
+sera encapsulé dans son prédécesseur \ldots
 
 
 \subsection{Les flags}
