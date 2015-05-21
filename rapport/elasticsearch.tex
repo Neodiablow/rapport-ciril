@@ -76,9 +76,33 @@ chrome://extension => Developer mode => Load unpacked extension.
 Et voilà ! \footnotesize{(avec un accent anglais)}
 
 \subsection{Utilisation de Sense}
-L'utilisation de sense est assez simple via son interface, la complexité se situe 
-plutôt du coté de la .... elasticsearch
+L'utilisation de Sense est assez simple via son interface :
 
-\begin{center}
+\begin{figure}[H]
+\center
 \includegraphics[width=15cm]{sensegui.png}
-\end{center}
+\label{fig:sensegui.png}
+\caption{Vue générale de Sense}
+\end{figure}
+
+La difficulté se situe évidemment plutôt du coté de l'appréhension, la configuration
+et l'optimisation de Elasticsearch.
+
+Nous allons avec l'image ci-dessous \ref{fig:sensegui2.png} brièvement expliquer le fonctionnement de Sense
+\begin{figure}[H]
+\center
+\includegraphics[width=15cm]{sensegui2.png}
+\label{fig:sensegui2.png}
+\caption{Zoom sur les fonctionnalités de Sense}
+\end{figure}
+Le formulaire \textbf{Server} situé en haut correspond à l'adresse et au port d'écoute 
+de l'instance Elasticsearch sur laquelle on souhaite travailler.
+
+Le panneau de gauche correspond au \textbf{panneau de requêtes}. On utilise l'api REST d'elasticsearch
+pour envoyer des requêtes (recherches, modification etc, point sur l'API prévu 
+ultérieurement). Il est à noté que le panneau de gauche est doté d'une autocomplétion
+pour les fonctions et configurations standards dans elasticsearch.
+
+Le panneau de droite est le \textbf{panneau de réponse} aux requêtes.
+
+
