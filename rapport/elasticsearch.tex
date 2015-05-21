@@ -1,3 +1,5 @@
+\definecolor{grey}{HTML}{CCA3A3}
+
 \begin{figure}[H]
 \center
 \includegraphics[width=0.2\textwidth]{elasticsearch.png}
@@ -28,17 +30,19 @@ atouts d'Elasticsearch réside dans son aptitude à pouvoir passer à l'échelle
 \section{Installation}
 Avant même de regarder les différentes dépendances nécessaires à l'utilisation de
 Elasticsearch il est recommandé de vérifier que l'on utilise bien la même version
-que son compère logstash (vérifier la documentation).
+que son compère logstash (vérifier la compatibilité dans la documentation si les
+versions de Logstash et Elasticsearch ont un numéro différent).
 
 Son installation est sensiblement la même que son comparse logstash puisque ce logiciel 
 nécessite également l'installation des dépendances \emph{jruby} et \emph{openjdk-7-jre}
 à noter qu'il fonctionne également sur openjdk-8-jre.
 
 Là aussi les paquets debian officiels n'existant pas on utilisera celui fourni par 
-elastic.co\footnote{https://download.elastic.co/elasticsearch/elasticsearch/elasticsearch-1.5.1.deb}.
-Et ici aussi le paquet est un peu approximatif puisqu'il faut rajouter certains chemin, et ajouter des droits.
+\href{https://download.elastic.co/elasticsearch/elasticsearch/elasticsearch-1.5.1.deb}{elastic.co}.
+Et ici aussi le paquet est un peu approximatif puisqu'il faut rajouter certains 
+chemin, et ajouter des droits.
 
-
+\subsection{Configuration de base}
 
 
 Acompleter et revoir
@@ -68,7 +72,7 @@ chrome://extension => Developer mode => Load unpacked extension.
 
 \begin{figure}[H]
 \center
-\includegraphics[width=15cm]{senseinstall.png}
+\includegraphics[width=12cm]{senseinstall.png}
 \label{fig:senseinstall}
 \caption{Plugin Sense installé dans chromium}
 \end{figure}
@@ -98,11 +102,52 @@ Nous allons avec l'image ci-dessous \ref{fig:sensegui2.png} brièvement explique
 Le formulaire \textbf{Server} situé en haut correspond à l'adresse et au port d'écoute 
 de l'instance Elasticsearch sur laquelle on souhaite travailler.
 
-Le panneau de gauche correspond au \textbf{panneau de requêtes}. On utilise l'api REST d'elasticsearch
+Le panneau de gauche correspond au \textbf{panneau de requête}. On utilise l'api REST d'elasticsearch
 pour envoyer des requêtes (recherches, modification etc, point sur l'API prévu 
 ultérieurement). Il est à noté que le panneau de gauche est doté d'une autocomplétion
 pour les fonctions et configurations standards dans elasticsearch.
 
 Le panneau de droite est le \textbf{panneau de réponse} aux requêtes.
 
+\section{La théorie}
 
+\section{L'infrastructure}
+
+\section{Les API Elasticsearch}
+Elasticsearch est énorme, mais être assez facilement utilisable par le 
+plus grand nombre, des \gls{API} \emph{optimisées} pour chaque tâches ont été conçues.
+
+\subsection{API REST}
+Cette API sert à la communication avec Elastisearch, comme toutes les API REST elle
+utilise les méthodes HTTP, ici : GET, POST, PUT et DELETE et s'appuie ensuite sur l'architecture d'Elasticsearch.
+
+\textbf{{\color{grey}http://host:port}/[{\color{red}index}]/[{\color{cyan}type}]/[{\color{yellow}\_action/id}]}\\[5mm]
+Imaginons que dans un projet fictif, nous souhaitions référencer des tweets.
+On pourrait procéder comme suit pour ajouter le premier.
+
+\textbf{PUT  {\color{grey} http://100.127.255.1:9200}/{\color{red}twitter}/{\color{cyan}tweet}/{\color{yellow}1}}
+
+\begin{lstlisting}[style=code,label={lst:RESTexemple1curl},caption={Avec curl}]
+curl -XPUT http://100.127.255.1:9200/twitter/tweet/1
+\end{lstlisting}
+Voici le résultat en utilisant curl, directement en ligne de commande, par 
+navigateur, \ldots
+
+\begin{lstlisting}[style=code,label={lst:RESTexemple1sense},caption={Avec Sense}]
+PUT /twitter/tweet/1
+\end{lstlisting}
+
+Voici la syntaxe que nous obtiendrions en utilisant Sense, puisque notre serveur 
+et notre port sont déjà renseignés, la syntaxe est bien plus courte.
+
+
+
+\subsection{QueryDSL}
+DSL pour Domain Specific Language, parce que Elasticsearch est avant tout un moteur 
+de recherche, il dispose de puissantes fonctionnalités de recherche. Il dispose donc
+de son propre langage d'interrogation le QueryDSL. C'est loin d'être un cas unique,
+par exemple Puppet dispose également de son propre langage de configuration.
+
+
+
+\section{Le mapping}
