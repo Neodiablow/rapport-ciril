@@ -107,7 +107,8 @@ pour envoyer des requêtes (recherches, modification etc, point sur l'API prévu
 ultérieurement). Il est à noté que le panneau de gauche est doté d'une autocomplétion
 pour les fonctions et configurations standards dans elasticsearch.
 
-Le panneau de droite est le \textbf{panneau de réponse} aux requêtes.
+Le panneau de droite est le \textbf{panneau de réponse} aux requêtes. Les informations
+nous parviennent en JSON.
 
 \section{La théorie}
 
@@ -157,7 +158,12 @@ très similaire pour supprimer tous les indexs d'un seul coup :\\
 La directive DELETE est utilisé pour supprimer des informations d'Elasticsearch.
 
 
+Enfin la directive GET qui sert à récupérer des information, à tout niveaux, index,
+type, mapping, type par défaut \ldots, en revanche il faut avoir un identifiant exact,
+ce n'est pas un outils de recherche (abordé dans la section suivante).
 \textbf{GET  {\color{grey} http://100.127.255.1:9200}/{\color{red}twitter}/{\color{cyan}tweet}/{\color{yellow}1}}
+
+Les information récupérées le sont en JSON.
 
 \subsection{QueryDSL}
 DSL pour Domain Specific Language, parce que Elasticsearch est avant tout un moteur 
