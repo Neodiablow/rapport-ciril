@@ -140,7 +140,24 @@ PUT /twitter/tweet/1
 Voici la syntaxe que nous obtiendrions en utilisant Sense, puisque notre serveur 
 et notre port sont déjà renseignés, la syntaxe est bien plus courte.
 
+La directive PUT est utilisé pour renseigner de nouvelles informations dans Elasticsearch.
 
+
+Dans notre projet d'analyse de logs, il est fréquent que nous dussions supprimer 
+des index, notamment dans le cas de paramétrage des \emph{mappings}, mais également
+pour soulager notre infrastructure du poids des logs de firewall (~20-30Go/jours).
+
+\textbf{DELETE  {\color{grey} http://100.127.255.1:9200}/{\color{red}twitter}/}\\
+
+Si nous avions un index twitter journalier il serait possible d'utiliser une commande
+très similaire pour supprimer tous les indexs d'un seul coup :\\
+
+\textbf{DELETE  {\color{grey} http://100.127.255.1:9200}/{\color{red}twitter*}}
+
+La directive DELETE est utilisé pour supprimer des informations d'Elasticsearch.
+
+
+\textbf{GET  {\color{grey} http://100.127.255.1:9200}/{\color{red}twitter}/{\color{cyan}tweet}/{\color{yellow}1}}
 
 \subsection{QueryDSL}
 DSL pour Domain Specific Language, parce que Elasticsearch est avant tout un moteur 
