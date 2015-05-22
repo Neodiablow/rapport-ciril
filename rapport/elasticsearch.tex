@@ -146,22 +146,22 @@ La directive PUT est utilisé pour renseigner de nouvelles informations dans Ela
 
 Dans notre projet d'analyse de logs, il est fréquent que nous dussions supprimer 
 des index, notamment dans le cas de paramétrage des \emph{mappings}, mais également
-pour soulager notre infrastructure du poids des logs de firewall (~20-30Go/jours).
+pour soulager notre infrastructure du poids des logs de firewall (~20-30Go/jours).\\
 
 \textbf{DELETE  {\color{grey} http://100.127.255.1:9200}/{\color{red}twitter}/}\\
 
 Si nous avions un index twitter journalier il serait possible d'utiliser une commande
 très similaire pour supprimer tous les indexs d'un seul coup :\\
 
-\textbf{DELETE  {\color{grey} http://100.127.255.1:9200}/{\color{red}twitter*}}
+\textbf{DELETE  {\color{grey} http://100.127.255.1:9200}/{\color{red}twitter*}}\\
 
-La directive DELETE est utilisé pour supprimer des informations d'Elasticsearch.
+La directive DELETE est utilisé pour supprimer des informations d'Elasticsearch.\\
 
 
 Enfin la directive GET qui sert à récupérer des information, à tout niveaux, index,
 type, mapping, type par défaut \ldots, en revanche il faut avoir un identifiant exact,
-ce n'est pas un outils de recherche (abordé dans la section suivante).
-\textbf{GET  {\color{grey} http://100.127.255.1:9200}/{\color{red}twitter}/{\color{cyan}tweet}/{\color{yellow}1}}
+ce n'est pas un outils de recherche (abordé dans la section suivante).\\[5mm]
+\textbf{GET  {\color{grey} http://100.127.255.1:9200}/{\color{red}twitter}/{\color{cyan}tweet}/{\color{yellow}1}}\\
 
 Les information récupérées le sont en JSON.
 
@@ -170,6 +170,9 @@ DSL pour Domain Specific Language, parce que Elasticsearch est avant tout un mot
 de recherche, il dispose de puissantes fonctionnalités de recherche. Il dispose donc
 de son propre langage d'interrogation le QueryDSL. C'est loin d'être un cas unique,
 par exemple Puppet dispose également de son propre langage de configuration.
+
+Il existe une QueryDSL restreint et un QueryDSL étendu.
+%\subsubsection{}
 
 
 
