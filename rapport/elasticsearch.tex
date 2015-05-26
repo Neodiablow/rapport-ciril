@@ -112,6 +112,23 @@ nous parviennent en JSON.
 
 \section{La théorie}
 
+\subsection{Approximation et comparaison avec le modèle relationnel}
+La comparaison entre Elasticsearch et une base de données n'est pas forcement heureuse,
+c'est un moteur de recherche (d'indexation). Il utilise donc la notion d'index   
+qu'on peut cependant assez facilement comparer au modèle relationnel.
+
+Elasticsearch s'organise autour d'index que l'on peut comparer aux bases (de données)
+dans le modèle relationnel, un index peut utiliser plusieurs types (dans notre projet
+nous aurions pu différencier les logs firewall des logs \textit{states} en utilisant 
+les types), les types s'apparentent aux tables dans le modèle relationnel. 
+Chaque enregistrement d'Elasticsearch est effectué sous forme document. Les documents
+(qui ont un type, éventuellement type par défaut), un document peut être comparé 
+à une ligne, ou un enregistrement. Ces lignes sont constitués de colonnes, appellées
+champs (ou fields) dans Elasticsearch.
+
+
+{\Huge NEED image}
+
 \section{L'infrastructure}
 
 \section{Les API Elasticsearch}
