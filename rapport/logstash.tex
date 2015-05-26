@@ -413,6 +413,58 @@ dans un fichier de log. Ce mail envoyé dans /var/mail/fdupont sera renvoyé dan
 même adresse, le contenu de l'événement se modifiera en permanence puisque le message
 sera encapsulé dans son prédécesseur \ldots
 
+\subsection{Expressions régulières et patterns}
+Les expressions régulières utilisées par Logstash dans le plugin grok utilisent le 
+moteur Oniguruma dont les spécifications sont disponibles à cette 
+\href{http://www.geocities.jp/kosako3/oniguruma/doc/RE.txt}{adresse}\footnote{http://www.geocities.jp/kosako3/oniguruma/doc/RE.txt, 
+si des symboles \textbf{ \textyen} apparaissent vous avez probablement un problème d'UTF8 sur 
+votre navigateur, ils correspondent à des \textbf{ \textbackslash}}.
+Ruby n'utilise plus Oniguruma depuis la version 2.0 mais son fork Onigmo\footnote{
+dixit Wikipédia https://en.wikipedia.org/wiki/Oniguruma}
+
+\subsubsection{Les expressions régulières de Grok}
+Ce moteur permet des manipulations avancées d'expressions régulières, ce n'est pas 
+l'objet de ce projet de les présenter. Nous nous contenterons simplement d'utiliser
+des syntaxes assez classiques d'expressions régulières à l'exception des named groups. 
+Qui permettent avantageusement de ne pas utiliser les patterns, ou plutôt d'en créer
+de nouveaux sans modifier les fichiers de Logstash.
+{\footnotesize(Grok est le plugin dont on se servira le plus avec Logstash c'est 
+pour cela que nous prenons le temps de présenter son système d'expression régulière)}
+
+
+\begin{lstlisting}[style=logstash,label={lst:grokregex1},caption={Named group}]
+(?<nom_du_champ>Pattern) 
+(?<username> [a-zA-Z0-9._-]+)
+\end{lstlisting}
+
+Grok créera rangera automatiquement une chaine de caractère satisfaisant la contrainte 
+\ipath{/[a-zA-Z0-9.\_-]+/}  dans un champ  username. 
+Ce champ pourra être réutiliser ultérieurement par Logstash ou même Elasticsearch.
+
+
+\subsubsection{Les patterns}
+Logstash mets en place un système très utile et très facile à utiliser de patterns 
+(motifs), ces patterns correspondent à des mots clefs représentant des expressions 
+régulières ou bien des concaténations d'expressions régulières ou de patterns.
+
+La compréhension des patterns est simple et presque instantané si l'on connait les
+expressions régulières.
+\begin{lstlisting}[style=logstash,label={lst:patternsexplication1},caption={Exemple de définition et d'utilisation de Patterns}]
+CISCOMAC (?:(?:[A-Fa-f0-9]{4}\.){2}[A-Fa-f0-9]{4})
+WINDOWSMAC (?:(?:[A-Fa-f0-9]{2}-){5}[A-Fa-f0-9]{2})
+COMMONMAC (?:(?:[A-Fa-f0-9]{2}:){5}[A-Fa-f0-9]{2})
+
+MAC (?:%{CISCOMAC}|%{WINDOWSMAC}|%{COMMONMAC})
+\end{lstlisting}
+
+Grok peut également utiliser ces patterns mais leur fonctionnement est général dans
+Logstash.
+On comprends bien dans le code précédent le fonctionnement des patterns : qui est
+très similaire à celui des \textit{named groups} : définition d'un nom, expression
+régulière associé. On les utilise en invoquant leur nom entouré par \%{} 
+Il sont utilisable ensemble comme dans l'exemple ci-dessus avec les adresses MAC,
+ou (beaucoup) plus bas dans l'explication du fonctionnement de l'architecture.
+
 
 \subsection{Les flags}
 Les \emph{flags} sont les noms donnés aux paramètres que l'on peut donner au binaire
