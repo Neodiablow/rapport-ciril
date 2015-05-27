@@ -27,13 +27,14 @@ L'utilisation de logstash est un pipeline qui s'articule autour de 3 \emph{blocs
 Cette façon de fonctionner peut faire penser à \emph{iptables}.
 
 Logstash est un logiciel développé en Jruby\footnote{sauf mention contraire, on supposera
-dans ce rapport que logstash est développé en ruby}. Le passage d'une phase 
-à l'autre est implémenté via les \emph{SizedQueue} de ruby. Elles sont dimensionnées 
-pour contenir 20 éléments\footnote{appelés messages lorsqu'on parle de queues, 
-on parle bien ici des \textbf{événements} logstash}, ce n'est pas paramétrable sans 
-modifier le code source, c'est un choix délibéré. Ces queues ne sont pas conçues 
-pour stocker des données à long terme. On verra plus tard que ce la justifie l'utilisation
-d'un \textit{buffer}, comme \emph{Redis}\footnote{voir la sous partie sur la tolérence
+dans ce rapport que logstash est développé en ruby} (Jruby est en faite une implémentation
+de ruby 1.8 en Java qui était à l'époque plus rapide que ruby "seul"). 
+Le passage d'une phase à l'autre est implémenté via les \emph{SizedQueue} de ruby. 
+Elles sont dimensionnées pour contenir 20 éléments\footnote{appelés messages lorsqu'on parle de queues, on parle bien ici 
+des \textbf{événements} logstash}, ce n'est pas paramétrable sans modifier le code 
+source, c'est un choix délibéré. Ces queues ne sont pas conçues pour stocker des 
+données à long terme. On verra plus tard que ce la justifie l'utilisation d'un 
+\textit{buffer}, comme \emph{Redis}\footnote{voir la sous partie sur la tolérence
 de pannes ainsi que le chapitre consacré à Redis}.
 
 
@@ -215,9 +216,15 @@ Enfin, il est possible, de donner le droit à un utilisateur non root, l'autoris
 de modifier certaines capabilities. Pour ce faire, il faut modifier le fichier \\[1mm]
 \ipath{/etc/security/capability.conf}.
 
-\subsection{Installation de plugins tiers}
-Procédure pour l'installation d'un plugin tiers
+%\subsection{Installation de plugins tiers}
+%Procédure pour l'installation d'un plugin tiers
 
+\section{Fonctionnement}
+\subsection{La base}
+Grossièrement Logstash permet traiter et transférer des données, en masse. Nous ne
+l'utiliserons essentiellement qu'avec Elasticsearch en utilitaire de sorti. Cependant
+et comme le montre la liste des ses abondants plugins d'output, Logstash est capable
+de fonctionner avec de nombreux autres logiciels.
 
 
 \section{Grammaire et conjugaison}
@@ -488,7 +495,11 @@ Par défaut Logstash utilisera les fichiers de configuration présents dans \\ \
 
 Les fichiers de confs et leurs fonctionnement + interaction entre plugins et etc...
 
-\section{Utilisation basique}
+\section{Utilisation}
+On peut utiliser Logstash de plusieurs façons, de manière plus ou moins complexe 
+en fonction de nos besoins et de notre infrastructure.
+La configuration la plus simple consiste à 
+
 
 \section{Mon serveur central}
 
