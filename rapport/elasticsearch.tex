@@ -131,6 +131,65 @@ champs (ou fields) dans Elasticsearch.
 
 \section{L'infrastructure}
 
+\subsection{Le tunning}
+Voici quelques conseilles qui sont applicables pratiquement dans toutes les situations
+pour une utilisation optimale de Elasticsearch.
+
+\subsubsection{Ne pas utiliser la swap}
+Il est très fréquent (et souvent nécessaire) de formater une partition de swap pour
+que le système puisse optimiser son fonctionnement. C'est très pratique pour ne pas
+saturer la mémoire RAM de nos machines de bureau, notamment quand on voit la consommation
+pantagruélique de certains navigateurs internet récents. Les fichiers qui ne sont 
+susceptible de ne pas être utilisé avant un long moment sont parfois stocké sur le
+disque dur afin de libérer de l'espace pour d'autres applications, la swap est
+également utilisé lorsque l'on met un ordinateur en veille \ldots
+
+La situation n'est pas la même sur un serveur. Ici nous sommes relativement maitre
+de notre environnement, et de plus nous voulons que le service Elasticsearch soit 
+le plus véloce possible, pour se faire il faut au contraire l'empêcher au maximum 
+d'utiliser la partition de swap (forcément plus lente).
+
+Il existe plusieurs façon de faire (y compris ne pas utiliser de partition de swap)
+celle que j'ai choisie d'utiliser est de modifier la variable \ipath{vm.swapiness}
+dans le fichier \ipath{/etc/sysctl.conf}. La swapiness représente le pourcentage
+de mémoire RAM restant à partir duquel on commence à envoyer de informations en
+swap.
+
+\begin{lstlisting}[style=code,label={lst:configswapiness},caption={Configuration swapiness}]
+vm.swapiness = 2
+swapoff -a
+swapon -a
+\end{lstlisting}
+Il existe deux méthodes pour que le changement de swapiness soit pris en compte :
+redémarrer la machine ou bien désactiver puis réactiver la swap, via les commandes
+swapon, swapoff. Utiliser la commande swapoff est également une mesure radicale à 
+notre problème.
+
+\subsubsection{Utiliser une quantité de RAM raisonné}
+Elasticsearch est limité par Java. Avant de parler de ces limites, il faut rappeler 
+que Elasticsearch est un front-end à Apache Lucene. Lucene est conçu pour tirer 
+parti très efficacement du cache des système de fichiers (probablement ext4 si 
+vous utilisez Debian), qui sont en définitif, gérer par le 
+noyau\footnote{https://www.elastic.co/guide/en/elasticsearch/guide/current/\_limiting\_memory\_usage.html}.
+Il est conseillé par la documentation de donner au maximum 50\% de la mémoire RAM
+disponible à Elasticsearch, le reste étant dévouer à lucène et au bon fonctionnement
+du système.
+Dans notre installation dont nous parlerons plus en détail ultérieurement, nous 
+avons choisi de nous réserver une bonne marge de manœuvre puisqu'un redis et un Logstash
+minimalistes tournent en sus sur la machine hébergeant Elasticsearch.
+
+Cependant cette valeur de 50\% n'a de sens que si Elasticsearch consomme moins de 
+32Go de RAM, en effet, en allouer plus devient contreproductif puisque jusqu'à 32Go
+la machine virtuelle Java (JVM) \textit{compresse} les adresses des pointeurs, 
+(tant qu'on reste sous la limite des 32Go de RAM on peut continuer à utiliser les 
+adresses mémoires sur 4 octets), après, la consommation de mémoire explose et le
+\textit{garbage collector} devient bien moins efficace.
+
+Pour les machines possédant une énorme quantité de mémoire RAM (128Go à 1To)
+il conseiller pour optimiser le fonctionnement de la machine de faire tourner plusieurs
+noeuds d'Elasticsearch dessus (attention aux entrées sortie et à l'utilisation processeur
+cependant.
+
 \section{Les API Elasticsearch}
 Elasticsearch est énorme, mais être assez facilement utilisable par le 
 plus grand nombre, des \gls{API} \emph{optimisées} pour chaque tâches ont été conçues.
