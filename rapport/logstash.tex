@@ -221,8 +221,8 @@ de modifier certaines capabilities. Pour ce faire, il faut modifier le fichier \
 
 \section{Fonctionnement}
 \subsection{La base}
-Grossièrement Logstash permet traiter et transférer des données, en masse. Nous ne
-l'utiliserons essentiellement qu'avec Elasticsearch en utilitaire de sorti. Cependant
+Grossièrement Logstash permet de traiter et transférer des données, en masse. Nous
+l'utiliserons essentiellement avec Elasticsearch en utilitaire de sorti. Cependant,
 et comme le montre la liste des ses abondants plugins d'output, Logstash est capable
 de fonctionner avec de nombreux autres logiciels.
 
@@ -427,7 +427,8 @@ moteur Oniguruma dont les spécifications sont disponibles à cette
 si des symboles \textbf{ \textyen} apparaissent vous avez probablement un problème d'UTF8 sur 
 votre navigateur, ils correspondent à des \textbf{ \textbackslash}}.
 Ruby n'utilise plus Oniguruma depuis la version 2.0 mais son fork Onigmo\footnote{
-dixit Wikipédia https://en.wikipedia.org/wiki/Oniguruma}
+dixit Wikipédia https://en.wikipedia.org/wiki/Oniguruma}. Mais cette évolution ne
+s'applique pas à Logstash puisque ce dernier est codé en Jruby.
 
 \subsubsection{Les expressions régulières de Grok}
 Ce moteur permet des manipulations avancées d'expressions régulières, ce n'est pas 
@@ -472,6 +473,11 @@ régulière associé. On les utilise en invoquant leur nom entouré par \%{}
 Il sont utilisable ensemble comme dans l'exemple ci-dessus avec les adresses MAC,
 ou (beaucoup) plus bas dans l'explication du fonctionnement de l'architecture.
 
+Nous n'avons pas créer de nouveaux patterns pour notre projet et préférer l'utilisation
+des expressions régulières. Cela reste cependant possible en modifiant les fichiers 
+paramétrant ces patterns. Ils sont par défaut situés dans \ipath{/opt/logstash/patterns}.
+
+
 
 \subsection{Les flags}
 Les \emph{flags} sont les noms donnés aux paramètres que l'on peut donner au binaire
@@ -490,10 +496,6 @@ de Logstash.
 Par défaut Logstash utilisera les fichiers de configuration présents dans \\ \ipath{
 /etc/logstash/conf.d/}, ils seront ouverts par ordre alphabétique.
 
-
-
-
-Les fichiers de confs et leurs fonctionnement + interaction entre plugins et etc...
 
 \section{Utilisation}
 On peut utiliser Logstash de plusieurs façons, de manière plus ou moins complexe 
