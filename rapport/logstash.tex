@@ -5,6 +5,12 @@
 \end{figure}
 \section{Présentation de Logstash}
 
+Logstash permet de traiter et/ou de transférer des données, en masse. Dans notre 
+projet, nous l'utiliserons essentiellement en conjonction avec Elasticsearch en 
+utilitaire de sorti. Cependant,
+et comme le montre la liste des ses abondants plugins d'output, Logstash est capable
+de fonctionner avec de nombreux autres logiciels.
+
 \subsection{Pourquoi Logstash?}
 Bien qu'un administrateur système compétent soit capable d'analyser de façon rapide 
 et efficace les logs d'une machine (à l'aide deperl+awk+sed+tail+grep), cette méthode
@@ -216,15 +222,10 @@ Enfin, il est possible, de donner le droit à un utilisateur non root, l'autoris
 de modifier certaines capabilities. Pour ce faire, il faut modifier le fichier \\[1mm]
 \ipath{/etc/security/capability.conf}.
 
-%\subsection{Installation de plugins tiers}
-%Procédure pour l'installation d'un plugin tiers
-
 \section{Fonctionnement}
+Logstash peut s'intégrer dans une architecture simple ou très compliqué, en fonction
+du cas il peut être utilisé dans plusieurs modes.
 \subsection{La base}
-Grossièrement Logstash permet de traiter et transférer des données, en masse. Nous
-l'utiliserons essentiellement avec Elasticsearch en utilitaire de sorti. Cependant,
-et comme le montre la liste des ses abondants plugins d'output, Logstash est capable
-de fonctionner avec de nombreux autres logiciels.
 
 
 \section{Grammaire et conjugaison}
@@ -352,6 +353,10 @@ or,xor et !.
 
 Dans notre exemple de code \ref{lst:conflogstashiniteloop}, la structure conditionnelle
 est utilisé pour faire le trie en utilisant les \emph{tags}.
+
+Il est à noter également les directives \textbf{path} disponibles par exemple dans
+le plugin file, prennent en compte le globbing et le globbing récursif 
+(\ipath{le/chemin/*/.*log}).
 
 \subsubsection{Autopsie d'une la boucle infinie}
 La configuration \ref{lst:conflogstashiniteloop}, qui ne fonctionne pas
@@ -493,11 +498,12 @@ de Logstash.
     du fichier de configuration.
 \end{itemize}
 
-Par défaut Logstash utilisera les fichiers de configuration présents dans \\ \ipath{
-/etc/logstash/conf.d/}, ils seront ouverts par ordre alphabétique.
+Par défaut Logstash utilisera les fichiers de configuration présents dans \\ 
+\ipath{/etc/logstash/conf.d/}, ils seront ouverts par ordre alphabétique.
 
 
 \section{Utilisation}
+Nous allons enfin discuter de la façon dont on peut utiliser Logstash
 On peut utiliser Logstash de plusieurs façons, de manière plus ou moins complexe 
 en fonction de nos besoins et de notre infrastructure.
 La configuration la plus simple consiste à 
