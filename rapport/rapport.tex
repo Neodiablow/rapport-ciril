@@ -175,28 +175,10 @@ quotidiennement ces \gls{logs} afin de pouvoir détécter un comportement suspec
 \part{Annexes}
 \chapter{Sources/Webographie/Bibliographie}
 \input{sources.tex}
+\chapter{Code Source et scripts}
+\input{scripts.tex}
 
 
-\begin{lstlisting}[style=code]
-CREATE USER 'root'@'192.168.1.28' IDENTIFIED BY 'pomme';
-CREATE USER 'root'@'192.168.1.28' IDENTIFIED BY 'pomme';
-CREATE USER 'root'@'192.168.1.28' IDENTIFIED BY 'pomme';CREATE USER 'root'@'192.168.1.28' IDENTIFIED BY 'pomme';
-Pommeeee carton pate
-IO pome IO la pomee de'io
-\end{lstlisting}
-
-pommeepompompomo
-
-\begin{lstlisting}[style=code]
-#!/usr/bin/ruby
-
-sfile=ARGV[0]
-dfile=ARGV[1]
-
-IO.readlines(sfile).each {|line|
-`echo "#{line}" >> #{dfile}`
-}
-\end{lstlisting}
 
 \printglossaries
 
