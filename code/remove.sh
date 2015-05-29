@@ -5,13 +5,7 @@
 # Permission to use, copy, modify, and/or distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
 # copyright notice and this permission notice appear in all copies.
-# THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
-# REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
-# AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
-# INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
-# LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
-# OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
-# PERFORMANCE OF THIS SOFTWARE.
+# Last Modified François Dupont 2015-05-28
 blade="100.127.255.1"
 daysback=31
 port=9200
@@ -60,16 +54,11 @@ case $option in
 esac
 done
 
-#if [ ! -z $1 ]; then
-#daysback=$1
-#fi
-
 end=$(expr $start_from \+ $daysback)
 if [ $? == 0 ]; then
 for i in $(seq $start_from $end); do
     d=$(date --date "$i days ago" +"%Y.%m.%d")
-    curl -XDELETE $blade:$port/$target-$d > /dev/null 2>&1
-    echo "Value : $i"
+    curl -sS -XDELETE $blade:$port/$target-$d 
 done
 else
     echo "Invalid number of days specified, aborting"
@@ -90,7 +79,7 @@ Options :
         default : 4
     -t target name of the indices
         default : firewall
-Example : $0  
+Example :  
     
 "
     exit 0
