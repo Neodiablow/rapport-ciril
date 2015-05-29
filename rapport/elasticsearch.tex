@@ -135,6 +135,10 @@ champs (ou fields) dans Elasticsearch.
 
 {\Huge NEED image}
 
+\subsection{Le modèle de recherche}
+
+
+
 \section{L'infrastructure}
 
 \subsection{Le tunning}
@@ -271,15 +275,22 @@ ce n'est pas un outils de recherche (abordé dans la section suivante).\\[5mm]
 
 Les information récupérées le sont en JSON.
 
-\subsection{QueryDSL}
+\subsection{Les API de recherche}
 DSL pour Domain Specific Language, parce que Elasticsearch est avant tout un moteur 
 de recherche, il dispose de puissantes fonctionnalités de recherche. Il dispose donc
 de son propre langage d'interrogation le QueryDSL. C'est loin d'être un cas unique,
 par exemple Puppet dispose également de son propre langage de configuration.
 
-Il existe une QueryDSL restreint et un QueryDSL étendu.
-%\subsubsection{}
+Il existe plusieurs API (ou méthodes) de recherche dans Elasticsearch nous les  
+détaillerons plus en détail après avoir expliquer le fonctionnement général d'une
+recherche dans Elasticsearch.
 
 
+
+\subsubsection{Empty Search}
+
+\subsubsection{SearchLite}
+
+\subsubsection{Full-Body Search et QueryDSL}
 
 \section{Le mapping}
