@@ -193,8 +193,32 @@ adresses mémoires sur 4 octets), après, la consommation de mémoire explose et
 
 Pour les machines possédant une énorme quantité de mémoire RAM (128Go à 1To)
 il conseiller pour optimiser le fonctionnement de la machine de faire tourner plusieurs
-noeuds d'Elasticsearch dessus (attention aux entrées sortie et à l'utilisation processeur
-cependant.
+noeuds d'Elasticsearch dessus (attention aux entrées sortie et à l'utilisation processeur).
+
+\subsection{Faire du nettoyage régulièrement}
+Plus Elasticsearch agrège des données plus il s'empâte, ce phénomène est inévitable 
+sur le long terme. Les contre-mesures sont de scale-out (monter à l'échelle horizontalement)
+en rajoutant de nouveaux nœuds à notre cluster elastic search. On s'appliquera à 
+manager les shards de façon optimisé bref à faire du fine tuning.
+
+Pour éviter ce ralentissement la solution la plus radicale reste de supprimer les 
+données. Justement, dans le cadre de notre projet, nous n'avons pas besoin de conserver 
+toutes les données sur le long terme. Nous avons donc décider de supprimer les logs 
+de changement d'état des par-feu tous les 4 jours. Ces logs peuvent représenter 
+jusqu'à 30Go de données journalières. 
+Pour ce faire nous utiliserons un tâche \textbf{cron} couplé à un script bash \ref{lst:scriptdelindex} tirant
+parti de l'API d'Elasticsearch dont nous parlerons plus bas.
+Pour indication, les index de firewall son supprimés tous les 4 jours, (une requête
+judiciaire/alerte sécurité arrive en général en moins de 3 jours). Les logs sont 
+de toute façon également conservés ailleurs pour se soumettre aux imperatifs judiciaires.
+Les index d'état (intéressants pour établir des statistiques) sont conservés 1 mois.
+
+Une des stratégies préconisé dans le cas où l'on souhaite conserver des données sur
+le long terme alors qu'on en a seulement un besoin d'accès et d'analyse ponctuel ;
+consiste à les enregistrer dans des fichiers séparés (output Logstash) et de les 
+faire ingérer à un cluster Elasticsearch dimesinonné en conséquence le moment venu.
+
+
 
 \section{Les API Elasticsearch}
 Elasticsearch est énorme, mais être assez facilement utilisable par le 
