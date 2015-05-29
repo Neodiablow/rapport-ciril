@@ -210,12 +210,27 @@ données. Justement, dans le cadre de notre projet, nous n'avons pas besoin de c
 toutes les données sur le long terme. Nous avons donc décider de supprimer les logs 
 de changement d'état des par-feu tous les 4 jours. Ces logs peuvent représenter 
 jusqu'à 30Go de données journalières. 
-Pour ce faire nous utiliserons un tâche \textbf{cron} couplé à un script bash \ref{lst:scriptdelindex} tirant
-parti de l'API d'Elasticsearch dont nous parlerons plus bas.
-Pour indication, les index de firewall son supprimés tous les 4 jours, (une requête
-judiciaire/alerte sécurité arrive en général en moins de 3 jours). Les logs sont 
-de toute façon également conservés ailleurs pour se soumettre aux imperatifs judiciaires.
-Les index d'état (intéressants pour établir des statistiques) sont conservés 1 mois.
+Pour ce faire nous utiliserons un tâche \textbf{cron} couplé à un script bash 
+\ref{lst:scriptdelindex} tirant parti de l'API d'Elasticsearch dont nous parlerons 
+plus bas. Pour indication, les index de firewall son supprimés tous les 4 jours, 
+(une requête judiciaire/alerte sécurité arrive en général en moins de 3 jours).\\ 
+Les logs sont de toute façon également conservés ailleurs pour se soumettre aux 
+imperatifs judiciaires. Les index d'état (intéressants pour établir des statistiques)
+sont conservés 1 mois.\\
+Remarque sur la commande curl et son utilisation dans cron
+
+\begin{lstlisting}[style=code,label={lst:curlexemple},caption={Extrait de notre script \ref{lst:scriptdelindex}}]
+curl -sS -XDELETE $blade:$port/$target-$d
+\end{lstlisting}
+
+On remarque ici l'utilisation de l'option -sS pour \textit{silent, Show errors}.
+Ainsi cron n'est pas importuné par les retour sur la sortie standard cela permet
+également, en ajoutant la directive \textbf{MAILTO: mail@example.fr} de renvoyer
+la sortie d'erreur vers mail@example.fr. Cela nécessite évidemment d'avoir configurer
+un serveur mail sur notre machine, par défaut sur Debian, Exim (dpkg-reconfigure 
+exim-config).
+
+Concernant -XDELETE c'est une utilisation de l'API REST décrite plus bas.
 
 Une des stratégies préconisé dans le cas où l'on souhaite conserver des données sur
 le long terme alors qu'on en a seulement un besoin d'accès et d'analyse ponctuel ;
