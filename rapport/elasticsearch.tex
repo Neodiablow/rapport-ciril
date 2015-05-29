@@ -6,12 +6,7 @@
 \includegraphics[width=0.2\textwidth]{elasticsearch.png}
 \label{fig:elasticsearchlogo.png}
 \end{figure}
-%\begin{wrapfigure}{r}{0.25\textwidth}
-%\begin{center}
-%\includegraphics[width=0.25\textwidth]{elasticsearch.png}
-%\end{center}
-%\caption{A gull}
-%\end{wrapfigure}
+
 \section{Présentation de Elasticsearch}
 Elasticsearch est moteur de recherche et d'analyse en temps réel. Il permet l'exploration
 de données de façon très rapide par des recherches, que ce soit par des recherches
@@ -135,9 +130,6 @@ champs (ou fields) dans Elasticsearch.
 
 
 {\Huge NEED image}
-
-\subsection{Le modèle de recherche}
-
 
 
 \section{L'infrastructure}
@@ -301,9 +293,32 @@ Il existe plusieurs API (ou méthodes) de recherche dans Elasticsearch nous les
 détaillerons plus en détail après avoir expliquer le fonctionnement général d'une
 recherche dans Elasticsearch.
 
+La recherche dans Elasticsearch est particulièrement efficace, car Elasticsearch 
+indexe tout le contenu de ses documents (il indexe chaque field, en fonction d'un
+mapping (discuté plus bas)).
+C'est pour permettre l'indexation qu'Elasticsearch utilise du JSON structuré.
+
 
 
 \subsubsection{Empty Search}
+C'est la forme la plus basique de l'API de recherche, on ne spécifie pas de requête
+spécifique. Comprendre le fonctionnement de cette API basique permettra d'utiliser
+plus efficacement SearchLite, qui en est l'évolution directe.
+
+
+\begin{lstlisting}[style=code,label={lst:APIsearchemptyexample1},caption={le "Hello World" de la recherche}]
+GET /_search
+\end{lstlisting}
+
+Cette requête retourne tous les documents, de tous les index du cluster duquel nous
+sommes membre.
+
+\begin{lstlisting}[style=code,label={lst:APIsearchemptyexample2},caption={Réponse type à notre requête précédente}]
+GET /_search
+\end{lstlisting}
+
+
+
 
 \subsubsection{SearchLite}
 
