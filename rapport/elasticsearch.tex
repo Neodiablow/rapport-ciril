@@ -314,10 +314,44 @@ Cette requête retourne tous les documents, de tous les index du cluster duquel 
 sommes membre.
 
 \begin{lstlisting}[style=code,label={lst:APIsearchemptyexample2},caption={Réponse type à notre requête précédente}]
-GET /_search
+{
+    "took": 798,
+    "timed_out": false,
+    "_shards": {
+        "total": 201,
+        "successful": 201,
+        "failed": 0
+    },
+    "hits": {
+        "total": 353585048,
+        "max_score": 1,
+        "hits": [
+        {
+            "_index": ".kibana",
+            "_type": "visualization",
+            "_id": "Top5-nat-firewall-router",
+            "_score": 1,
+            "_source": {
+                "title": "Top5 nat-firewall router",
+                "visState": "{\"type\":\"histogram\",\"params\":{\"shareYAxis\":true,\"addTooltip\":true,\"addLegend\":true,\"mode\":\"stacked\",\"defaultYExtents\":false},\"aggs\":[{\"id\":\"1\",\"type\":\"count\",\"schema\":\"metric\",\"params\":{}},{\"id\":\"2\",\"type\":\"terms\",\"schema\":\"group\",\"params\":{\"field\":\"IPnat\",\"size\":5,\"order\":\"desc\",\"orderBy\":\"1\"}}],\"listeners\":{}}",
+                "description": "",
+                "version": 1,
+                "kibanaSavedObjectMeta": {
+                "searchSourceJSON": "{\"index\":\"firewall-*\",\"query\":{\"query_string\":{\"query\":\"*\",\"analyze_wildcard\":true}},\"filter\":[]}"
+                }
+            }
+        },
+        .... REMOVED ...
+    }
+}
 \end{lstlisting}
 
-
+\paragraph{hits}
+Hits représente le nombre total de documents retournés, ici 353585048, c'est le
+nombre de résultats.
+\paragraph{took}
+Took est le temps en millisecondes pris pour effectué cette requête, ici 798
+\paragraph{shard}
 
 
 \subsubsection{SearchLite}
