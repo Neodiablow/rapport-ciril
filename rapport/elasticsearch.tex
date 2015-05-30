@@ -302,8 +302,8 @@ C'est pour permettre l'indexation qu'Elasticsearch utilise du JSON structuré.
 
 \subsubsection{Empty Search}
 C'est la forme la plus basique de l'API de recherche, on ne spécifie pas de requête
-spécifique. Comprendre le fonctionnement de cette API basique permettra d'utiliser
-plus efficacement SearchLite, qui en est l'évolution directe.
+spécifique. Comprendre le fonctionnement et les possiblité de cette API basique 
+permettra d'utiliser plus efficacement SearchLite, qui en est l'évolution directe.
 
 
 \begin{lstlisting}[style=code,label={lst:APIsearchemptyexample1},caption={le "Hello World" de la recherche}]
@@ -341,17 +341,77 @@ sommes membre.
                 }
             }
         },
-        .... REMOVED ...
+        .... 9 Autres ...
     }
 }
 \end{lstlisting}
 
+Quelques explications :
+
 \paragraph{hits}
-Hits représente le nombre total de documents retournés, ici 353585048, c'est le
-nombre de résultats.
+L'élément hits contient des informations sur la requête et les réponse à la requête.
+\textit{total} représente le nombre total de documents retournés pour cette requête, ici le 
+nombre total de documents indexés: 353585048. 
+Cela signifie qu'au moment de la requête il y avait environ 353 millions de lignes
+de logs indexés dans notre Elasticsearch au moment de la requête.
+
+Les réponses à la requête nous sont renvoyées dans l'array \textit{hits}, par défaut
+seul les 10 premiers documents satisfaisant notre requête nous sont renvoyés 
+(comme il n'y avait pas de requête, simplement les 10 premiers documents).
+
+Les documents renvoyés dans l'array sont classés en fonction de leur \_score, une 
+fois encore, puisque nous n'avons rien précisé dans notre requête, tous les résultats 
+nous sont renvoyés avec le score 1.
+
+On notera que le \ipath{max\_score}, score maximum obtenu lors de la requête.
+
+Enfin on remarque que le source (tous les champs indexés) de chaque document est présent
+dans la réponse à la requête.
+
 \paragraph{took}
 Took est le temps en millisecondes pris pour effectué cette requête, ici 798
+
 \paragraph{shard}
+L'élément \_shards, nous indique le nombre de shards utilisé lors de la requête. 
+Dans combien de shards tout c'est bien passé, dans combien il y a eu des erreurs,
+les erreurs sont très peu probables, cela se produit généralement sur un cluster 
+de plusieurs machines, lorsque plusieurs d'entre elles sont inacessibles (il faut 
+que les primary et replica d'un shard soient inaccessible en même temps).
+
+\paragraph{timeout}
+Il est possible d'effectuer une recherche \textit{par timeout}, cela signifie que 
+Elasticsearch va effectuer sa recherche de façon classique, mais que lorsque le temps
+nécessaire à la recherche dépassera un temps déterminé, il renvera les informations 
+qu'il a eu le temps de rassembler, toujours dans l'ordre qui lui semble le plus pertinant
+(ordonné par score). Attention cependant, cela ne nous absouds pas pour autant du
+coût de la recherche. Si les shards renvoient bien les résultats pertinents au moment
+souhaité, cela n'arrête pas pour autant la requête qui finira de s'executer en arrière
+plan.
+
+\begin{lstlisting}[style=code,label={lst:APIsearchemptyexample3},caption={Une recherche "vide" avec timeout}]
+GET /_search?timeout=10ms
+\end{lstlisting}
+
+
+\paragraph{Recherche multi-index et multitype}
+La recherche multi-index et multitype est toujours possible comme dans l'API REST
+
+\begin{lstlisting}[style=code,label={lst:APIsearchemptyexample4},caption={Une recherche multi-index ...}]
+GET /gb,us/_search
+GET /g*,u*/_search
+GET /gb,us/user,tweet/_search
+\end{lstlisting}
+
+\paragraph{Pagination}
+Par défaut lors d'une requête Elasticsearch renvoit seulement les 10$^{ers}$ résultats.
+Il est biensure possible de paramétrer cela, pour afficher plus de résultats, et pas
+forcément les plus pertinents (ceux qui présente le score le plus élevé).\\
+\textbf{size} permet d'indiquer le nombre de résultats souhaités\\
+\textbf{from} permet d'indiquer le nombre de résultats que l'on souhaite sauter.
+
+\begin{lstlisting}[style=code,label={lst:APIsearchemptyexample4},caption={Pagination}]
+GET /_search?size=5&from=10
+\end{lstlisting}
 
 
 \subsubsection{SearchLite}
