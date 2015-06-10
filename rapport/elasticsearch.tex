@@ -419,6 +419,80 @@ Comme expliqué avant il existe deux forme d'API de recherche. L'API lite avec r
 en chaine de caractères \textit{(string query)} et l'API \textit{"full body request"},
 qui nécessite comme corps de la requête, du JSON.
 
+Pour utiliser la recherche SearchLite, nécessite simple d'ajouter en sus de notre
+empty search \emph{?q=} et la requête. Attention si vous utilisez cette API avec 
+curl il pourrait être nécessaire d'utiliser la syntaxe http (\%2B pour + par exemple).
+
+\begin{lstlisting}[style=code,label={lst:APIsearchliteexample1},caption={Exemples simples}]
+GET /_search?q=epinal
+GET /state-2015.05.22/_search?q=epinal
+\end{lstlisting}
+
+Ici on cherche le terme \emph{epinal} dans tous les champs, c'est par fois utile,
+mais dans de nombreux cas nous connaissons déjà le nom du champ (cf \hyperref[lst:grokregex1]{Logstash}) dans
+lequel nous souhaitons avoir le terme. 
+
+Pour se faire il suffit d'utiliser la syntaxe suivante : 
+\begin{lstlisting}[style=code,label={lst:APIsearchliteexample2},caption={Choix du champ}]
+GET /_search?q=logsource:epinal
+\end{lstlisting}
+
+Bien plus intéressant, il est possible d'imposer des conditions à remplir ie: doit
+contenir le terme suivant, ou au contraire ne doit \textbf{pas} contenir le terme 
+suivant.
+
+\begin{lstlisting}[style=code,label={lst:APIsearchliteexample3},caption={Conditions must (not) match}]
+GET /_search?q=+logsource:*epinal* -logsource:sw*
+\end{lstlisting}
+
+Dans l'exemple précédant on souhaite chercher les équipement réseaux situés à epinal
+mais pas les switchs.
+L'utilisation des + et - change vraiment le sens de la requête, dans la précédante
+sans les symboles, la présence ou non augmentait la pertinence des réponses contenant
+le terme recherché, mais n'était pas discriminante.
+Avec ces symboles, on exclu les réponses qui ne se conforment pas à nos exigences.
+
+
+La précense des \textbf{*} sera explicité dans la partie sur la recherche full text
+{\scriptsize \textit{(prise d'Aspirine\texttrademark conseillée)}}.
+
+
+Il existe un autre moyen d'influencer la pertinence des résultats (de faire remonter
+en haut de liste ce qui nous intéresse le plus).
+Cela est particulièrement pratique dans les longues requêtes.
+Il s'agit de l'opérateur \textbf{\^} qu'on n'utilise en général en conjonction de
+parenthèses (qui servent simplement à faire des groupes).
+
+
+\begin{lstlisting}[style=code,label={lst:APIsearchliteexample4},caption={Modifier la pertinence}]
+GET /_search?q=+logsource:*epinal* -logsource:sw* (timestamp:May)^10 Power
+\end{lstlisting}
+Dans cette requête nous cherchons toujours des équipements non switch situés à Epinal.
+Nous somme cette fois ci très intéressés par ce qui s'est passé en Mai et d'autant
+plus si cela concerne un problème d'alimentation éléctrique.
+
+Concernant la gestion du temps, et des timestamp, nous allons voir une propriété 
+intéressante d'Elasticsearch lorsque le mapping de l'index est bien réalisé.
+Il est capable de \textit{s'orienter} dans le temps à partir d'un champ texte.
+Cela n'est pas forcément très utile si l'on utilise Kibana, puisque son interface
+nous permet très facilement d'être plus précis, mais cela laisse imaginer les possiblités
+d'Elasticsearch.
+
+
+\begin{lstlisting}[style=code,label={lst:APIsearchliteexample5},caption={Le temps dans SearchLite}]
+GET /_search?q=+logsource:*epinal* -logsource:sw* (timestamp:>Jun)^10 Power
+GET /_search?q=+logsource:*epinal* -logsource:sw* (timestamp:=<Jun)^10 Power
+\end{lstlisting}
+
+SearchLite accepte les opérateur $< > =< =>$ et Elasticsearch est capable de les 
+interprété pour peu que le champ soit \textit{mappé comme date}(cf Mapping).
+
+Il est possible d'utiliser les opérateurs logiques \textbf{OR} et \textbf{AND} 
+dont l'utilisation est assez évidante \ldots
+\begin{lstlisting}[style=code,label={lst:APIsearchliteexample6},caption={Opérateurs logiques}]
+
+\end{lstlisting}
+
 
 
 
