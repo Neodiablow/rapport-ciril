@@ -503,6 +503,7 @@ quelles dans Sense, et en retirant \ipath{GET /\_search?q=} dans Kibana.
 \subsubsection{Full-Body Search et QueryDSL}
 
 \section{Le mapping et l'analyse}
+\subsection{Mapping}
 Le mapping est strictement comparable au schéma d'une base, dans le modèle relationnel.
 Le mapping définit donc le "type" de nos "champs", attention on fait rentrer dans 
 le mapping plus que dans le schéma d'une base (analyse, indexation, \ldots).
@@ -515,6 +516,7 @@ la requête suivante.
 GET /firewall-2015.05.07/_mapping
 \end{lstlisting}
 
+Et voici un résultat :
 
 \begin{lstlisting}[style=code,label={lst:mappingresult},caption={Exemple de mapping}]
 {
@@ -558,3 +560,49 @@ GET /firewall-2015.05.07/_mapping
     }
 }
 \end{lstlisting}
+
+
+On remarque que beaucoup de champs ont pour type \textbf{string}, c'est le type choisi
+par défaut.
+
+Bien qu'ils ne soient pas utilisés ici il existe d'autres types de base, il est aussi
+possible d'en définir soi-même, cela ne sera pas abordé dans ce rapport.
+
+Types par défaut :
+\begin{itemize}
+    \item   boolean: true/false
+    \item   long: nombres entiers
+    \item   double: nombres à virgule
+    \item   string: chaine de charactères
+    \item   date:   une date valide, (voir la doc pour les normes acceptées)
+\end{itemize}
+
+Pour créer un nouveau mapping, il faut au préalable supprimer le précédent, (supprimer 
+l'index auquel est attaché le mapping).
+
+
+
+
+\subsection{Analyse}
+On remarque que certains champs ont également un \textbf{index: "not\_analyzed"}.
+Tous n'en n'ont pas car il est souvent plus intéressant d'avoir des champs analysés.
+Et par défaut les champs sont analysés.
+
+Il existe trois niveaux d'indexation:
+\begin{itemize}
+    \item   \textbf{Analyzed}, signifie que la chaine de caractère est analysé puis indexé,
+    donc cherchable en \textit{full text}.
+    \item   \textbf{not\_analyzed}, le champ est toujours cherchable, mais puisqu'il n'a pas 
+    été analysé, on ne peut le trouvé qu'avec sa valeur exact. \emph{Cette propriété
+    peut se révéler essentielle pour réaliser des graphiques efficaces.} 
+    \footnotesize{Il faut parfois savoir comment on veut exploiter ses données pour
+    pouvoir les traiter en conséquence.}
+    \item \textbf{no}, n'index pas ce champ, il n'est pas cherchable. Je ne me suis
+    jamais servis de cette propriété, peut sans doute avoir une utilité pour l'optimisation
+    de performances.
+\end{itemize}
+
+\subsubsection{Fonctionnement de l'analyse}
+
+\subsubsection{Full text}
+
