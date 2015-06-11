@@ -493,10 +493,24 @@ dont l'utilisation est assez évidante \ldots
 +IPoutside:"8.8.8.8" +IPnat:"8.8.4.4" +(portnat:"37657" OR portnat:"19474")
 \end{lstlisting}
 
+Il faut faire attention à l'utilisation des symboles -, :, /," qui on une signification.
 
+
+Remarque générale, les syntaxes présentées jusqu'à présent son utilisables telles
+quelles dans Sense, et en retirant \ipath{GET /\_search?q=} dans Kibana.
 
 
 \subsubsection{Full-Body Search et QueryDSL}
 
 \section{Le mapping et l'analyse}
+Le mapping est strictement comparable au schéma d'une base, dans le modèle relationnel.
+Le mapping définit donc le "type" de nos "champs", attention on fait rentrer dans 
+le mapping plus que dans le schéma d'une base (analyse, indexation, \ldots).
 
+Il y'a un mapping différent par index (il existe aussi des templates, applicable 
+à plusieurs index). Pour accéder au mapping d'un index il suffit dans Sense de lancer
+la requête suivante.
+
+\begin{lstlisting}[style=code,label={lst:mappingget1},caption={Obtenir un mapping}]
+GET /_search?q=+logsource:*epinal* -logsource:sw* (timestamp:>Jun)^10 Power
+\end{lstlisting}
