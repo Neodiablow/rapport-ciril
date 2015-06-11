@@ -581,6 +581,130 @@ Pour créer un nouveau mapping, il faut au préalable supprimer le précédent, 
 l'index auquel est attaché le mapping).
 
 
+\begin{lstlisting}[style=code,label={lst:mappingiput1},caption={Changer le mapping d'un index}]
+DELETE /firewall-2015.05.07
+PUT /firewall-2015.05.07/
+{
+    "mappings": {
+    ....
+             "properties": {
+                "@timestamp": {
+                "type": "date",
+                "format": "dateOptionalTime"
+                },
+                "@version": {
+                "type": "string",
+                "index": "not_analyzed"
+                },
+                "IPinside": {
+                "type": "ip",
+                "index": "analyzed",
+                "store": "yes"
+                },
+                "IPnat": {
+                "type": "string",
+                "index": "not_analyzed",
+                "norms": {
+                "enabled": false
+                },
+                }
+                ....
+            }
+    }
+}
+\end{lstlisting}
+
+La requête entière est trop longue pour être affiché, donne une idée de la forme.
+Une méthode efficace pour générer la sienne est d'utiliser celle créer par Elasticsearch
+par défaut puis de la raboter et de la modelé à notre convenance.
+
+Cette méthode est pratique pour faire des tests mais elle ne concerne qu'un seul 
+index. Dans le projet nous travaillons avec de multiples index, il sera plus pratique
+d'utiliser les templates pour que le même modèle s'applique partout où nous le souhaitons.
+
+Autre remarque, si vous faites la manipulations ci-dessus dans un environnement de 
+production, il y a toutes les chanches pour que Elasticsearch vous renvoie une erreur.
+En effet Logstash créer par défaut de nouveaux index. Si on supprime l'index du  
+jour (on perd les données), il sera recréer avec le template par défaut presque 
+instantanément puisque logstash reçoit environ \textbf{500logs/s}. Pendant les tests
+il peut être utile d'éteindre Logstash.
+
+Pour créer un template, il faut simplement supprimer l'ancien et écrire le nouveau.
+Il est également conseillé de supprimer les anciens indexs utilisant un mapping 
+différents. Ils seront \textbf{toujours utilisables dans Sense}, mais seront 
+\textbf{incohérents aux yeux de Kibana} et empêcheront de faire des recherches.
+
+
+\begin{lstlisting}[style=code,label={lst:mappingput2},caption={Ajouter un template de mapping}]
+(DELETE /state-2015.05*)
+DELETE /_template/state-log
+
+PUT /_template/state-log
+{
+"template": "state-*",
+"order": 1,
+"settings": {"number_of_shards": 5},
+"mappings": {
+    "syslog": {
+        "properties": {
+            "@timestamp": {
+            "type": "date",
+            "format": "dateOptionalTime"
+            },
+            "@version": {
+            "type": "string"
+            },
+            "action": {
+            "type": "string",
+            "index": "not_analyzed"
+            },
+            "chiffre": {
+            "type": "integer"
+            },
+            "datetest": {
+            "type": "date",
+            "format": "MMM d H:m:s"              
+            },
+            "firewall": {
+            "type": "string"
+            },
+            "host": {
+            "type": "string"
+            },
+            "information": {
+            "type": "string"
+            },
+            "logsource": {
+            "type": "string",
+            "index": "not_analyzed"
+            },
+            "message": {
+            "type": "string"
+            },
+            "reste": {
+            "type": "string"
+            },
+            "tags": {
+            "type": "string"
+            },
+            "timestamp": {
+            "type": "string"
+            },
+            "type": {
+            "type": "string"
+            }
+        }
+    }
+}
+}
+\end{lstlisting}
+On constate que certains champs sont analysés et d'autres non, ces choix apparaitrons
+plus clair après la partie concernant l'analyse.
+Du point de vue mapping on peut noté que integer est également un type valable (liste 
+exhaustive dans la documentation), on constate aussi que le type date (un type particulier
+de string) qui \textbf{ne peut pas} être analysé, supporte plusieurs formats, définis
+d'après la \hyperref[http://joda-time.sourceforge.net/api-release/org/joda/time/format/DateTimeFormat.html]{norme JAVA}.
+Avec quelques types prédéfinis \hyperref[https://www.elastic.co/guide/en/elasticsearch/reference/1.5/mapping-date-format.html]{ici}.
 
 
 \subsection{Analyse}
