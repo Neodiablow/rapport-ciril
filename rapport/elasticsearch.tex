@@ -40,7 +40,7 @@ nécessite également l'installation des dépendances \emph{jruby} et \emph{open
 à noter qu'il fonctionne également sur openjdk-8-jre.
 
 Là aussi les paquets debian officiels n'existant pas on utilisera celui fourni par 
-\href{https://download.elastic.co/elasticsearch/elasticsearch/elasticsearch-1.5.1.deb}{elastic.co}.
+\hyperref[https://download.elastic.co/elasticsearch/elasticsearch/elasticsearch-1.5.1.deb]{elastic.co}.
 Et ici aussi le paquet est un peu approximatif puisqu'il faut rajouter certains 
 chemin, et ajouter des droits.
 
@@ -512,5 +512,49 @@ Il y'a un mapping différent par index (il existe aussi des templates, applicabl
 la requête suivante.
 
 \begin{lstlisting}[style=code,label={lst:mappingget1},caption={Obtenir un mapping}]
-GET /_search?q=+logsource:*epinal* -logsource:sw* (timestamp:>Jun)^10 Power
+GET /firewall-2015.05.07/_mapping
+\end{lstlisting}
+
+
+\begin{lstlisting}[style=code,label={lst:mappingresult},caption={Exemple de mapping}]
+{
+    "firewall-2015.06.10": {
+        "mappings": { "syslog": {"properties": {
+                    "@timestamp": {
+                        "type": "date",
+                        "format": "dateOptionalTime"
+                    },
+                    "@version": {
+                    "type": "string"
+                    },
+                    "IPinside": {"type": "string"},
+                    "IPnat": {"type": "string},
+                    "IPoutside": {"type": "string"},
+                    "action": {"type": "string"},
+                    "chiffre": {"type": "integer"},
+                    "datetest": {
+                        "type": "string",
+                        "index": "not_analyzed"
+                    },
+                    "firewall": {"type": "string"},
+                    "host": {"type": "string"},
+                    "information": {"type": "string"},
+                    "logsource": {
+                        "type": "string",
+                        "index": "not_analyzed"
+                    },
+                    "message": {"type": "string"},
+                    "numero": {"type": "string"},
+                    "operation": {"type": "string"},
+                    "portin": {"type": "string"},
+                    "portnat": {"type": "string"},
+                    "portout": {"type": "string"},
+                    "program": {"type": "string"},
+                    "reste": {"type": "string"},
+                    "tags": {"type": "string"},
+                    "timestamp": {"type": "string"},
+                    "type": {"type": "string"}
+        }}}
+    }
+}
 \end{lstlisting}
