@@ -727,6 +727,88 @@ Il existe trois niveaux d'indexation:
 \end{itemize}
 
 \subsubsection{Fonctionnement de l'analyse}
+L'analyse consiste en deux grandes étapes, découper une chaine de charactère en termes
+recherchable, puis assainissement de ces termes en enlevant par exemple les majuscules
+ou en retirant les termes non pertinents (le, la, les, des \ldots), voir même en 
+remplaçant des synonymes.
+
+En faite le processus compte trois étapes. Tout d'abord le \emph{filtrage de caractères}
+(faire disparaitre les / ou transformer \& en et. La tokenization (\textit{termisation}
+en traduction approximative), créer un terme pour chaque chaine de caractère séparer
+par un espace, une virgule, un point, \ldots{} (paramétrable cf doc). Enfin le filtre
+de termes, (décris dans l'assainissement au dessus).
+
+
 
 \subsubsection{Full text}
+Le full text s'oppose aux valeurs exacts.
+Les champs non analysés sont traités comme des valeurs exacts.
+Comme expliqué plus haut, les chiffres, les booléens, les dates, sont des valeurs 
+exacts. Il est possible qu'une chaine de caractère en soit une aussi.
 
+\textbf{"Le chien"} est différent de \textbf{"le chien"} ou encore de \textbf{"Lechien"}.
+
+Pour le full text la notion d'index et d'analyseur est primordiale. L'analyseur va
+décidé de comment les différents membres de la chaine de caractère vont être considérés.
+Après cette étape ces membres vont être indexés et une recherche les renverra par 
+popularité décroissante.
+
+Puisqu'un exemple vaut mieux qu'un long discours, je vais m'inspiré de ceux donnés
+dans \textit{"The Definitive guide to Elasticsearch"}.
+
+
+Considérons 2 phrases :
+\begin{itemize}
+    \item The quick brown fox jumped over the lazy dog
+    \item Quick brown foxes leap over lazy dogs in summer
+\end{itemize}
+
+\begin{figure}[H]
+\center
+\begin{tabular}{|l||c|c|}
+\hline
+Terms   & P1    &  P2\\ \hline  
+Quick   &       &  X\\ \hline  
+The     &   X   &   \\ \hline
+brown   &   X   &  X\\ \hline
+dog     &   X   &   \\ \hline
+dogs    &       &  X\\ \hline
+fox     &   X   &   \\ \hline
+foxes   &       &  X\\ \hline
+in      &       &  X\\ \hline
+jumped  &   X   &   \\ \hline
+lazy    &   X   &  X\\ \hline
+leap    &       &  X\\ \hline
+over    &   X   &  X\\ \hline
+quick   &   X   &   \\ \hline
+summer  &       &  X\\ \hline
+the     &   X   &  X\\ \hline 
+\end{tabular}
+\caption{Index des phrase}
+\end{figure}
+Lors d'une recherche full text, Elasticsearch va créer ce genre de listes.
+
+Si je cherche \emph{quick brown}, le tableau ressemblerait à cela 
+
+
+\begin{figure}[H]
+\center
+\begin{tabular}{|l||c|c|}
+\hline
+Terms   & P1    &  P2\\ \hline  
+brown   &   X   &  X\\ \hline
+quick   &   X   &   \\ \hline \hline
+Total   &   2   &  1 \\ \hline
+\end{tabular}
+\caption{Index correspondant à une recherche}
+\end{figure}
+
+On voit donc bien que la phrase la plus populaire est la phrase 1. On constate également
+que Elasticsearch \emph{fait une différence entre \emph{Quick} et \emph{quick}}. 
+Cela est est réglable (on peut, ne pas tenir compte de la casse).
+Ce qu'il faut retenir c'est que pour discriminer efficacement, il est aussi possible
+d'utiliser des syntaxe comme +fox, de même on peut faire une recherche avec un bloc
+de deux termes pour être plus efficace : "over the" qui n'existe que dans P1.
+
+
+\section{Plus d'information }
