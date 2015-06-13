@@ -86,12 +86,16 @@
 %Page remerciments
 \emph{\Large Remerciements}
 \\[2cm]
-Remerciment 1
-\\[1cm]
-Remerciment 2
+Je tiens tout d'abord à remercier Vincent \textsc{Delove} mon maître de stage pour 
+m'avoir proposé le sujet, mais également pour son support, ses conseils, sa patience 
+et sa flexibilité.
 \\[2cm]
-Remerciment 3
-
+Je remercie également Emanuel \textsc{Nataf} mon tuteur également pour sa flexibilité
+et son intérêt pour mon sujet.
+\\[1cm]
+Merci à toute l'équipe du réseau Lothaire pour son accueil chaleureux et son support. 
+Et plus particulièrement à Luc \textsc{Didry} et Stéphane \textsc{Fetter} pour leur
+aide en général et notamment en système.
 
 %Page table des matières
 \setcounter{tocdepth}{1}
@@ -101,22 +105,59 @@ Remerciment 3
 %Introduction
 \part{Introduction}
 
+\chapter{Introduction}
 \section{Problématique}
 La gestion de \gls{logs} est une problématique commune à presque tous les services informatique,
 tous les fournisseurs de services et plus globalement, toutes personnes gérant une infrastructure 
 informatisée.
 
-Les \gls{logs} sont précieux car ils sont un des éléments indispensable au dépanage, au monitoring,
-à l'anticipation de problèmes inhérant à l'exploitation d'une infrastructure informatique.
-\footnote{terme volontairement très vaste}
-\emph{De nombreuses structures continuent encore aujourd'hui d'analyser plus ou moins "manuellement" leurs
-\emph{\gls{logs}}, qu'ils proviennent de \emph{hardware, ou de software}}.
+Les \gls{logs} sont précieux car ils sont un des éléments indispensable au dépanage, 
+au monitoring, ils permettent l'anticipation de problèmes inhérent à l'exploitation 
+des dites infrastructures, ainsi que de constater de potentielles tentatives d'intrusions.
+À ces aspects pratiques relatifs au bon fonctionnement des systèmes s'ajoute également
+une problématique judiciaire. Il est souvent nécessaire de garder des logs pour un 
+temps défini  dans la loi. Ces logs doivent évidemment être consultable de manière
+diligente.
 
-L'objectif de ce projet est de répondre à la problématique de la gestion et de l'analyse de log, en utilisant
-la stack ELK\footnote{Elasticsearch Logstash Kibana}.
-Dans ce rapport nous expliquerons de façon plus précise en quoi consiste la gestion de log,
-les fonctions et fonctionnement des outils dont nous ferons usage, enfin, nous détaillerons notre 
-architecture et ses évolutions possibles.
+Avec des milliers de ligne de logs par seconde, il est devenu impossible de naviguer
+"au hasard" dans les fichiers pour regarder si tout se passe bien.
+
+Cependant \emph{de nombreuses structures continuent encore aujourd'hui d'analyser 
+plus ou moins "manuellement" leurs \emph{\gls{logs}}}. Cette méthode reste envisageable 
+si on cherche quelque chose de précis, comme une IP dans un intervalle de quelques 
+secondes, mais impossible pour des recherches trop vagues, on se noie.
+
+
+\section{Objectif}
+En résumé, l'objectif de ce projet est de redonner la possibilité aux administrateurs
+de vérifier le bon fonctionnement de leur infrastructure sans avoir à attendre l'alerte
+Nagios (qui reste indispensable). L'idée est de permettre un suivi quotidien, permettant
+de mettre en évidence des indicateurs de bonne ou de mauvaise santé du système, sans 
+pour autant que ces problèmes soient critiques (mieux le système est entretenu, moins
+on risque la panne).
+Pour réaliser ce projet il a été décidé d'utiliser la stack ELK\footnote{Elasticsearch Logstash Kibana}.
+
+
+
+\subsection{Limites}
+Pour des raisons de disponibilité matériel mais aussi d'intérêt par rapport au sujet
+je n'ai pas travaillé sur les cluster Elasticsearch de façon pratique. Elasticsearch
+est un logiciel hautement parallélisable, et qui donc scale très bien à l'horizontal. 
+
+Ce rapport se concentre sur l'aspect gestion de logs, il est possible de faire bien
+plus avec Elasticsearch que ce qui est présenté dans ce rapport.
+De même nous nous concentrons avec logstash sur l'exploitation de syslogs, il est 
+capable de faire d'autres choses, notamment avec les logs apache. On présentera 
+tout de même une base solide de ce qui est faisable avec.
+
+
+\section{Organisation du rapport}
+La première partie du rapport sera consacrée à l'environnement de travail et à la 
+présentation des notions. La seconde se concentrera sur le fonctionnement de chacun 
+des logiciels utilisés ainsi que quelques problèmes liés à leur exploitation en production.
+Enfin la troisième partie conclura ce rapport en présentant la solution retenue 
+pour la mise en production, les éventuels ajouts possible, et enfin une conclusion 
+générale.
 
 
 \chapter{Environnement}
@@ -134,15 +175,8 @@ dans le cas où cela est nécessaire. Il est fréquent d'avoir des scripts analy
 quotidiennement ces \gls{logs} afin de pouvoir détécter un comportement suspect.
 
 
-\chapter{Les clusters}
-
-
-\chapter{MoM}
-
-
 \chapter{Gestion de projet}
 %\input{tableaudebord.tex}
-\section{Nos objectifs}
 \chapter{Présentation des notions}
 \chapter{Définitions}
 
