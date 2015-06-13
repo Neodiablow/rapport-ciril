@@ -1,0 +1,8 @@
+[Unit]
+Description=Kibana
+
+[Service]
+ExecStart=/home/fdupont/kibana-4.0.2-linux-x64/bin/kibana
+
+[Install]
+WantedBy=multi-user.target 
