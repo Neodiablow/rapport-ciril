@@ -87,15 +87,15 @@
 \emph{\Large Remerciements}
 \\[2cm]
 Je tiens tout d'abord à remercier Vincent \textsc{Delove} mon maître de stage pour 
-m'avoir proposé le sujet, mais également pour son support, ses conseils, sa patience 
-et sa flexibilité.
+m'avoir proposé le sujet, mais également pour son support, ses conseils, sa patience
+et sa disponibilité.
 \\[2cm]
-Je remercie également Emanuel \textsc{Nataf} mon tuteur également pour sa flexibilité
-et son intérêt pour mon sujet.
+Je remercie également Emanuel \textsc{Nataf} mon tuteur pour  son intérêt pour mon 
+sujet ainsi que les marges de manoeuvres qu'il à su me laisser.
 \\[1cm]
-Merci à toute l'équipe du réseau Lothaire pour son accueil chaleureux et son support. 
-Et plus particulièrement à Luc \textsc{Didry} et Stéphane \textsc{Fetter} pour leur
-aide en général et notamment en système.
+Merci à toute l'équipe du réseau Lothaire pour son accueil chaleureux et son soutien.
+Je remercie plus particulièrement  Luc \textsc{Didry} et Stéphane \textsc{Fetter} pour leur
+aide, en général, et  notamment en système.
 
 %Page table des matières
 \setcounter{tocdepth}{1}
@@ -107,22 +107,22 @@ aide en général et notamment en système.
 
 \chapter{Introduction}
 \section{Problématique}
-La gestion de \gls{logs} est une problématique commune à presque tous les services informatique,
+La gestion de \gls{logs} est une problématique commune à presque tous les services informatiques,
 tous les fournisseurs de services et plus globalement, toutes personnes gérant une infrastructure 
 informatisée.
 
-Les \gls{logs} sont précieux car ils sont un des éléments indispensable au dépanage, 
-au monitoring, ils permettent l'anticipation de problèmes inhérent à l'exploitation 
-des dites infrastructures, ainsi que de constater de potentielles tentatives d'intrusions.
+Les \gls{logs} sont précieux car ils sont un des éléments indispensables au dépannage, 
+au monitoring. Ils permettent d'anticiper des problèmes inhérents à l'exploitation 
+des infrastructures, et  de constater de potentielles tentatives d'intrusions.
 À ces aspects pratiques relatifs au bon fonctionnement des systèmes s'ajoute également
 une problématique judiciaire. Il est souvent nécessaire de garder des logs pour un 
-temps défini  dans la loi. Ces logs doivent évidemment être consultable de manière
+temps défini  dans la loi. Ces logs doivent évidemment être consultables de manière
 diligente.
 
-Avec des milliers de ligne de logs par seconde, il est devenu impossible de naviguer
+Avec des milliers de lignes de logs par seconde, il est devenu impossible de naviguer
 "au hasard" dans les fichiers pour regarder si tout se passe bien.
 
-Cependant \emph{de nombreuses structures continuent encore aujourd'hui d'analyser 
+Cependant, \emph{de nombreuses structures continuent encore aujourd'hui d'analyser 
 plus ou moins "manuellement" leurs \emph{\gls{logs}}}. Cette méthode reste envisageable 
 si on cherche quelque chose de précis, comme une IP dans un intervalle de quelques 
 secondes, mais impossible pour des recherches trop vagues, on se noie.
@@ -140,14 +140,14 @@ Pour réaliser ce projet il a été décidé d'utiliser la stack ELK\footnote{El
 
 
 \subsection{Limites}
-Pour des raisons de disponibilité matériel mais aussi d'intérêt par rapport au sujet
-je n'ai pas travaillé sur les cluster Elasticsearch de façon pratique. Elasticsearch
+Pour des raisons de disponibilité matériel mais, aussi, d'intérêt par rapport au sujet,
+je n'ai pas travaillé sur les clusters Elasticsearch de façon pratique. Elasticsearch
 est un logiciel hautement parallélisable, et qui donc scale très bien à l'horizontal. 
 
 Ce rapport se concentre sur l'aspect gestion de logs, il est possible de faire bien
 plus avec Elasticsearch que ce qui est présenté dans ce rapport.
-De même nous nous concentrons avec logstash sur l'exploitation de syslogs, il est 
-capable de faire d'autres choses, notamment avec les logs apache. On présentera 
+De même nous nous concentrons avec logstash sur l'exploitation de syslogs. Il est 
+capable de faire d'autres choses, notamment, avec les logs apache. On présentera 
 tout de même une base solide de ce qui est faisable avec.
 
 
@@ -156,29 +156,80 @@ La première partie du rapport sera consacrée à l'environnement de travail et 
 présentation des notions. La seconde se concentrera sur le fonctionnement de chacun 
 des logiciels utilisés ainsi que quelques problèmes liés à leur exploitation en production.
 Enfin la troisième partie conclura ce rapport en présentant la solution retenue 
-pour la mise en production, les éventuels ajouts possible, et enfin une conclusion 
-générale.
-
+pour la mise en production, les éventuels ajouts possibles.
 
 \chapter{Environnement}
-\section{Sous Direction des Infrastructures}
+J'ai réalisé mon stage de Licence professionnelle ASRALL, dans l'équipe réseau Lothaire.
+Cette équipe dépend de la Sous Direction des Infrastructures, membre de la Direction 
+du numérique de l'Université de Lorraine. Son rôle est d'opérer le réseau des 
+établissements scolaires et de recherche de la région Lorraine.
+\section{Réseau Lothaire}
+\begin{figure}[H]
+\center
+\includegraphics{lothaire.jpg}
+\end{figure}
+Le réseau de télécommunications à haut débit sur le territoire de la région Lorraine, 
+dénommé Lothaire, est réservé aux secteurs de l’Enseignement Supérieur, de la Recherche 
+et du Transfert de Technologie. 
+
+L'équipe Lothaire assure l’interconnexion des réseaux de Nancy (\emph{StanNet}), Metz(\emph{AmpereNet}), 
+Epinal (\emph{EpiNet}) ainsi que d'autres sites en région (IUFM, CROUS, \ldots) avec le
+réseau \emph{RENATER} (REseau NAtional de télécommunication pour la Technologie, l'Enseignement 
+et la Recherche). Ce lien est réalisé au nœud régional situé sur le site du Montet 
+(mon lieu de stage) à Vandœuvre-lès-Nancy.
+
+(cf \hyperref[fig:imagereseaulothaire1]{schéma 10.1}  et \hyperref[fig:imagereseaulothaire1]{schéma 10.2} 
+en annexes)
+
+\subsection{Historique et rôle et organigrame}
+
+Avant la création de \emph{l'Université de Lorraine} au 1er Janvier 2012 l'équipe 
+réseau Lothaire était attachée au CIRIL (Centre Interuniversitaire de Ressources Informatiques
+de Lorraine). Depuis, l'organisme a été absorbé par la sous direction des infrastructure
+de l'université.
+
+En plus d’opérer les infrastructures du réseau Régional, l’ Equipe Réseau Lothaire 
+assure un ensemble de services auprès de la Communauté de l’Enseignement Supérieur 
+et de la Recherche de Lorraine :
+
+\begin{itemize}
+    \item interface technique et financière avec les établissements partenaires, 
+    les opérateurs et les prestataires retenus,
+    \item configuration du routage (IPv4 et IPv6) et des règles de sécurité (ACL , 
+    Firewall),
+    \item service de gestion des noms de domaines (DNS),
+    \item développement, maintenance et diffusion nationale d’outils de métrologie ,
+    \item administration d’un portail captif (YaCaP) pour les accès Wifi,
+    \item filtrage des accès WEB sur certains réseaux,
+    \item gestion d’une plateforme pour les accès sécurisés (VPN),
+    \item collecte et archivage des traces (logs) des activités réseaux,
+    \item mise à disposition de logiciels libres pour la communauté (FTP),
+    \item service de synchronisation d’horloge (NTP),
+    \item routage d’appel de visioconférences (gatekeeper H323),
+    \item gestion des réseaux de campus de l’Université de Lorraine.
+\end{itemize}                                                
+
+L'équipe est constituée de 10 ingénieurs, dont 1 responsable Alexandre Simon, ainsi
+que d'un enseignant chercheur détaché.
+
+
 \section{Environnement de travail}
 
-\chapter{La gestion de logs}
-
-La gestion des \gls{logs} est un problème presque aussi vieux que l'informatique.
-Au commencement 
-
-La tendance est cependant (et depuis longtemps) à la centralisation de ces fichiers afin de faciliter 
-leur accès et leur analyse ultérieur. Cela permet également une sauvegarde plus facile de ces derniers 
-dans le cas où cela est nécessaire. Il est fréquent d'avoir des scripts analysant 
-quotidiennement ces \gls{logs} afin de pouvoir détécter un comportement suspect.
-
-
-\chapter{Gestion de projet}
-%\input{tableaudebord.tex}
-\chapter{Présentation des notions}
-\chapter{Définitions}
+%\chapter{La gestion de logs}
+%
+%La gestion des \gls{logs} est un problème presque aussi vieux que l'informatique.
+%Au commencement 
+%
+%La tendance est cependant (et depuis longtemps) à la centralisation de ces fichiers afin de faciliter 
+%leur accès et leur analyse ultérieur. Cela permet également une sauvegarde plus facile de ces derniers 
+%dans le cas où cela est nécessaire. Il est fréquent d'avoir des scripts analysant 
+%quotidiennement ces \gls{logs} afin de pouvoir détécter un comportement suspect.
+%
+%
+%\chapter{Gestion de projet}
+%%\input{tableaudebord.tex}
+%\chapter{Présentation des notions}
+%\chapter{Définitions}
 
 \part{Les logiciels}
 \chapter{Logstash}
@@ -202,6 +253,8 @@ quotidiennement ces \gls{logs} afin de pouvoir détécter un comportement suspec
 \part{Annexes}
 \chapter{Sources/Webographie/Bibliographie}
 \input{sources.tex}
+\chapter{Images}
+\input{images.tex}
 \chapter{Code Source et scripts}
 \input{scripts.tex}
 
