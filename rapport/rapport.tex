@@ -172,11 +172,11 @@ Le réseau de télécommunications à haut débit sur le territoire de la régio
 dénommé Lothaire, est réservé aux secteurs de l’Enseignement Supérieur, de la Recherche 
 et du Transfert de Technologie. 
 
-L'équipe Lothaire assure l’interconnexion des réseaux de Nancy (\emph{StanNet}), Metz(\emph{AmpereNet}), 
-Epinal (\emph{EpiNet}) ainsi que d'autres sites en région (IUFM, CROUS, \ldots) avec le
-réseau \emph{RENATER} (REseau NAtional de télécommunication pour la Technologie, l'Enseignement 
-et la Recherche). Ce lien est réalisé au nœud régional situé sur le site du Montet 
-(mon lieu de stage) à Vandœuvre-lès-Nancy.
+L'équipe Lothaire assure l’interconnexion des réseaux de Nancy (\emph{StanNet}), 
+Metz (\emph{AmpereNet}), Epinal (\emph{EpiNet}) ainsi que d'autres sites en région 
+(IUFM, CROUS\ldots) avec le réseau \emph{RENATER} (REseau NAtional de télécommunication 
+pour la Technologie, l'Enseignement et la Recherche). Ce lien est réalisé au nœud 
+régional situé sur le site du Montet (mon lieu de stage) à Vandœuvre-lès-Nancy.
 
 (cf \hyperref[fig:imagereseaulothaire1]{schéma 10.1}  et \hyperref[fig:imagereseaulothaire1]{schéma 10.2} 
 en annexes)
@@ -214,7 +214,22 @@ que d'un enseignant chercheur détaché.
 
 
 \section{Environnement de travail}
+J'ai physiquement réalisé mon stage dans un bureau (plutôt spacieux), en compagnie
+d'un autre stagiaire.
+Ma machine travail était un ordinateur fixe Dell Optiplex 780 équipé d'un Core2 et 
+de 4 Go de RAM. Il m'a été laissé une grande liberté quant à l'installation de mon
+système d'exploitation, j'ai donc choisi un classique Debain GNU/Linux.
 
+Cette machine était bien pratique pour réaliser des tests (machines virtuelles, 
+installation de logiciels\ldots), mais n'était évidemment pas capable d'ingurgiter 
+tous les logs réseau des établissements d'enseignement en Lorraine. On a donc mis 
+à ma disposition (dans le Datacenter du bâtiment) 2 serveurs qui serviront après 
+la fin du stage de machines de production. Un Dell R520 (12 cœurs, 12Go de RAM),
+c'est la machine qui fera tourné Elasticsearch et un Dell 2950 (4 coeurs 4 Go de RAM)
+c'est la machine qui accueillera le Logstash qui traitera tous les logs.
+
+Par cohérence avec le reste de l'infrastructure il a été décidé d'installer une 
+Debian Jessie, nouvellement stable au moment de l'installation.
 %\chapter{La gestion de logs}
 %
 %La gestion des \gls{logs} est un problème presque aussi vieux que l'informatique.
