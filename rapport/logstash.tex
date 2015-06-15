@@ -13,11 +13,15 @@ de fonctionner avec de nombreux autres logiciels.
 
 \subsection{Pourquoi Logstash?}
 Bien qu'un administrateur système compétent soit capable d'analyser de façon rapide 
-et efficace les logs d'une machine (à l'aide deperl+awk+sed+tail+grep), cette méthode
+et efficace les logs d'une machine (à l'aide de perl+awk+sed+tail+grep+\ldots), cette méthode
 est fastidieuse. De plus, face à des dizaines/milliers de machines (virtuelles aussi), 
-cette méthode n'est plus applicable, elle ne peut pas passer à l'échelle.
-Il est actuellement fréquent (cloud, applications multicouches, \ldots) que les logs 
-d'une seule machine ne suffisent plus à diagnostiquer le problème auquel on est confronté.
+cette méthode de travail n'est plus applicable, elle ne peut pas passer à l'échelle.
+De plus Il devient de plus en plus fréquent (cloud, applications multicouches, \ldots) 
+que les logs d'une seule machine ne suffisent pas à diagnostiquer convenablement un 
+problème.
+
+C'est pour centraliser tout types de le \gls{logs} que logstash a été créer, nous
+l'utiliserons surtout pour sa vélocité et sa grande synergie avec Elasticsearch.
 
 \subsection{Fonctionnement interne}
 L'utilisation de logstash est un pipeline qui s'articule autour de 3 \emph{blocs} 
@@ -69,9 +73,9 @@ comme par exemple rubydebug, collectd, ou, bien plus intéressant pour nous, net
 % les plugins et les patterns par défaut?
 
 \subsubsection{Tolérance de pannes}
-Vos logs sont \textbf{importants}, c'est la raison d'être de Logstash, il ne souhaite 
-pas que vous en perdiez le moindre à cause d'un problème réseau ou d'une défaillance
-quelconque rendant la destination indisponible.
+Vos logs sont \textbf{importants}, les traiter efficacement est la raison d'être 
+de Logstash. Il ne souhaite pas que vous en perdiez le moindre à cause d'un problème 
+réseau ou d'une défaillance quelconque rendant la destination indisponible.
 %cf pipeline.rb et base.rb dans github
 Lors d'une indisponibilité, les plugins outputs tentent de renvoyer les événements 
 vers leur destination. Si ce n'est pas possible le plugin arrête de lire sa queue 
@@ -83,14 +87,14 @@ la queue \textit{input => filtre}.
 Si cette dernière venait à se remplir c'est le Logstash tout entier qui refuserait de 
 traiter de nouvelles informations. Dans le meilleur des mondes, les expéditeurs de
 données se comporteraient comme logstash et attendraient patiemment que le problème
-se résolve. Malheureusement cela n'est pas toujours possible, particulièrement, dans
-nos problématiques d'où l'importance d'un Redis en amont (ou en aval) afin de 
-faire tampon.\footnote{Il existe d'autres outils que Redis, (dont ce n'est pas la fonction
+se résolve. Malheureusement cela n'est pas toujours possible d'où l'importance d'un 
+Redis en amont (ou en aval) afin de faire tampon.
+\footnote{Il existe d'autres outils que Redis, (dont ce n'est pas la fonction
 principale) pour réaliser ce travail, ils sont plus adapté mais aussi moins documentés
 dans leur utilisation avec Logstash.}
 
 \subsubsection{Multithread}
-Attention ces informations sont pour le moment, \date{Jeudi 16 Avril}, correctes 
+Attention ces informations sont pour le moment, \textit{Jeudi 16 Avril 2015}, correctes 
 mais sont amenées à changer, notamment concernant les outputs.
 
 Chaque plugin input utilise un \gls{thread}. Cela permet d'éviter les engorgements si  
@@ -222,10 +226,8 @@ Enfin, il est possible, de donner le droit à un utilisateur non root, l'autoris
 de modifier certaines capabilities. Pour ce faire, il faut modifier le fichier \\[1mm]
 \ipath{/etc/security/capability.conf}.
 
-\section{Fonctionnement}
-Logstash peut s'intégrer dans une architecture simple ou très compliquée. En fonction
-du cas il peut être utilisé dans plusieurs modes.
-\subsection{La base}
+
+
 
 
 \section{Grammaire et conjugaison}
@@ -503,19 +505,73 @@ Par défaut Logstash utilisera les fichiers de configuration présents dans \\
 
 
 \section{Utilisation}
-Nous allons enfin discuter la manière dont on peut utiliser Logstash
-On peut utiliser Logstash de plusieurs façons, plus ou moins complexes, 
-en fonction de nos besoins et de notre infrastructure.
-La configuration la plus simple consiste à 
-
-{\huge à finir}
-
-\section{Mon serveur central}
+Logstash peut s'intégrer dans une architecture simple ou très compliquée. En fonction
+du cas il peut être utilisé dans plusieurs modes.
 
 
+\subsection{La base}
+Pour fonctionner Logstash doit recevoir des données en input, et les envoyer sur 
+une destination d'output.
+La configuration la plus simple consiste à lire l'input d'un clavier et à diriger 
+son output sur la sortie standard. Cela à été montré dans une partie 
+\hyperref[lst:conflogstashminimale]{précédente}.
+Dans ce cas, une seule machine est impliquée, cela n'a d'utilité que pour une démonstration
+et éventuellement des tests.
 
-\section{Monter à l'échelle}
+Logstash est parfois utilisé pour centralisé les logs en un seul point en attendant
+une sauvegarde du fichier nouvellement créé.
 
 
+\begin{lstlisting}[style=logstash,label={lst:conflogstashminimale2},caption={Un autre exemple de configuration minime}]
+input {
+    file {
+        path => ["/var/log/mail/fdupont", "/var/log/mail/apache", "/var/log/mail/...", ]
+    }
+}
+
+filter {
+    #On peut imaginer faire de l'assainissement/standardisation de logs ici...
+}
+
+output {
+    file {
+        path => ["/var/log/logoftheday-%{+YYYY-MM-dd}.log", ]
+    }
+}
+\end{lstlisting}
+Ce genre de configuration bien qu'un peu exotique peut s'envisager dans le cas de
+de petites infrastructures avec une simple réplication des logs pour la sauvegarde.
+Ici on tirerai principalement avantage de la capacité de traitement de Logstash grace
+à son bloc filtre.
+
+Mais le plus souvent on utilise Logstash comme un serveur central, parfois pour d'autres
+Logstash.
+\subsection{Mon serveur central}
+Notre configuration sera présentée dans la troisième partie, mais c'est ce genre 
+de montage que nous utilisons pour le projet.
+
+Ici l'idée est de faire pointer les syslogs configurés sur tous les équipements vers
+un serveur, faisant tourné une instance de Logstash. Cette instance renvera ensuite 
+le flux \textit{utile} vers sa destination, ici un Elasticsearch (après une préalable
+mise en tampon dans un redis).
+
+Ici logstash sert donc à trié et centralisé le flux il n'est strictosensus pas indispensable
+on prend cependant de gros risque à envoyer tous nos logs d'un coup sur une machine
+dont le but est d'analyser des logs, pas d'encaisser le flux. 
+Ne pas utiliser ce genre d'infrastructure poserait probablement des problèmes I/O,
+et empecherait la scalabilité à plus long terme. si la machine intermédiaire, le 
+serveur central, ne peut plus encaiser la charge, il suffit d'en déployer un autre
+et de diviser le flux des syslogs (et autres) entre ces deux serveurs \textit{centraux}.
+
+
+{\huge NEED SCHEMA !}
+\subsection{Monter à l'échelle}
+Dans de très grosses infrastructures, il est possible qu'il faille des infrastructures
+encore plus complexes
+
+
+{\huge NEED SCHEMA !}
+
+Description du schéma
 
 
