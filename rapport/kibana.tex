@@ -20,7 +20,7 @@ aisé une fois les principes de bases assimilés.
 L'installation de Kibana est relativement simple, il suffit de télécharger l'application
 compressé à l'adresse sur le site de \url{https://download.elastic.co/kibana/kibana/kibana-4.0.2-linux-x64.tar.gz}{elastic}.
 On décompresse, on lance (\ipath{path/bin/kibana}), et c'est parti !
-Évidemment, si on execute kibana d'une telle manière il est préferable de le lancer
+Évidemment, si on execute Kibana d'une telle manière il est préferable de le lancer
 depuis un tmux ou un screen (ou un quelconque multiplexeur de terminal). Il est 
 également facile de réaliser son propre service systemd.
 
@@ -32,14 +32,14 @@ Dans des circonstances normales c'est tout ce que vous aurez à paramétrer (hor
 SSL \ldots{}).
 
 Il peut arriver dans de rares cas (lorsque Elasticsearch est saturé ou bien lors 
-d'une requête particulièrement gourmande) que kibana se ferme car Elasticsearch met
+d'une requête particulièrement gourmande) que Kibana se ferme car Elasticsearch met
 trop de temps à répondre. Il est dans ces cas là, il est fortement conseillé de 
 redémarrer l'instance en question, d'étendre sa \emph{HEAP\_SIZE}, ou bien si possible, 
 rajouter de la RAM.
 
 Il est possible de modifier le requestTimeout dans \ipath{path/src/lib/waitForEs.js}
 C'est pour l'instant la seule façon de faire, d'après une issue github, la prochaine 
-mouture de kibana devrait intégrer ce paramètre dans son fichier de configuration.
+mouture de Kibana devrait intégrer ce paramètre dans son fichier de configuration.
 
 \section{Utilisation de Kibana}
 Dans cette partie nous allons faire une brève présentation (illustré) de Kibana et
@@ -217,13 +217,13 @@ iframes permettant de les inclure dans une page de monitoring par exemple.
 \end{figure}
 
 \subsection{Settings}
-Si un doute s'était imissé dans notre esprit, les paramètres de kibana, ne concernent
-uniquement kibana, pas Elasticsearch,\hyperref[fig:kibanatuto14]{ certaines informations} 
-sont cependant affichées pour aider l'utilisation de kibana mais pas de possibilité 
+Si un doute s'était imissé dans notre esprit, les paramètres de Kibana, concernent
+uniquement Kibana, et pas Elasticsearch,\hyperref[fig:kibanatuto14]{ certaines informations} 
+sont cependant affichées pour aider l'utilisation de Kibana mais pas de possibilité 
 de les modifiées.
 
 En revanche, il faut bien avouer que leurs consultation est plus agréable depuis 
-kibana que depuis l'export json d'Elasticsearch.
+Kibana que depuis l'export json d'Elasticsearch.
 
 \begin{figure}[H]
 \center

@@ -47,22 +47,22 @@ chemin, et ajouter des droits.
 \subsection{Configuration de base}
 
 
-Acompleter et revoir
+{\huge Acompleter et revoir}
 p24-26
  test
 
 
 \section{Sense}
-Sense est un module chrome développé par Boaz Leskes, il sert de front-end à ElasticSearch.
-Le développement (public) de ce module est maintenant arrêté. Il fait parti de 
-\emph{Marvel} le logiciel de monitoring et d'optimisation, vendu\footnote{voir bas 
-de page : \url{https://www.elastic.co/products/marvel/signup.html}} 
-par la société \emph{elastic}.
+Sense est un module chrome développé par Boaz Leskes. Il sert de client à ElasticSearch
+pour éviter d'avoir à le manipuler directement via curl.
+
+Le développement (public) de ce module est arrêté depuis son intégration dans \emph{Marvel} 
+le logiciel de monitoring et d'optimisation, vendu\footnote{voir basde page : 
+\url{https://www.elastic.co/products/marvel/signup.html}} par la société \emph{elastic}.
 
 
 \subsection{Installation}
-Installer ce logiciel est simple comme installer une extension Chrome\footnote{testé sur chromium}
-tierce.
+C'est simple comme installer une extension Chrome\footnote{testé sur chromium} tierce.
 Tout d'abord : récupérer le module à l'adresse \url{https://github.com/bleskes/sense}
 en utilisant par exemple : 
 \begin{lstlisting}[style=code,label=lst:gitclonesense]
@@ -71,18 +71,15 @@ git clone https://github.com/bleskes/sense.git
 
 Il suffit ensuite de l'activer dans chromium :\\ 
 chrome://extension => Developer mode => Load unpacked extension.
-
 \begin{figure}[H]
 \center
 \includegraphics[width=12cm]{senseinstall.png}
 \label{fig:senseinstall}
 \caption{Plugin Sense installé dans chromium}
 \end{figure}
-
 Et voilà ! \footnotesize{(avec un accent anglais)}
-
 \subsection{Utilisation de Sense}
-L'utilisation de Sense est assez simple via son interface :
+Voic l'interface de Sense :
 
 \begin{figure}[H]
 \center
@@ -104,46 +101,199 @@ Nous allons avec l'image ci-dessous \ref{fig:sensegui2.png} brièvement explique
 Le formulaire \textbf{Server} situé en haut correspond à l'adresse et au port d'écoute 
 de l'instance Elasticsearch sur laquelle on souhaite travailler.
 
-Le panneau de gauche correspond au \textbf{panneau de requête}. On utilise l'api REST d'elasticsearch
-pour envoyer des requêtes (recherches, modification etc, point sur l'API prévu 
-ultérieurement). Il est à noté que le panneau de gauche est doté d'une autocomplétion
-pour les fonctions et configurations standards dans elasticsearch.
+Le panneau de gauche correspond au \textbf{panneau de requête}. On utilise l'api 
+REST d'Elasticsearch pour envoyer des requêtes (recherches, modifications\ldots 
+une présentation de l'API est réalisé ultérieurement). Il est à noté que le panneau 
+de gauche est doté d'une autocomplétion pour les fonctions et les éléments standards 
+d'Elasticsearch.
 
 Le panneau de droite est le \textbf{panneau de réponse} aux requêtes. Les informations
 nous parviennent en JSON.
 
 \section{La théorie}
+{\huge A compléter}
 
 \subsection{Approximation et comparaison avec le modèle relationnel}
 La comparaison entre Elasticsearch et une base de données n'est pas forcement heureuse,
-c'est un moteur de recherche (d'indexation). Il utilise donc la notion d'index   
-qu'on peut cependant assez facilement comparer au modèle relationnel.
+c'est un moteur de recherche (d'indexation), pas une base de données. 
+%Il utilise donc la notion d'index qu'on peut cependant assez facilement comparer au modèle relationnel.
 
 Elasticsearch s'organise autour d'index que l'on peut comparer aux bases (de données)
-dans le modèle relationnel, un index peut utiliser plusieurs types (dans notre projet
-nous aurions pu différencier les logs firewall des logs \textit{states} en utilisant 
-les types), les types s'apparentent aux tables dans le modèle relationnel. 
+dans le modèle relationnel, un index peut utiliser plusieurs types\footnote{Dans 
+notre projet \textbf{nous n'avons pas fait ce choix} pour pouvoir plus facilement 
+modifier les mappings sans supprimer toutes les données. Il aurait été envisageable
+par exemple de différencier les logs firewall des logs \textit{states} en utilisant 
+les types. Cf partie 3}, ils s'apparentent aux tables dans le modèle relationnel. 
+
 Chaque enregistrement d'Elasticsearch est effectué sous forme document. Les documents
-(qui ont un type, éventuellement type par défaut), un document peut être comparé 
-à une ligne, ou un enregistrement. Ces lignes sont constitués de colonnes, appellées
-champs (ou fields) dans Elasticsearch.
+sont nécessairement rangé dans un type, éventuellement type par défaut. Le document 
+peut être comparé à une ligne (row). 
 
+Ces lignes sont constitués de colonnes, appellées champs (ou fields) dans Elasticsearch.
 
-{\Huge NEED image}
+\begin{figure}[H]
+\textbf{BDD Relationnelle $\Rightarrow$ Base de données $\Rightarrow$ Tables $\Rightarrow$ Ligne $\Rightarrow$ Colonnes\\
+Elasticsearch \hspace{7mm} $\Rightarrow$ \hspace{8mm }Index \hspace{8mm} $\Rightarrow$ \hspace{3mm}Types \hspace{3mm} $\Rightarrow$ Documents $\Rightarrow$ Champs}
+\end{figure}
 
 
 \section{L'infrastructure}
+Dans cette partie nous allons expliquer comment fonctionne Elasticsearch à plus bas 
+niveau. Nous allons parler de noeuds, de shards, d'instances\ldots
 
-\subsection{Le tunning}
-Voici quelques conseilles qui sont applicables pratiquement dans toutes les situations
-pour une utilisation optimale de Elasticsearch.
+Comprendre cette partie est nécessaire pour pouvoir paramétrer une installation simple 
+nous expliquerons briêvement les enjeux pour un cluster plus imposant.
+\subsection{La base}
+\subsubsection{Grappes et nœuds}
+Chaque instance d'Elasticsearch fonctionne nécessairement dans une entité abstraite 
+appelé cluster (grappe), c'est son groupe. On peut avoir un cluster d'une seule instance.
+Les clusters son identifiés par des noms.
+
+Une instance est appelé \emph{node} (nœuds). Il est possible de lancer plusieurs nodes  
+par machines mais c'est déconseillé (cf partie tuning).
+
+Les nodes partagent leurs données et la charge de travail au sein du cluster. Le 
+cluster est capable automatiquement de répartir équitablement ses données entre 
+les nodes, et ce même lors de l'ajout ou la suppression d'un node.
+
+Il existe un/footnote{dans de grosses infrastructure il est possible d'en avoir plus
+pour aider à la gestion du cluster} master node qui est élu au sein du cluster. 
+Ce node est chargé de la gestion du cluster ajout ou suppression des des nodes, des  
+index. Si le trafic dans le cluster augmente suffisamment le master node peut n'être 
+dédié qu'à cette tache.
+
+\subsubsection{Shards}
+On a vu précédemment que les index sont l'endroit où sont stocké les données. Un 
+index est un \textit{namespace logique} qui pointe vers un ou plusieurs shards.
+
+Un shard (éclat) contient une fraction de toutes les données de  son index. Dans 
+le cas ou index n'aurait qu'un seul shard (il en a 5 par défaut), ce shard contiendrait
+l'index entier.
+Chaque shard est une instance de Apache lucene. Chaque shard est un moteur de recherche
+complet, mais ne possedant qu'une fraction des données d'un index entier.
+
+Les applications utilisant Elasticsearch (comme Kibana) ne dialogue qu'avec les index
+la couche d'abstraction au dessus des shards, justement parce que les informations 
+d'un shard sont parcellaire.
+
+Il existe deux types de shards les shards primaires, et les shards répliqués.
+Les shards répliqués sont des copies de shards primaires, ils servent à accélérer
+le traitement des requêtes Elasticsearch, ils peuvent également servir de \emph{failover} 
+en cas de défaillance d'une machine.
+
+Le nombre de shards \textbf{primaire} attribué à chaque index est fixe et ne peut 
+pas être changé au cours de la vie de l'index. Il est en revanche tout à fait possible
+d'ajouter ou de supprimer des shards répliqués.
+
+\subsubsection{Redondances et montées à l'échelle}
+Dans cette partie en plus du fonctionnement du cluster et de la répartition des shards
+nous évoquerons sa santé. Un cluster est considérer en bonne santé lorsque tous ses
+shards sont répliqués au moins une fois (\textit{failover}).
+
+Nous prendrons ici l'exemple d'un index \emph{blog} possédant 3 shards primaires. 
+\footnote{Exemple inspiré et images tirées de \textit{A definitive guide to Elasticsearch}}
+Nous souhaitons que chaque shard primaire soit répliqué une fois (donc trois shards
+répliqués). Cette figure de style n'est pas innocente, le réglage de ce paramètre
+\footnote{via l'API présenté après la partie sur le tuning} est présenté de la même
+façon: "number\_of\_shards":3, "number\_of\_replica":1. 
+
+
+\begin{figure}[H]
+\center
+\includegraphics[width=0.6\textwidth]{elasticsearch/clustershard1.png}
+\label{fig:clustershard1}
+\caption{Cluster minimal, 1 node, 1 index}
+\end{figure}
+
+La santé de notre serveur est ici considéré comme moyenne, il peut parfaitement 
+fonctionner, mais touts ses shards répliqués ne sont pas  actifs. En faite aucun 
+shard répliqué n'est actif. Cela n'aurait pas d'intérêt d'ajouter les shards répliqués
+sur ce node, car cela n'améliorera pas le traitement des données et ne protégera pas
+notre cluster contre la perte de données, en cas défaillance de son unique node.
+
+Nous allons maintenant rajouté un node, sans changer notre configuration.
+
+\begin{figure}[H]
+\center
+\includegraphics[width=0.6\textwidth]{elasticsearch/clustershard2.png}
+\label{fig:clustershard2}
+\caption{Cluster, 2 node, 1 index}
+\end{figure}
+
+On constate que notre cluster est maintenant redondé, le node master possède les 
+shards primaires, le second node les shards répliqués. Ces actions sont effectuées
+automatiquement à l'ajout du node.
+
+La santé de notre cluster est maintenant considéré comme bonne, il peut supporter 
+une panne.
+
+Nous allons maintenant rajouter encore un node et ainsi répartir mieux la charge
+
+\begin{figure}[H]
+\center
+\includegraphics[width=1\textwidth]{elasticsearch/clustershard3.png}
+\label{fig:clustershard3}
+\caption{Cluster, 3 node, 1 index}
+\end{figure}
+
+Cette configuration fonctionne plus efficacement que la précédente puisqu'elle a 
+accès à plus de ressource et que Elasticsearch répartie intelligemment la ses ressources
+et donc la charge de travail sur les différents nodes.
+
+Remarque, si l'on perdait un node maintenant, nous nous retrouverions dans la configuration
+numéro 2 (avec le failover), quitte à devoir réélir un master node. Notre état de santé,
+serait toujours bon.
+
+Pour voir des choses plus intéressantes, nous allons ajouter un shard répliqué (donc 3).
+
+\begin{figure}[H]
+\center
+\includegraphics[width=1\textwidth]{elasticsearch/clustershard4.png}
+\label{fig:clustershard4}
+\caption{Cluster, 3 node, 1 index, mais plus de shards répliqués!}
+\end{figure}
+
+
+Rien de particulièrement notable.
+
+Mais si nous enlevons le node 1\ldots
+
+\begin{figure}[H]
+\center
+\includegraphics[width=1\textwidth]{elasticsearch/clustershard5.png}
+\label{fig:clustershard5}
+\caption{Cluster, 2 node, 1 index encore\ldots ou pas}
+\end{figure}
+
+Au moment précis de la coupure notre cluster est passé en mauvaise santé, car il 
+n'avait plus de node master, et surtout des shards primaire étaient manquants.
+
+Si une recherche avait été effectué sur cet index à ce moment précis, des résultats partiels
+auraient été obtenus, ainsi qu'un avertissement du fait que toutes les données n'étaient
+pas disponibles.
+
+On constate qu'une élection de master node a eu lieu. En constatant que deux shards 
+primaires sont manquant il a immédiatement promu les sards répliqués au rang de 
+shard primaires.
+
+La santé de notre cluster est maintenant considéré comme moyenne, puisque tous ses
+shards répliqués ne peuvent pas être affectés.
+
+
+Cette partie permet de résoudre les problèmes qui pourraient survenir (meme sur
+un cluster d'une seule machine) et permet surtout de mieux comprendre le fonctionnement
+interne de Elasticsearch.
+
+\subsection{Le tuning}
+Voici quelques conseils applicables dans pratiquement toutes les situations et 
+permettant d'optimiser le fonctionnement d'Elasticsearch.
 
 \subsubsection{Ne pas utiliser la swap}
 Il est très fréquent (et souvent nécessaire) de formater une partition de swap pour
 que le système puisse optimiser son fonctionnement. C'est très pratique pour ne pas
 saturer la mémoire RAM de nos machines de bureau, notamment quand on voit la consommation
 pantagruélique de certains navigateurs internet récents. Les fichiers qui ne sont 
-susceptible de ne pas être utilisé avant un long moment sont parfois stocké sur le
+susceptible de ne pas être utilisé avant un long moment sont parfois stockés sur le
 disque dur afin de libérer de l'espace pour d'autres applications, la swap est
 également utilisé lorsque l'on met un ordinateur en veille \ldots
 
@@ -811,4 +961,4 @@ d'utiliser des syntaxe comme +fox, de même on peut faire une recherche avec un 
 de deux termes pour être plus efficace : "over the" qui n'existe que dans P1.
 
 
-\section{Plus d'information }
+%\section{Plus d'information }

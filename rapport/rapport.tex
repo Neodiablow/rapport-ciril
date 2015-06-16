@@ -91,11 +91,11 @@ m'avoir proposé le sujet, mais également pour son support, ses conseils, sa pa
 et sa disponibilité.
 \\[2cm]
 Je remercie également Emanuel \textsc{Nataf} mon tuteur pour  son intérêt pour mon 
-sujet ainsi que les marges de manoeuvres qu'il à su me laisser.
+sujet ainsi que les marges de manoeuvres qu'il a su me laisser.
 \\[1cm]
 Merci à toute l'équipe du réseau Lothaire pour son accueil chaleureux et son soutien.
 Je remercie plus particulièrement  Luc \textsc{Didry} et Stéphane \textsc{Fetter} pour leur
-aide, en général, et  notamment en système.
+aide, en général, et  notamment en système et la correction.
 
 %Page table des matières
 \setcounter{tocdepth}{1}
@@ -108,7 +108,7 @@ aide, en général, et  notamment en système.
 \chapter{Introduction}
 \section{Problématique}
 La gestion de \gls{logs} est une problématique commune à presque tous les services informatiques,
-tous les fournisseurs de services et plus globalement, toutes personnes gérant une infrastructure 
+tous les fournisseurs de services et plus globalement, toute personne gérant une infrastructure 
 informatisée.
 
 Les \gls{logs} sont précieux car ils sont un des éléments indispensables au dépannage, 
@@ -125,11 +125,11 @@ Avec des milliers de lignes de logs par seconde, il est devenu impossible de nav
 Cependant, \emph{de nombreuses structures continuent encore aujourd'hui d'analyser 
 plus ou moins "manuellement" leurs \emph{\gls{logs}}}. Cette méthode reste envisageable 
 si on cherche quelque chose de précis, comme une IP dans un intervalle de quelques 
-secondes, mais impossible pour des recherches trop vagues, on se noie.
+secondes, mais impossible pour des recherches trop vagues: on se noie.
 
 
 \section{Objectif}
-En résumé, l'objectif de ce projet est de redonner la possibilité aux administrateurs
+L'objectif de ce projet est de redonner la possibilité aux administrateurs
 de vérifier le bon fonctionnement de leur infrastructure sans avoir à attendre l'alerte
 Nagios (qui reste indispensable). L'idée est de permettre un suivi quotidien, permettant
 de mettre en évidence des indicateurs de bonne ou de mauvaise santé du système, sans 
@@ -140,15 +140,20 @@ Pour réaliser ce projet il a été décidé d'utiliser la stack ELK\footnote{El
 
 
 \subsection{Limites}
-Pour des raisons de disponibilité matériel mais, aussi, d'intérêt par rapport au sujet,
-je n'ai pas travaillé sur les clusters Elasticsearch de façon pratique. Elasticsearch
-est un logiciel hautement parallélisable, et qui donc scale très bien à l'horizontal. 
+Pour des raisons de disponibilité matérielle mais, aussi, d'intérêt par rapport au sujet,
+je n'ai pas travaillé sur les clusters Elasticsearch de façon pratique (une seule 
+instance du logiciel tourne actuellement dans la cluster de salle machine). Elasticsearch
+est un logiciel hautement parallélisable, et qui donc \textit{scale} très bien à 
+l'horizontal. 
 
 Ce rapport se concentre sur l'aspect gestion de logs, il est possible de faire bien
 plus avec Elasticsearch que ce qui est présenté dans ce rapport.
-De même nous nous concentrons avec logstash sur l'exploitation de syslogs. Il est 
-capable de faire d'autres choses, notamment, avec les logs apache. On présentera 
-tout de même une base solide de ce qui est faisable avec.
+
+Lors de notre étude de Logstash nous nous concentrerons sur l'exploitation de syslogs. 
+Il est possible de faire d'autres choses avec ce logiciel, notamment concernant, 
+l'exploitation des logs d'apache. 
+Ce qui sera présenter fournira tout de même une base solide de ce qui est faisable 
+avec Logstash.
 
 
 \section{Organisation du rapport}
@@ -156,12 +161,12 @@ La première partie du rapport sera consacrée à l'environnement de travail et 
 présentation des notions. La seconde se concentrera sur le fonctionnement de chacun 
 des logiciels utilisés ainsi que quelques problèmes liés à leur exploitation en production.
 Enfin la troisième partie conclura ce rapport en présentant la solution retenue 
-pour la mise en production, les éventuels ajouts possibles.
+pour la mise en production ainsi que les éventuels ajouts possibles.
 
 \chapter{Environnement}
 J'ai réalisé mon stage de Licence professionnelle ASRALL, dans l'équipe réseau Lothaire.
 Cette équipe dépend de la Sous Direction des Infrastructures, membre de la Direction 
-du numérique de l'Université de Lorraine. Son rôle est d'opérer le réseau des 
+du Numérique de l'Université de Lorraine. Son rôle est d'opérer le réseau des 
 établissements scolaires et de recherche de la région Lorraine.
 \section{Réseau Lothaire}
 \begin{figure}[H]
@@ -181,52 +186,52 @@ régional situé sur le site du Montet (mon lieu de stage) à Vandœuvre-lès-Na
 (cf \hyperref[fig:imagereseaulothaire1]{schéma 10.1}  et \hyperref[fig:imagereseaulothaire1]{schéma 10.2} 
 en annexes)
 
-\subsection{Historique et rôle et organigrame}
+\subsection{Historique, rôle et organigramme}
 
 Avant la création de \emph{l'Université de Lorraine} au 1er Janvier 2012 l'équipe 
 réseau Lothaire était attachée au CIRIL (Centre Interuniversitaire de Ressources Informatiques
-de Lorraine). Depuis, l'organisme a été absorbé par la sous direction des infrastructure
+de Lorraine). Depuis, l'organisme a été absorbé par la Sous Direction des Infrastructures
 de l'université.
 
-En plus d’opérer les infrastructures du réseau Régional, l’ Equipe Réseau Lothaire 
+En plus d’opérer les infrastructures du réseau Régional, l’ équipe réseau Lothaire 
 assure un ensemble de services auprès de la Communauté de l’Enseignement Supérieur 
 et de la Recherche de Lorraine :
 
 \begin{itemize}
     \item interface technique et financière avec les établissements partenaires, 
-    les opérateurs et les prestataires retenus,
+    les opérateurs et les prestataires retenus ;
     \item configuration du routage (IPv4 et IPv6) et des règles de sécurité (ACL , 
-    Firewall),
-    \item service de gestion des noms de domaines (DNS),
-    \item développement, maintenance et diffusion nationale d’outils de métrologie ,
-    \item administration d’un portail captif (YaCaP) pour les accès Wifi,
-    \item filtrage des accès WEB sur certains réseaux,
-    \item gestion d’une plateforme pour les accès sécurisés (VPN),
-    \item collecte et archivage des traces (logs) des activités réseaux,
-    \item mise à disposition de logiciels libres pour la communauté (FTP),
-    \item service de synchronisation d’horloge (NTP),
-    \item routage d’appel de visioconférences (gatekeeper H323),
+    Firewall) ;
+    \item service de gestion des noms de domaines (DNS) ;
+    \item développement, maintenance et diffusion nationale d’outils de métrologie  ;
+    \item administration d’un portail captif (YaCaP) pour les accès Wifi ;
+    \item filtrage des accès web sur certains réseaux ;
+    \item gestion d’une plateforme pour les accès sécurisés (VPN) ;
+    \item collecte et archivage des traces (logs) des activités réseaux ;
+    \item mise à disposition de logiciels libres pour la communauté ;
+    \item service de synchronisation d’horloge (NTP) ;
+    \item routage d’appel de visioconférences (gatekeeper H323) ;
     \item gestion des réseaux de campus de l’Université de Lorraine.
 \end{itemize}                                                
 
-L'équipe est constituée de 10 ingénieurs, dont 1 responsable Alexandre Simon, ainsi
+L'équipe est constituée de 10 ingénieurs, dont 1 responsable, Alexandre Simon, ainsi
 que d'un enseignant chercheur détaché.
 
 
 \section{Environnement de travail}
 J'ai physiquement réalisé mon stage dans un bureau (plutôt spacieux), en compagnie
 d'un autre stagiaire.
-Ma machine travail était un ordinateur fixe Dell Optiplex 780 équipé d'un Core2 et 
+Ma machine de travail était un ordinateur fixe Dell Optiplex 780 équipé d'un Core2 et 
 de 4 Go de RAM. Il m'a été laissé une grande liberté quant à l'installation de mon
-système d'exploitation, j'ai donc choisi un classique Debain GNU/Linux.
+système d'exploitation, j'ai donc choisi une classique Debian GNU/Linux.
 
 Cette machine était bien pratique pour réaliser des tests (machines virtuelles, 
 installation de logiciels\ldots), mais n'était évidemment pas capable d'ingurgiter 
 tous les logs réseau des établissements d'enseignement en Lorraine. On a donc mis 
-à ma disposition (dans le Datacenter du bâtiment) 2 serveurs qui serviront après 
-la fin du stage de machines de production. Un Dell R520 (12 cœurs, 12Go de RAM),
-c'est la machine qui fera tourné Elasticsearch et un Dell 2950 (4 coeurs 4 Go de RAM)
-c'est la machine qui accueillera le Logstash qui traitera tous les logs.
+à ma disposition (dans le Datacenter du bâtiment) 2 serveurs qui serviront, après 
+la fin du stage, de machines de production. Un Dell R520 (12 cœurs, 12Go de RAM),
+la machine qui fera tourner Elasticsearch et un Dell 2950 (4 coeurs 4 Go de RAM)
+la machine qui accueillera le Logstash qui traitant tous les logs.
 
 Par cohérence avec le reste de l'infrastructure il a été décidé d'installer une 
 Debian Jessie, nouvellement stable au moment de l'installation.
@@ -257,11 +262,6 @@ Debian Jessie, nouvellement stable au moment de l'installation.
 \input{kibana.tex}
 
 \part{Synthèse et conclusion}
-\chapter{Fonctionnement général}
-
-\chapter{Évolutions possible}
-\section{Monitoring}
-\section{Sécurité}
 
 \chapter{Conclusion}
 
@@ -272,6 +272,8 @@ Debian Jessie, nouvellement stable au moment de l'installation.
 \input{images.tex}
 \chapter{Code Source et scripts}
 \input{scripts.tex}
+\chapter{Tutoriels à l'usage de l'équipe}
+\input{tutoriels.tex}
 
 
 

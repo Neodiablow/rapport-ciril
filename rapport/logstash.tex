@@ -5,7 +5,7 @@
 \end{figure}
 \section{Présentation de Logstash}
 
-Logstash permet de traiter et/ou de transférer des données, en masse. Dans notre 
+Logstash permet de traiter et/ou de transférer des données en masse. Dans notre 
 projet, nous l'utiliserons essentiellement en conjonction avec Elasticsearch en 
 utilitaire de sortie. Cependant,
 et comme le montre la liste des ses abondants plugins d'output, Logstash est capable
@@ -13,14 +13,14 @@ de fonctionner avec de nombreux autres logiciels.
 
 \subsection{Pourquoi Logstash?}
 Bien qu'un administrateur système compétent soit capable d'analyser de façon rapide 
-et efficace les logs d'une machine (à l'aide de perl+awk+sed+tail+grep+\ldots), cette méthode
+et efficace les logs d'une machine (à l'aide de perl,awk,sed,tail,grep\ldots), cette méthode
 est fastidieuse. De plus, face à des dizaines/milliers de machines (virtuelles aussi), 
 cette méthode de travail n'est plus applicable, elle ne peut pas passer à l'échelle.
-De plus Il devient de plus en plus fréquent (cloud, applications multicouches, \ldots) 
+De plus Il devient de plus en plus fréquent (cloud, applications multicouches\ldots) 
 que les logs d'une seule machine ne suffisent pas à diagnostiquer convenablement un 
 problème.
 
-C'est pour centraliser tout types de le \gls{logs} que logstash a été créer, nous
+C'est pour centraliser tout types de \gls{logs} que logstash a été créé, nous
 l'utiliserons surtout pour sa vélocité et sa grande synergie avec Elasticsearch.
 
 \subsection{Fonctionnement interne}
@@ -554,6 +554,12 @@ Ici l'idée est de faire pointer les syslogs configurés sur tous les équipemen
 un serveur, faisant tourné une instance de Logstash. Cette instance renvera ensuite 
 le flux \textit{utile} vers sa destination, ici un Elasticsearch (après une préalable
 mise en tampon dans un redis).
+\begin{figure}[H]
+\center
+\includegraphics[width=1\textwidth]{stacksimple.png}
+\label{fig:elkstack1}
+\caption{Pile ELK}
+\end{figure}
 
 Ici logstash sert donc à trié et centralisé le flux il n'est strictosensus pas indispensable
 on prend cependant de gros risque à envoyer tous nos logs d'un coup sur une machine
@@ -564,14 +570,29 @@ serveur central, ne peut plus encaiser la charge, il suffit d'en déployer un au
 et de diviser le flux des syslogs (et autres) entre ces deux serveurs \textit{centraux}.
 
 
-{\huge NEED SCHEMA !}
 \subsection{Monter à l'échelle}
-Dans de très grosses infrastructures, il est possible qu'il faille des infrastructures
-encore plus complexes
+Dans de très grosses structures, il est possible qu'il faille des infrastructures
+encore plus complexes!
 
+\begin{figure}[H]
+\center
+\includegraphics[width=0.8\textwidth]{logstashcomplex.jpg}
+\label{fig:logstashcomplex}
+\caption{Exemple de montage plus complexe}
+{\footnotesize Image de : The Logstash Book}
+\end{figure}
 
-{\huge NEED SCHEMA !}
+L'idée reste la même que dans l'infrstructure précédente, mais, on est passé en multicouche.
+C'est à dire qu'on a séparé physiquement chaque partie de l'infrstructure. 
 
-Description du schéma
+Une couche pour le \textit{cluster Elasticsearch}, une couche pour les \textit{tampons Redis}\ldots
+Chaque couche utilise plusieurs instances de leur \textit{logiciel métier}, cette redondance empêche les
+points de défaillance unique (single point of failure). Elle permet également une
+plus grande \textit{scalabilité} horizontale. 
 
+Autrement dit, si le besoin s'en fait
+sentir, il est possible avec des changements de configuration minimes de d'ajouter
+des machines dans nos couches. Il devient possible d'augmenter sans jamais l'éteindre 
+complètement la capacité de traitement de notre infrstructure. C'est la base de la
+haute disponibilité.
 
