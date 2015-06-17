@@ -11,6 +11,10 @@
 {ç}{{\c c}}1 {Ç}{{\c C}}1 {ø}{{\o}}1 {å}{{\r a}}1 {Å}{{\r A}}1
 {€}{{\EUR}}1 {£}{{\pounds}}1
 }
+\definecolor{blocs}{HTML}{0066FF}
+\definecolor{plugins}{HTML}{CC0000}
+\definecolor{special}{HTML}{CCFF33}
+\definecolor{greysou}{HTML}{A4A4A4}
 
 \lstdefinestyle{python}
 {
@@ -60,7 +64,7 @@ numbersep=3pt,
 frame=tb,
 breaklines=true
 columns=fullflexible,
-backgroundcolor=\color{black},
+backgroundcolor=\color{greysou},
 %backgroundcolor=\color{white},%for printing
 captionpos=b
 %linewidth=0.9\linewidth,
@@ -68,9 +72,6 @@ captionpos=b
 }
 
 
-\definecolor{blocs}{HTML}{0066FF}
-\definecolor{plugins}{HTML}{CC0000}
-\definecolor{special}{HTML}{CCFF33}
 
 \lstdefinestyle{logstash}{
 language=bash,
@@ -78,7 +79,7 @@ numbers=left,
 numberstyle=\tiny\color{black},
 basicstyle=\inco\color{white},
 %basicstyle=\inco\color{black},%for printing
-backgroundcolor=\color{black},
+backgroundcolor=\color{greysou},
 %backgroundcolor=\color{white},%for printing
 keywordstyle=\color{blocs},
 keywordstyle=[2]\color{plugins},
