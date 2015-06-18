@@ -1,4 +1,114 @@
+\section{Elasticsearch}
+\begin{lstlisting}[style=code,label={lst:mappingresult},caption={Exemple de mapping}]
+{
+    "firewall-2015.06.10": {
+        "mappings": { "syslog": {"properties": {
+                    "@timestamp": {
+                        "type": "date",
+                        "format": "dateOptionalTime"
+                    },
+                    "@version": {
+                    "type": "string"
+                    },
+                    "IPinside": {"type": "string"},
+                    "IPnat": {"type": "string},
+                    "IPoutside": {"type": "string"},
+                    "action": {"type": "string"},
+                    "chiffre": {"type": "integer"},
+                    "datetest": {
+                        "type": "string",
+                        "index": "not_analyzed"
+                    },
+                    "firewall": {"type": "string"},
+                    "host": {"type": "string"},
+                    "information": {"type": "string"},
+                    "logsource": {
+                        "type": "string",
+                        "index": "not_analyzed"
+                    },
+                    "message": {"type": "string"},
+                    "numero": {"type": "string"},
+                    "operation": {"type": "string"},
+                    "portin": {"type": "string"},
+                    "portnat": {"type": "string"},
+                    "portout": {"type": "string"},
+                    "program": {"type": "string"},
+                    "reste": {"type": "string"},
+                    "tags": {"type": "string"},
+                    "timestamp": {"type": "string"},
+                    "type": {"type": "string"}
+        }}}
+    }
+}
+\end{lstlisting}
+\label{lst:mappingresult}
 
+\begin{lstlisting}[style=code,label={lst:mappingput2},caption={Ajouter un template de mapping}]
+(DELETE /state-2015.05*)
+DELETE /_template/state-log
+
+PUT /_template/state-log
+{
+"template": "state-*",
+"order": 1,
+"settings": {"number_of_shards": 5},
+"mappings": {
+    "syslog": {
+        "properties": {
+            "@timestamp": {
+            "type": "date",
+            "format": "dateOptionalTime"
+            },
+            "@version": {
+            "type": "string"
+            },
+            "action": {
+            "type": "string",
+            "index": "not_analyzed"
+            },
+            "chiffre": {
+            "type": "integer"
+            },
+            "datetest": {
+            "type": "date",
+            "format": "MMM d H:m:s"              
+            },
+            "firewall": {
+            "type": "string"
+            },
+            "host": {
+            "type": "string"
+            },
+            "information": {
+            "type": "string"
+            },
+            "logsource": {
+            "type": "string",
+            "index": "not_analyzed"
+            },
+            "message": {
+            "type": "string"
+            },
+            "reste": {
+            "type": "string"
+            },
+            "tags": {
+            "type": "string"
+            },
+            "timestamp": {
+            "type": "string"
+            },
+            "type": {
+            "type": "string"
+            }
+        }
+    }
+}
+}
+\end{lstlisting}
+\label={lst:mappingput2}
+
+\section{Code en production}
 \lstinputlisting[style=logstash,label={lst:scriptdelindex},caption={Script de suppression d'index}]{../code/remove.sh}
 
 \lstinputlisting[style=logstash,label={lst:scriptkibanaservice},caption={Service simple pour kibana}]{../code/kibana/kibana.service}
@@ -7,3 +117,4 @@ indiqué, par exemple.
 
 
 \lstinputlisting[style=logstash,label={lst:scriptfinal},caption={Script de configuration général coté server central}]{../code/logstash/logstashfinal.conf}
+

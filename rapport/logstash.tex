@@ -24,7 +24,7 @@ C'est pour centraliser tout types de \gls{logs} que logstash a été créé, nou
 l'utiliserons surtout pour sa vélocité et sa grande synergie avec Elasticsearch.
 
 \subsection{Fonctionnement interne}
-L'utilisation de logstash est un pipeline qui s'articule autour de 3 \emph{blocs} 
+L'utilisation de Logstash s'articule autour de 3 \emph{blocs} 
 également appelés \emph{stages} (phase).
 \begin{itemize}
     \item   Le bloc : \emph{Inputs} génère des événements à partir des informations reçues
@@ -33,8 +33,6 @@ L'utilisation de logstash est un pipeline qui s'articule autour de 3 \emph{blocs
     \item   Le bloc : \emph{Outputs} envoie les évènements de logstash vers leur 
     prochaine destination.
 \end{itemize}
-
-Cette façon de fonctionner peut faire penser à \emph{iptables}.
 
 Logstash est un logiciel développé en Jruby\footnote{sauf mention contraire, on supposera
 dans ce rapport que logstash est développé en ruby} (Jruby est en faite une implémentation
@@ -61,19 +59,13 @@ Il est possible d'implémenter de nouveaux plugins en ruby afin de les ajouter �
 notre logstash.
 
 Il existe également un \textit{pseudo-bloc} qui peut s'insérer dans les autres, ce 
-bloc, \emph{codec} permet là de gérer la \textit{représentation des données} c'est 
+bloc, \emph{codec} permet de gérer la \textit{représentation des données} c'est 
 à dire qu'un codec est capable de lire ou d'écrire dans une syntaxe particulière 
 comme par exemple rubydebug, collectd, ou, bien plus intéressant pour nous, netflow.
 
-%wtf why?
-%et les types ??
-
-
-%Explications supplémentaires sur les filtres
-% les plugins et les patterns par défaut?
 
 \subsubsection{Tolérance de pannes}
-Vos logs sont \textbf{importants}, les traiter efficacement est la raison d'être 
+Les logs sont \textbf{importants}, les traiter efficacement est la raison d'être 
 de Logstash. Il ne souhaite pas que vous en perdiez le moindre à cause d'un problème 
 réseau ou d'une défaillance quelconque rendant la destination indisponible.
 %cf pipeline.rb et base.rb dans github
@@ -91,21 +83,10 @@ se résolve. Malheureusement cela n'est pas toujours possible d'où l'importance
 Redis en amont (ou en aval) afin de faire tampon.
 \footnote{Il existe d'autres outils que Redis, (dont ce n'est pas la fonction
 principale) pour réaliser ce travail, ils sont plus adapté mais aussi moins documentés
-dans leur utilisation avec Logstash.}
+dans leur utilisation avec Logstash.}\\[2mm] 
 
-\subsubsection{Multithread}
-Attention ces informations sont pour le moment, \textit{Jeudi 16 Avril 2015}, correctes 
-mais sont amenées à changer, notamment concernant les outputs.
 
-Chaque plugin input utilise un \gls{thread}. Cela permet d'éviter les engorgements si  
-certaines entrées sont plus longues à traiter que d'autres.
-
-Le bloc filtre entier n'utilise, par défaut, qu'un seul thread, mais, il est possible 
-d'augmenter le nombre de threads affectés au traitement des filtres avec le \gls{flag}
--w lors du démarrage de Logstash.
-
-À l'heure actuelle, le bloc output de logstash ne peut utiliser qu'un seul thread.
-Il lit donc sa queue de façon séquentielle.
+Consulter la partie sur le \textbf{multithread} p\pageref{subsec:logstashmultithread}
 
 
 \section{Installation}
@@ -141,8 +122,7 @@ Il lit donc sa queue de façon séquentielle.
 
 Sur Debian Jessie, il n'existe pas de paquet officiel logstash maintenu. Il existe,
 en revanche, un paquet tiers\fnu{https://download.elastic.co/logstash/logstash/packages/debian/logstash\_1.4.2-1-2c0f5a1\_all.deb}
-fourni par l'éditeur du logiciel. Le dit paquet n'est pas de très bonne facture  
-puisqu'il nécessite l'ajout de dépendances manuelles\footnote{wget paquet, 
+fourni par l'éditeur du logiciel. Attention, le paquet nécessite l'ajout de dépendances manuelles\footnote{wget paquet, 
 dpkg -i paquet, apt-get install -f} ainsi qu'un rechargement de 
 la configuration des services : \emph{systemctl daemon-reload}.
 
@@ -167,7 +147,7 @@ wget -qO - https://packages.elasticsearch.org/GPG-KEY-elasticsearch | sudo apt-k
 Il est d'usage dans une installation \textit{propre} de créer un utilisateur spécifique
 à notre utilisation. C'est également le cas dans notre paquet. L'administrateur 
 système doit donner à cet utilisateur, nouvellement créé les droits nécessaires 
-pour qu'il puisse faire son travail correctement correctement. Dans le cadre de 
+pour qu'il puisse faire son travail correctement. Dans le cadre de 
 l'analyse de logs, faire de l'utilisateur logstash un membre du groupe \emph{adm}. 
 Le groupe d'administration de Debian lui permettra, par exemple, d'avoir accès en 
 lecture à la plupart des fichiers de \ipath{/var/log/}.
@@ -319,7 +299,7 @@ output {
 Cet exemple de code ne doit pas être utilisé : c'est une boucle infinie.
 Il permet en revanche, d'expliquer de nombreux points de fonctionnement de la syntaxe
 du fichier de configuration de Logstash.
-Ce code représente, en faite, {\bfseries 2 fichiers}, mail.conf et shipping.conf, tout
+Ce code représente, en fait, {\bfseries 2 fichiers}, mail.conf et shipping.conf, tous
 deux situés dans le répertoire par défaut des fichiers de configuration de Logstash
 \ipath{/etc/logstash/conf.d/}. Ils sont lus par ordre alphabétique et concaténés 
 (comprendre que les inputs ainsi que les outputs sont fusionnés, il faut donc être
@@ -343,7 +323,7 @@ directives, mais avec une syntaxe commune.
 
 La plupart des directives de plugins se comportent ainsi, pas toutes. Nous
 verrons quelques exemples dans des configurations plus avancées. Dans tout les cas, il
-est indispensable de se référer à la documentation pour toute primo utilisation d'un
+est indispensable de se référer à la documentation pour toute première utilisation d'un
 plugin.
 
 
@@ -428,19 +408,11 @@ même adresse. Le contenu de l'événement se modifiera en permanence puisque le
 sera encapsulé dans son prédécesseur \ldots
 
 \subsection{Expressions régulières et patterns}
-Les expressions régulières utilisées par Logstash dans le plugin grok utilisent le 
-moteur Oniguruma dont les spécifications sont disponibles à cette 
-\href{http://www.geocities.jp/kosako3/oniguruma/doc/RE.txt}{adresse}\footnote{http://www.geocities.jp/kosako3/oniguruma/doc/RE.txt, 
-si des symboles \textbf{ \textyen} apparaissent vous avez probablement un problème d'UTF8 sur 
-votre navigateur, ils correspondent à des \textbf{ \textbackslash}}.
-Ruby n'utilise plus Oniguruma depuis la version 2.0 mais son fork Onigmo\footnote{
-dixit Wikipédia https://en.wikipedia.org/wiki/Oniguruma}. Mais cette évolution ne
-s'applique pas à Logstash puisque ce dernier est codé en Jruby.
 
 \subsubsection{Les expressions régulières de Grok}
-Ce moteur permet des manipulations avancées d'expressions régulières, ce n'est pas 
-l'objet de ce projet de les présenter. Nous nous contenterons simplement d'utiliser
-des syntaxes assez classiques d'expressions régulières à l'exception des named groups. 
+Le moteur d'expression régulière de ruby\footnote{Oniguruma, présenté p\pageref{subsec:logstashregexengine}} est très puissant. 
+Nous allons ici présenter les \emph{named groups}, une fonctionnalité assez avancé présente dans ce moteur.
+
 Ces derniers permettent avantageusement de ne pas utiliser les patterns, ou plutôt d'en créer
 de nouveaux sans modifier les fichiers de Logstash.
 {\footnotesize(Grok est le plugin dont on se servira le plus avec Logstash, c'est 
@@ -456,14 +428,13 @@ Grok créera rangera automatiquement une chaine de caractères, satisfaisant la 
 \ipath{/[a-zA-Z0-9.\_-]+/}  dans un champ  username. 
 Ce champ pourra être réutiliser ultérieurement par Logstash ou même Elasticsearch.
 
-
-\subsubsection{Les patterns}
-Logstash mets en place un système très utile et très facile à utiliser de patterns 
+\subsubsection{Les patterns de Grok}
+Logstash\footnote{certains patterns sont bien utilisables en dehors de grok} met en place un système très utile et très facile à utiliser de patterns 
 (motifs). Ces patterns correspondent à des mots clefs représentant des expressions 
-régulières ou bien des concaténations d'expressions régulières ou de patterns.
+régulières ou bien des concaténations d'expressions régulières et/ou de patterns.
 
-La compréhension des patterns est simple et presque instantanée si l'on connait les
-expressions régulières.
+Pour mieux comprendre en voici quelques exemples. 
+
 \begin{lstlisting}[style=logstash,label={lst:patternsexplication1},caption={Exemple de définition et d'utilisation de Patterns}]
 CISCOMAC (?:(?:[A-Fa-f0-9]{4}\.){2}[A-Fa-f0-9]{4})
 WINDOWSMAC (?:(?:[A-Fa-f0-9]{2}-){5}[A-Fa-f0-9]{2})
@@ -472,18 +443,15 @@ COMMONMAC (?:(?:[A-Fa-f0-9]{2}:){5}[A-Fa-f0-9]{2})
 MAC (?:%{CISCOMAC}|%{WINDOWSMAC}|%{COMMONMAC})
 \end{lstlisting}
 
-Grok peut également utiliser ces patterns mais leur fonctionnement est général dans
-Logstash.
-On comprends bien dans le code précédent le fonctionnement des patterns : il est
+On comprend bien en lisant le code précédent le fonctionnement des patterns : il est
 très similaire à celui des \textit{named groups} : définition d'un nom, expression
-régulière associée. On les utilise en invoquant leur nom entouré par \%{} 
-Il sont utilisables ensemble comme dans l'exemple ci-dessus avec les adresses MAC,
-ou (beaucoup) plus bas dans l'explication du fonctionnement de l'architecture.
+régulière associée. 
+
+On les utilise en invoquant leur nom entouré par \%{} 
 
 Nous n'avons pas créé de nouveaux patterns pour notre projet et préféré l'utilisation
-des expressions régulières. Cela reste cependant possible en modifiant les fichiers 
+des expressions régulières (named groups). Cela reste cependant possible en modifiant les fichiers 
 paramétrant ces patterns. Ils sont par défaut situés dans \ipath{/opt/logstash/patterns}.
-
 
 
 \subsection{Les flags}
@@ -491,11 +459,11 @@ Les \emph{flags} sont les noms donnés aux paramètres que l'on peut donner au b
 de Logstash.
 
 \begin{itemize}
-    \item -f : file, désigne le fichier de configuration à utiliser
+    \item -f : file, désigne le fichier de configuration à utiliser;
     \item -e : permet d'utiliser une chaine de caractères (depuis la console) pour
-    pour configurer Logstash, à utiliser pour faire des tests de configuration simples.
+    pour configurer Logstash, à utiliser pour faire des tests de configuration simples;
     \item -w : filterworkers, comme expliqué plus haut, permet d'affecter plusieurs
-    threads à la gestion des filtres. (par défaut 1)
+    threads à la gestion des filtres. (par défaut 1);
     \item - -configtest : associé à -f \ipath{path/to/conffile} vérifie la syntaxe 
     du fichier de configuration.
 \end{itemize}

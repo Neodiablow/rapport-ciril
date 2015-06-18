@@ -6,6 +6,9 @@
 \includegraphics[width=0.2\textwidth]{elasticsearch.png}
 \label{fig:elasticsearchlogo.png}
 \end{figure}
+\section{Introduction}
+%Elasticsearch est notre backend, la colonne vertebrale de notre installation.
+%C'est lui qui est capable d'analyser la masse de donnée
 
 \section{Présentation de Elasticsearch}
 Elasticsearch est moteur de recherche et d'analyse en temps réel. Il permet l'exploration
@@ -26,7 +29,7 @@ atouts d'Elasticsearch réside dans son aptitude à pouvoir passer à l'échelle
 \footnotesize{\emph{Attention, ce chapitre ne sera qu'une présentation très succinte des possibilités 
 du logiciel Elasticsearch, tout détailler nécessiterait \emph{sans doutes} des milliers
 de pages, le résumé officiel\footnote{Elasticsearch : The Definitive Guide, disponible 
-chez Pearson et Github https://github.com/elastic/elasticsearch-definitive-guide}
+chez Pearson et Github}
 en fait déjà \emph{plus de 950} \ldots}}
 
 \section{Installation}
@@ -52,68 +55,11 @@ p24-26
  test
 
 
-\section{Sense}
-Sense est un module chrome développé par Boaz Leskes. Il sert de client à ElasticSearch
-pour éviter d'avoir à le manipuler directement via curl.
-
-Le développement (public) de ce module est arrêté depuis son intégration dans \emph{Marvel} 
-le logiciel de monitoring et d'optimisation, vendu\footnote{voir basde page : 
-\url{https://www.elastic.co/products/marvel/signup.html}} par la société \emph{elastic}.
-
-
-\subsection{Installation}
-C'est simple comme installer une extension Chrome\footnote{testé sur chromium} tierce.
-Tout d'abord : récupérer le module à l'adresse \url{https://github.com/bleskes/sense}
-en utilisant par exemple : 
-\begin{lstlisting}[style=code,label=lst:gitclonesense]
-git clone https://github.com/bleskes/sense.git
-\end{lstlisting}
-
-Il suffit ensuite de l'activer dans chromium :\\ 
-chrome://extension => Developer mode => Load unpacked extension.
-\begin{figure}[H]
-\center
-\includegraphics[width=12cm]{senseinstall.png}
-\label{fig:senseinstall}
-\caption{Plugin Sense installé dans chromium}
-\end{figure}
-Et voilà ! \footnotesize{(avec un accent anglais)}
-\subsection{Utilisation de Sense}
-Voic l'interface de Sense :
-
-\begin{figure}[H]
-\center
-\includegraphics[width=15cm]{sensegui.png}
-\label{fig:sensegui.png}
-\caption{Vue générale de Sense}
-\end{figure}
-
-La difficulté se situe évidemment plutôt du coté de l'appréhension, la configuration
-et l'optimisation de Elasticsearch.
-
-Nous allons avec l'image ci-dessous \ref{fig:sensegui2.png} brièvement expliquer le fonctionnement de Sense
-\begin{figure}[H]
-\center
-\includegraphics[width=15cm]{sensegui2.png}
-\label{fig:sensegui2.png}
-\caption{Zoom sur les fonctionnalités de Sense}
-\end{figure}
-Le formulaire \textbf{Server} situé en haut correspond à l'adresse et au port d'écoute 
-de l'instance Elasticsearch sur laquelle on souhaite travailler.
-
-Le panneau de gauche correspond au \textbf{panneau de requête}. On utilise l'api 
-REST d'Elasticsearch pour envoyer des requêtes (recherches, modifications\ldots 
-une présentation de l'API est réalisé ultérieurement). Il est à noté que le panneau 
-de gauche est doté d'une autocomplétion pour les fonctions et les éléments standards 
-d'Elasticsearch.
-
-Le panneau de droite est le \textbf{panneau de réponse} aux requêtes. Les informations
-nous parviennent en JSON.
 
 \section{La théorie}
-{\huge A compléter}
+{%\huge A compléter}
 
-\subsection{Approximation et comparaison avec le modèle relationnel}
+%\subsection{Approximation et comparaison avec le modèle relationnel}
 La comparaison entre Elasticsearch et une base de données n'est pas forcement heureuse,
 c'est un moteur de recherche (d'indexation), pas une base de données. 
 %Il utilise donc la notion d'index qu'on peut cependant assez facilement comparer au modèle relationnel.
@@ -293,7 +239,7 @@ Il est très fréquent (et souvent nécessaire) de formater une partition de swa
 que le système puisse optimiser son fonctionnement. C'est très pratique pour ne pas
 saturer la mémoire RAM de nos machines de bureau, notamment quand on voit la consommation
 pantagruélique de certains navigateurs internet récents. Les fichiers qui ne sont 
-susceptible de ne pas être utilisé avant un long moment sont parfois stockés sur le
+susceptibles de ne pas être utilisés avant un long moment sont parfois stockés sur le
 disque dur afin de libérer de l'espace pour d'autres applications, la swap est
 également utilisé lorsque l'on met un ordinateur en veille \ldots
 
@@ -302,8 +248,8 @@ de notre environnement, et de plus nous voulons que le service Elasticsearch soi
 le plus véloce possible, pour se faire il faut au contraire l'empêcher au maximum 
 d'utiliser la partition de swap (forcément plus lente).
 
-Il existe plusieurs façon de faire (y compris ne pas utiliser de partition de swap)
-celle que j'ai choisie d'utiliser est de modifier la variable \ipath{vm.swapiness}
+Il existe plusieurs façon de faire (y compris ne pas utiliser de partition de swap).
+Celle que j'ai choisie d'utiliser est de modifier la variable \ipath{vm.swapiness}
 dans le fichier \ipath{/etc/sysctl.conf}. La swapiness représente le pourcentage
 de mémoire RAM restant à partir duquel on commence à envoyer de informations en
 swap.
@@ -383,8 +329,11 @@ faire ingérer à un cluster Elasticsearch dimesinonné en conséquence le momen
 
 
 \section{Les API Elasticsearch}
-Elasticsearch est énorme, mais être assez facilement utilisable par le 
-plus grand nombre, des \gls{API} \emph{optimisées} pour chaque tâches ont été conçues.
+Elasticsearch est énorme, mais peut être assez facilement utilisable par le 
+plus grand nombre grâce aux \gls{API} \emph{optimisées} pour chaque tâches qui ont été implémentées.\\[2mm]
+Pour faciliter l'utilisation des différentes APIs il est conseillé d'utiliser \textbf{Sense},
+cet outil est présenté p\pageref{subsec:elasticsense}
+
 
 \subsection{API REST}
 Cette API sert à la communication avec Elastisearch, comme toutes les API REST elle
@@ -399,19 +348,17 @@ On pourrait procéder comme suit pour ajouter le premier.
 \begin{lstlisting}[style=code,label={lst:RESTexemple1curl},caption={Avec curl}]
 curl -XPUT http://100.127.255.1:9200/twitter/tweet/1
 \end{lstlisting}
-Voici le résultat en utilisant curl, directement en ligne de commande, par 
-navigateur, \ldots
+%Voici le résultat en utilisant curl, directement en ligne de commande, par 
+%navigateur, \ldots
 
 \begin{lstlisting}[style=code,label={lst:RESTexemple1sense},caption={Avec Sense}]
 PUT /twitter/tweet/1
 \end{lstlisting}
 
 Voici la syntaxe que nous obtiendrions en utilisant Sense, puisque notre serveur 
-et notre port sont déjà renseignés, la syntaxe est bien plus courte.
+et notre port sont déjà renseignés. Nous utiliserons par convention cette syntaxe plus courte.
 
-La directive PUT est utilisé pour renseigner de nouvelles informations dans Elasticsearch.
-
-
+La directive \textbf{PUT} est utilisé pour renseigner de nouvelles informations dans Elasticsearch.\\[3mm]
 Dans notre projet d'analyse de logs, il est fréquent que nous dussions supprimer 
 des index, notamment dans le cas du paramétrage des \emph{mappings}, mais également
 pour soulager notre infrastructure du poids des logs de firewall (~20-30Go/jours).\\
@@ -419,36 +366,34 @@ pour soulager notre infrastructure du poids des logs de firewall (~20-30Go/jours
 \textbf{DELETE  {\color{grey} http://100.127.255.1:9200}/{\color{red}twitter}/}\\
 
 Si nous avions un index twitter journalier il serait possible d'utiliser une commande
-très similaire pour supprimer tous les indexs d'un seul coup :\\
+très similaire pour supprimer tous les index d'un seul coup :\\
 
 \textbf{DELETE  {\color{grey} http://100.127.255.1:9200}/{\color{red}twitter*}}\\
 
-La directive DELETE est utilisé pour supprimer des informations d'Elasticsearch.\\
+La directive \textbf{DELETE} est utilisé pour supprimer des informations d'Elasticsearch.\\
 
 
-Enfin la directive GET qui sert à récupérer des information, à tout niveaux, index,
-type, mapping, type par défaut \ldots, en revanche il faut avoir un identifiant exact,
-ce n'est pas un outils de recherche (abordé dans la section suivante).\\[5mm]
+La directive \textbf{GET} sert à récupérer des information à tout niveaux: index,
+type, mapping\ldots Il faut par contre avoir l'identifiant exact de la ressource à laquelle on souhaite accéder pour utiliser cette directive.
+Ce n'est pas un outils de recherche\footnote{Outils de recherche abordé dans la section suivante}.\\[3mm]
 \textbf{GET  {\color{grey} http://100.127.255.1:9200}/{\color{red}twitter}/{\color{cyan}tweet}/{\color{yellow}1}}\\
 
-Les information récupérées le sont en JSON.
+Les réponses d'Elasticsearch sont en \textbf{JSON}. 
+
 
 \subsection{Les API de recherche}
-DSL pour Domain Specific Language, parce que Elasticsearch est avant tout un moteur 
-de recherche, il dispose de puissantes fonctionnalités de recherche. Il dispose donc
-de son propre langage d'interrogation le QueryDSL. C'est loin d'être un cas unique,
-par exemple Puppet dispose également de son propre langage de configuration.
+%DSL pour Domain Specific Language, parce que Elasticsearch est avant tout un moteur 
+%de recherche, il dispose de puissantes fonctionnalités de recherche. Il dispose donc
+%de son propre langage d'interrogation le QueryDSL. C'est loin d'être un cas unique,
+%par exemple Puppet dispose également de son propre langage de configuration.
 
 Il existe plusieurs API (ou méthodes) de recherche dans Elasticsearch nous les  
-détaillerons plus en détail après avoir expliquer le fonctionnement général d'une
-recherche dans Elasticsearch.
+détaillerons plus en détail l'API searchLite après avoir expliqué le fonctionnement général d'une recherche dans Elasticsearch.
 
 La recherche dans Elasticsearch est particulièrement efficace, car Elasticsearch 
-indexe tout le contenu de ses documents (il indexe chaque field, en fonction d'un
-mapping (discuté plus bas)).
-C'est pour permettre l'indexation qu'Elasticsearch utilise du JSON structuré.
-
-
+indexe tout le contenu de ses documents (il indexe chaque champ, en fonction d'un
+mapping particulier\footnote{explication sur le mapping p\pageref{sec:mappingetanalys}}).
+%C'est pour faciliter l'indexation qu'Elasticsearch utilise du JSON structuré.
 
 \subsubsection{Empty Search}
 C'est la forme la plus basique de l'API de recherche, on ne spécifie pas de requête
@@ -502,7 +447,7 @@ Quelques explications :
 L'élément hits contient des informations sur la requête et les réponse à la requête.
 \textit{total} représente le nombre total de documents retournés pour cette requête, ici le 
 nombre total de documents indexés: 353585048. 
-Cela signifie qu'au moment de la requête il y avait environ 353 millions de lignes
+Cela signifie qu'il y avait environ 353 millions de lignes
 de logs indexés dans notre Elasticsearch au moment de la requête.
 
 Les réponses à la requête nous sont renvoyées dans l'array \textit{hits}, par défaut
@@ -519,24 +464,24 @@ Enfin on remarque que le source (tous les champs indexés) de chaque document es
 dans la réponse à la requête.
 
 \paragraph{took}
-Took est le temps en millisecondes pris pour effectué cette requête, ici 798
+Took est le temps en millisecondes pris pour effectué cette requête, ici 798ms
 
 \paragraph{shard}
 L'élément \_shards, nous indique le nombre de shards utilisé lors de la requête. 
-Dans combien de shards tout c'est bien passé, dans combien il y a eu des erreurs,
-les erreurs sont très peu probables, cela se produit généralement sur un cluster 
-de plusieurs machines, lorsque plusieurs d'entre elles sont inacessibles (il faut 
-que les primary et replica d'un shard soient inaccessible en même temps).
+Dans combien de shards tout c'est bien passé, dans combien il y a eu des erreurs.
+Les erreurs sont très peu probables, cela se produit généralement sur un cluster 
+de plusieurs machines, alors que plusieurs d'entre elles sont inacessibles (il faut 
+que les primary et replica d'un shard soient inaccessible en même temps). Cela peut aussi produire sur un serveur surchargé (les temps d'accèstrop long feront croire à Elasticsearch que le shard est inaccessible).
 
 \paragraph{timeout}
 Il est possible d'effectuer une recherche \textit{par timeout}, cela signifie que 
 Elasticsearch va effectuer sa recherche de façon classique, mais que lorsque le temps
-nécessaire à la recherche dépassera un temps déterminé, il renvera les informations 
-qu'il a eu le temps de rassembler, toujours dans l'ordre qui lui semble le plus pertinant
+autorisé pour la recherche est dépassé, il renvera les informations 
+qu'il a eu le temps de rassembler. Toujours dans l'ordre qui lui semble le plus pertinant
 (ordonné par score). Attention cependant, cela ne nous absouds pas pour autant du
 coût de la recherche. Si les shards renvoient bien les résultats pertinents au moment
 souhaité, cela n'arrête pas pour autant la requête qui finira de s'executer en arrière
-plan.
+plan même si les résultats ne sont pas pris en compte.
 
 \begin{lstlisting}[style=code,label={lst:APIsearchemptyexample3},caption={Une recherche "vide" avec timeout}]
 GET /_search?timeout=10ms
@@ -565,13 +510,15 @@ GET /_search?size=5&from=10
 
 
 \subsubsection{Search Lite}
-Comme expliqué avant il existe deux forme d'API de recherche. L'API lite avec requête
+\label{subsec:elasticsearchlite}
+Comme expliqué avant il existe deux formes d'API de recherche. L'API lite avec requête
 en chaine de caractères \textit{(string query)} et l'API \textit{"full body request"},
-qui nécessite comme corps de la requête, du JSON.
+qui nécessite comme corps de la requête, du JSON\footnote{Voir la documentation}.
 
-Pour utiliser la recherche SearchLite, nécessite simple d'ajouter en sus de notre
-empty search \emph{?q=} et la requête. Attention si vous utilisez cette API avec 
-curl il pourrait être nécessaire d'utiliser la syntaxe http (\%2B pour + par exemple).
+Utiliser la recherche SearchLite, nécessite simple d'ajouter à notre
+empty search \emph{?q=} puis la requête. 
+\emph{Attention, si vous utilisez cette API avec 
+curl, \emph{il pourrait être nécessaire d'utiliser la syntaxe http} (\%2B pour + par exemple)}.
 
 \begin{lstlisting}[style=code,label={lst:APIsearchliteexample1},caption={Exemples simples}]
 GET /_search?q=epinal
@@ -603,8 +550,8 @@ le terme recherché, mais n'était pas discriminante.
 Avec ces symboles, on exclu les réponses qui ne se conforment pas à nos exigences.
 
 
-La précense des \textbf{*} sera explicité dans la partie sur la recherche full text
-{\scriptsize \textit{(prise d'Aspirine\texttrademark conseillée)}}.
+La présence des \textbf{*} est une sorte de globbing, nécessaire lorsque l'on fait
+une recherche fulltext 
 
 
 Il existe un autre moyen d'influencer la pertinence des résultats (de faire remonter
@@ -635,7 +582,7 @@ GET /_search?q=+logsource:*epinal* -logsource:sw* (timestamp:=<Jun)^10 Power
 \end{lstlisting}
 
 SearchLite accepte les opérateur $< > =< =>$ et Elasticsearch est capable de les 
-interprété pour peu que le champ soit \textit{mappé comme date}(cf Mapping).
+interpréter pour peu que le champ soit \textit{mappé comme date}(cf Mapping).
 
 Il est possible d'utiliser les opérateurs logiques \textbf{OR} et \textbf{AND} 
 dont l'utilisation est assez évidante \ldots
@@ -650,14 +597,15 @@ Remarque générale, les syntaxes présentées jusqu'à présent son utilisables
 quelles dans Sense, et en retirant \ipath{GET /\_search?q=} dans Kibana.
 
 
-\subsubsection{Full-Body Search et QueryDSL}
-{\huge TODO!}
+%\subsubsection{Full-Body Search et QueryDSL}
+%{\huge TODO!}
 
 \section{Le mapping et l'analyse}
+\label{sec:mappingetanalys}
 \subsection{Mapping}
-Le mapping est strictement comparable au schéma d'une base, dans le modèle relationnel.
-Le mapping définit donc le "type" de nos "champs", attention on fait rentrer dans 
-le mapping plus que dans le schéma d'une base (analyse, indexation, \ldots).
+Le mapping est \textbf{comparable au schéma d'une base, dans le modèle relationnel}.
+Le mapping définit donc le "type" de nos "champs". Attention on fait rentrer dans 
+le mapping plus, que dans le schéma d'une base (analyse, indexation, \ldots).
 
 Il y'a un mapping différent par index (il existe aussi des templates, applicable 
 à plusieurs index). Pour accéder au mapping d'un index il suffit dans Sense de lancer
@@ -667,50 +615,8 @@ la requête suivante.
 GET /firewall-2015.05.07/_mapping
 \end{lstlisting}
 
-Et voici un résultat :
+Voir un \textbf{exemple de mapping} : p\pageref{lst:mappingresult}\\[2mm]
 
-\begin{lstlisting}[style=code,label={lst:mappingresult},caption={Exemple de mapping}]
-{
-    "firewall-2015.06.10": {
-        "mappings": { "syslog": {"properties": {
-                    "@timestamp": {
-                        "type": "date",
-                        "format": "dateOptionalTime"
-                    },
-                    "@version": {
-                    "type": "string"
-                    },
-                    "IPinside": {"type": "string"},
-                    "IPnat": {"type": "string},
-                    "IPoutside": {"type": "string"},
-                    "action": {"type": "string"},
-                    "chiffre": {"type": "integer"},
-                    "datetest": {
-                        "type": "string",
-                        "index": "not_analyzed"
-                    },
-                    "firewall": {"type": "string"},
-                    "host": {"type": "string"},
-                    "information": {"type": "string"},
-                    "logsource": {
-                        "type": "string",
-                        "index": "not_analyzed"
-                    },
-                    "message": {"type": "string"},
-                    "numero": {"type": "string"},
-                    "operation": {"type": "string"},
-                    "portin": {"type": "string"},
-                    "portnat": {"type": "string"},
-                    "portout": {"type": "string"},
-                    "program": {"type": "string"},
-                    "reste": {"type": "string"},
-                    "tags": {"type": "string"},
-                    "timestamp": {"type": "string"},
-                    "type": {"type": "string"}
-        }}}
-    }
-}
-\end{lstlisting}
 
 
 On remarque que beaucoup de champs ont pour type \textbf{string}, c'est le type choisi
@@ -766,102 +672,43 @@ PUT /firewall-2015.05.07/
 \end{lstlisting}
 
 La requête entière est trop longue pour être affiché, donne une idée de la forme.
-Une méthode efficace pour générer la sienne est d'utiliser celle créer par Elasticsearch
-par défaut puis de la raboter et de la modelé à notre convenance.
+Une méthode efficace pour générer la sienne est d'utiliser le mapping créé par Elasticsearch
+par défaut puis modeler notre requête à notre convenance à partir de ce squelette.
 
 Cette méthode est pratique pour faire des tests mais elle ne concerne qu'un seul 
 index. Dans le projet nous travaillons avec de multiples index, il sera plus pratique
 d'utiliser les templates pour que le même modèle s'applique partout où nous le souhaitons.
 
-Autre remarque, si vous faites la manipulations ci-dessus dans un environnement de 
-production, il y a toutes les chanches pour que Elasticsearch vous renvoie une erreur.
-En effet Logstash créer par défaut de nouveaux index. Si on supprime l'index du  
-jour (on perd les données), il sera recréer avec le template par défaut presque 
-instantanément puisque logstash reçoit environ \textbf{500logs/s}. Pendant les tests
-il peut être utile d'éteindre Logstash.
+Autre remarque, \textbf{si vous faites la manipulation ci-dessus dans un environnement de 
+production, il y a toutes les chanches pour qu'Elasticsearch vous renvoie une erreur}.
+Par défaut Logstash créé de nouveaux index si rien n'existe pour accueillir les logs qu'il envoie à Elasticsearch. Ainsi, si on supprime l'index du jour (on perd les données), mais un autre index du même nom sera recréer avecle template par défaut presque 
+instantanément puisque Logstash reçoit (dans notre cas) environ \textbf{500logs/s}. 
+Pendant les tests il peut être judicieu d'éteindre Logstash.
 
+
+Un template sera ici le mapping par défaut utilisé par une certaine forme d'index, une sorte de modèle.
 Pour créer un template, il faut simplement supprimer l'ancien et écrire le nouveau.
-Il est également conseillé de supprimer les anciens indexs utilisant un mapping 
-différents. Ils seront \textbf{toujours utilisables dans Sense}, mais seront 
-\textbf{incohérents aux yeux de Kibana} et empêcheront de faire des recherches.
+Il est également conseillé de supprimer les anciens index utilisant un mapping 
+différent. Ils seront \textbf{toujours utilisables dans Sense}, mais seront 
+\textbf{incohérents aux yeux de Kibana} et empêcheront de faire des recherches
+\footnote{Faire des recherches avec des mappings différents, c'est comme faire des opérations dans des bases différentes}.\\[2mm]
 
 
-\begin{lstlisting}[style=code,label={lst:mappingput2},caption={Ajouter un template de mapping}]
-(DELETE /state-2015.05*)
-DELETE /_template/state-log
+Voir un exemple de \textbf{création de template} p\pageref{lst:mappingput2}\\[2mm]
 
-PUT /_template/state-log
-{
-"template": "state-*",
-"order": 1,
-"settings": {"number_of_shards": 5},
-"mappings": {
-    "syslog": {
-        "properties": {
-            "@timestamp": {
-            "type": "date",
-            "format": "dateOptionalTime"
-            },
-            "@version": {
-            "type": "string"
-            },
-            "action": {
-            "type": "string",
-            "index": "not_analyzed"
-            },
-            "chiffre": {
-            "type": "integer"
-            },
-            "datetest": {
-            "type": "date",
-            "format": "MMM d H:m:s"              
-            },
-            "firewall": {
-            "type": "string"
-            },
-            "host": {
-            "type": "string"
-            },
-            "information": {
-            "type": "string"
-            },
-            "logsource": {
-            "type": "string",
-            "index": "not_analyzed"
-            },
-            "message": {
-            "type": "string"
-            },
-            "reste": {
-            "type": "string"
-            },
-            "tags": {
-            "type": "string"
-            },
-            "timestamp": {
-            "type": "string"
-            },
-            "type": {
-            "type": "string"
-            }
-        }
-    }
-}
-}
-\end{lstlisting}
-On constate que certains champs sont analysés et d'autres non, ces choix apparaitrons
-plus clair après la partie concernant l'analyse.
-Du point de vue mapping on peut noté que integer est également un type valable (liste 
+%On constate que certains champs sont analysés et d'autres non, ces choix apparaitrons
+%plus clairs après la partie concernant l'analyse.
+Du point de vue mapping on peut noter que integer est également un type valable (liste 
 exhaustive dans la documentation), on constate aussi que le type date (un type particulier
-de string) qui \textbf{ne peut pas} être analysé, supporte plusieurs formats, définis
-d'après la \hyperref[http://joda-time.sourceforge.net/api-release/org/joda/time/format/DateTimeFormat.html]{norme JAVA}.
-Avec quelques types prédéfinis \hyperref[https://www.elastic.co/guide/en/elasticsearch/reference/1.5/mapping-date-format.html]{ici}.
+de string), qui \textbf{ne peut pas} être analysé, supporte plusieurs formats, définis
+d'après la \hyperref[http://joda-time.sourceforge.net/api-release/org/joda/time/format/DateTimeFormat.html]{norme JAVA}\footnote{http://joda-time.sourceforge.net/api-release/org/joda/time/format/DateTimeFormat.html}.
+Avec quelques types prédéfinis \hyperref[https://www.elastic.co/guide/en/elasticsearch/reference/1.5/mapping-date-format.html]{ici}\footnote{https://www.elastic.co/guide/en/elasticsearch/reference/1.5/mapping-date-format.html}.
 
 
 \subsection{Analyse}
 On remarque que certains champs ont également un \textbf{index: "not\_analyzed"}.
 Tous n'en n'ont pas car il est souvent plus intéressant d'avoir des champs analysés.
-Et par défaut les champs sont analysés.
+Et par défaut tous les champs sont analysés.
 
 Il existe trois niveaux d'indexation:
 \begin{itemize}
@@ -883,83 +730,19 @@ recherchable, puis assainissement de ces termes en enlevant par exemple les maju
 ou en retirant les termes non pertinents (le, la, les, des \ldots), voir même en 
 remplaçant des synonymes.
 
-En faite le processus compte trois étapes. Tout d'abord le \emph{filtrage de caractères}
+En fait le processus compte trois étapes. Tout d'abord le \emph{filtrage de caractères}
 (faire disparaitre les / ou transformer \& en et. La tokenization (\textit{termisation}
 en traduction approximative), créer un terme pour chaque chaine de caractère séparer
 par un espace, une virgule, un point, \ldots{} (paramétrable cf doc). Enfin le filtre
-de termes, (décris dans l'assainissement au dessus).
+de termes, (décris dans l'assainissement au dessus).\\[2mm]
+
+Le fonctionnement des \textbf{recherches full text} est expliqué plus en détail p\pageref{subsec:elasticfulltext}
 
 
+\section{Conclusion}
+Nous savons maintenant ranger nos données de façon efficace dans Elasticsearch cela va nous permettre de créer des index faciles à analyser et à \textit{requêter} avec Kibana. Cette partie est probablement la pluscomplexe et la plus importante mais aussi la moins user-friendly. 
+Construire un mapping n'est pas facile et nécessite de bien comprendre anticiper l'exploitation que l'on souhaite faire de ses données.
 
-\subsubsection{Full text}
-Le full text s'oppose aux valeurs exacts.
-Les champs non analysés sont traités comme des valeurs exacts.
-Comme expliqué plus haut, les chiffres, les booléens, les dates, sont des valeurs 
-exacts. Il est possible qu'une chaine de caractère en soit une aussi.
-
-\textbf{"Le chien"} est différent de \textbf{"le chien"} ou encore de \textbf{"Lechien"}.
-
-Pour le full text la notion d'index et d'analyseur est primordiale. L'analyseur va
-décidé de comment les différents membres de la chaine de caractère vont être considérés.
-Après cette étape ces membres vont être indexés et une recherche les renverra par 
-popularité décroissante.
-
-Puisqu'un exemple vaut mieux qu'un long discours, je vais m'inspiré de ceux donnés
-dans \textit{"The Definitive guide to Elasticsearch"}.
-
-
-Considérons 2 phrases :
-\begin{itemize}
-    \item The quick brown fox jumped over the lazy dog
-    \item Quick brown foxes leap over lazy dogs in summer
-\end{itemize}
-
-\begin{figure}[H]
-\center
-\begin{tabular}{|l||c|c|}
-\hline
-\textbf{Termes}   & \textbf{P1}    & \textbf{P2}\\ \hline  
-Quick   &       &  X\\ \hline  
-The     &   X   &   \\ \hline
-brown   &   X   &  X\\ \hline
-dog     &   X   &   \\ \hline
-dogs    &       &  X\\ \hline
-fox     &   X   &   \\ \hline
-foxes   &       &  X\\ \hline
-in      &       &  X\\ \hline
-jumped  &   X   &   \\ \hline
-lazy    &   X   &  X\\ \hline
-leap    &       &  X\\ \hline
-over    &   X   &  X\\ \hline
-quick   &   X   &   \\ \hline
-summer  &       &  X\\ \hline
-the     &   X   &  X\\ \hline 
-\end{tabular}
-\caption{Index des phrase}
-\end{figure}
-Lors d'une recherche full text, Elasticsearch va créer ce genre de listes.
-
-Si je cherche \emph{quick brown}, le tableau ressemblerait à cela 
-
-
-\begin{figure}[H]
-\center
-\begin{tabular}{|l||c|c|}
-\hline
-\textbf{Termes}   & \textbf{P1}    & \textbf{P2}\\ \hline  
-brown   &   X   &  X\\ \hline
-quick   &   X   &   \\ \hline \hline
-Total   &   2   &  1 \\ \hline
-\end{tabular}
-\caption{Index correspondant à une recherche}
-\end{figure}
-
-On voit donc bien que la phrase la plus populaire est la phrase 1. On constate également
-que Elasticsearch \emph{fait une différence entre \emph{Quick} et \emph{quick}}. 
-Cela est est réglable (on peut, ne pas tenir compte de la casse).
-Ce qu'il faut retenir c'est que pour discriminer efficacement, il est aussi possible
-d'utiliser des syntaxe comme +fox, de même on peut faire une recherche avec un bloc
-de deux termes pour être plus efficace : "over the" qui n'existe que dans P1.
 
 
 %\section{Plus d'information }

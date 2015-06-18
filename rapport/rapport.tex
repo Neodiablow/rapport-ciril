@@ -90,12 +90,12 @@ Je tiens tout d'abord à remercier Vincent \textsc{Delove} mon maître de stage 
 m'avoir proposé le sujet, mais également pour son support, ses conseils, sa patience
 et sa disponibilité.
 \\[2cm]
-Je remercie également Emanuel \textsc{Nataf} mon tuteur pour  son intérêt pour mon 
-sujet ainsi que les marges de manoeuvres qu'il a su me laisser.
+Je remercie également Emanuel \textsc{Nataf} mon tuteur pour l'intérêt qu'il a porté au 
+sujet ainsi que les marges de manœuvres qu'il a su me laisser.
 \\[1cm]
 Merci à toute l'équipe du réseau Lothaire pour son accueil chaleureux et son soutien.
 Je remercie plus particulièrement  Luc \textsc{Didry} et Stéphane \textsc{Fetter} pour leur
-aide, en général, et  notamment en système et la correction.
+aide, en général, et  notamment en système.
 
 %Page table des matières
 \setcounter{tocdepth}{1}
@@ -105,7 +105,7 @@ aide, en général, et  notamment en système et la correction.
 %Introduction
 \part{Introduction}
 
-\chapter{Introduction}
+\chapter{Sujet du stage}
 \section{Problématique}
 La gestion de \gls{logs} est une problématique commune à presque tous les services informatiques,
 tous les fournisseurs de services et plus globalement, toute personne gérant une infrastructure 
@@ -125,17 +125,17 @@ Avec des milliers de lignes de logs par seconde, il est devenu impossible de nav
 Cependant, \emph{de nombreuses structures continuent encore aujourd'hui d'analyser 
 plus ou moins "manuellement" leurs \emph{\gls{logs}}}. Cette méthode reste envisageable 
 si on cherche quelque chose de précis, comme une IP dans un intervalle de quelques 
-secondes, mais impossible pour des recherches trop vagues: on se noie.
+secondes, mais impossible pour des recherches moins ciblées.
 
 
 \section{Objectif}
-L'objectif de ce projet est de redonner la possibilité aux administrateurs
-de vérifier le bon fonctionnement de leur infrastructure sans avoir à attendre l'alerte
+L'objectif de ce projet est de fournir un outil supplémentaire aux administrateurs
+pour vérifier le bon fonctionnement de leur infrastructure sans avoir à attendre l'alerte
 Nagios (qui reste indispensable). L'idée est de permettre un suivi quotidien, permettant
 de mettre en évidence des indicateurs de bonne ou de mauvaise santé du système, sans 
 pour autant que ces problèmes soient critiques (mieux le système est entretenu, moins
 on risque la panne).
-Pour réaliser ce projet il a été décidé d'utiliser la stack ELK\footnote{Elasticsearch Logstash Kibana}.
+Pour réaliser ce projet il a été décidé d'utiliser la pile ELK\footnote{Elasticsearch Logstash Kibana}.
 
 
 
@@ -146,28 +146,34 @@ instance du logiciel tourne actuellement dans la cluster de salle machine). Elas
 est un logiciel hautement parallélisable, et qui donc \textit{scale} très bien à 
 l'horizontal. 
 
-Ce rapport se concentre sur l'aspect gestion de logs, il est possible de faire bien
-plus avec Elasticsearch que ce qui est présenté dans ce rapport.
+%Ce rapport se concentre sur l'exploration et l'exploitation des logs. Elasticsearch 
+%est que ce qui est présenté dans ce rapport.
 
 Lors de notre étude de Logstash nous nous concentrerons sur l'exploitation de syslogs. 
 Il est possible de faire d'autres choses avec ce logiciel, notamment concernant, 
 l'exploitation des logs d'apache. 
-Ce qui sera présenter fournira tout de même une base solide de ce qui est faisable 
-avec Logstash.
+Ce qui sera présenter fournira tout de même une base solide des possibilités offertes
+par Logstash.
 
 
 \section{Organisation du rapport}
 La première partie du rapport sera consacrée à l'environnement de travail et à la 
-présentation des notions. La seconde se concentrera sur le fonctionnement de chacun 
-des logiciels utilisés ainsi que quelques problèmes liés à leur exploitation en production.
-Enfin la troisième partie conclura ce rapport en présentant la solution retenue 
-pour la mise en production ainsi que les éventuels ajouts possibles.
+présentation des objectifs. 
+
+La seconde partie présente l'utilisation et le fonctionnement des principaux logiciels
+utilisés dans le projet. Pour des raisons de lisibilité certains passages moins 
+essentiels ont été déplacés en Annexe.
+
+Enfin la troisième partie, qui conclura ce rapport,  présente la solution retenue 
+pour la mise en production. Elle sert également à faire le bilan du projet ainsi 
+qu'à proposer quelques pistes d'amélioration.
+
 
 \chapter{Environnement}
 J'ai réalisé mon stage de Licence professionnelle ASRALL, dans l'équipe réseau Lothaire.
 Cette équipe dépend de la Sous Direction des Infrastructures, membre de la Direction 
 du Numérique de l'Université de Lorraine. Son rôle est d'opérer le réseau des 
-établissements scolaires et de recherche de la région Lorraine.
+établissements scolaires et de recherche de la région Lorraine, le réseau Lothaire.
 \section{Réseau Lothaire}
 \begin{figure}[H]
 \center
@@ -219,11 +225,10 @@ que d'un enseignant chercheur détaché.
 
 
 \section{Environnement de travail}
-J'ai physiquement réalisé mon stage dans un bureau (plutôt spacieux), en compagnie
-d'un autre stagiaire.
-Ma machine de travail était un ordinateur fixe Dell Optiplex 780 équipé d'un Core2 et 
-de 4 Go de RAM. Il m'a été laissé une grande liberté quant à l'installation de mon
-système d'exploitation, j'ai donc choisi une classique Debian GNU/Linux.
+J'ai physiquement réalisé mon stage dans un bureau, en compagnie d'un autre stagiaire.
+Ma machine de travail était un ordinateur fixe Dell. Il m'a été laissé une grande 
+liberté quant à l'installation de mon système d'exploitation, j'ai donc choisi une 
+classique Debian GNU/Linux.
 
 Cette machine était bien pratique pour réaliser des tests (machines virtuelles, 
 installation de logiciels\ldots), mais n'était évidemment pas capable d'ingurgiter 
@@ -265,6 +270,33 @@ Debian Jessie, nouvellement stable au moment de l'installation.
 \input{synthese.tex}
 
 \chapter{Conclusion}
+Ce stage a été une très bonne expérience. L'équipe, accueillante et disponible, m'a
+permis de bien m'intégrer dès le début du stage. 
+
+Les limites et les objectifs du projet avaient été bien fixés par mon maitre de stage, 
+Vincent \textsc{Delove}, ce qui m'a empêché de me disperser. Un écueil facile, lorsque 
+l'on travail avec un outil aussi versatile qu'Elasticsearch.
+
+L'objectif de fournir \emph{un outil facilitant l'exploration de données} dans les 
+\gls{logs} des équipements réseau de Lorraine a été rempli. 
+Plusieurs membres de l'équipe s'en sont déjà servi avec succès. Il a également permis 
+de mettre en évidence des défaillances sur des équipements qui avait été jusqu'alors 
+sous-estimées.
+
+%L'outil est flexible et pourra être adapté à de nouveaux besoins.
+
+Réaliser ce projet m'a permis de mettre en pratique de nombreuses connaissances vues 
+en licence ASRALL, d'approfondir des notions de système, parfois assez pointues, 
+comme les capabilities. Mais aussi d'en apprendre plus sur un outil dont nous avions
+juste gratter la surface en cours : les expressions régulières. Ce stage m'a surtout 
+permis d'appréhender et de mettre en place deux outils que je ne connaissais pas 
+Elasticsearch et Logstash. Ces logiciels sont en ce moment à la mode et ils semblent,
+au moins concernant Elasticsearch, être partis pour rester. C'est donc pour moi une chance
+d'avoir pu acquérir de l'expérience sur ces technologies, me seront utile dans mon 
+prochain emploi.
+
+%J'ai beaucoup apprécié la souplesse d'organisation qui m'a été laissé par mon tuteur
+
 
 \part{Annexes}
 \chapter{Sources/Webographie/Bibliographie}
@@ -273,8 +305,10 @@ Debian Jessie, nouvellement stable au moment de l'installation.
 \input{images.tex}
 \chapter{Code Source et scripts}
 \input{scripts.tex}
-\chapter{Tutoriels à l'usage de l'équipe}
-\input{tutoriels.tex}
+\chapter{Parties non essentielles}
+\input{nonessentiel.tex}
+%\chapter{Tutoriels à l'usage de l'équipe}
+%\input{tutoriels.tex}
 
 
 
