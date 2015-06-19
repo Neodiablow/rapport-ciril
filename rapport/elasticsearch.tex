@@ -44,15 +44,25 @@ nécessite également l'installation des dépendances \emph{jruby} et \emph{open
 
 Là aussi les paquets debian officiels n'existant pas on utilisera celui fourni par 
 \hyperref[https://download.elastic.co/elasticsearch/elasticsearch/elasticsearch-1.5.1.deb]{elastic.co}.
-Et ici aussi le paquet est un peu approximatif puisqu'il faut rajouter certains 
-chemin, et ajouter des droits.
 
 \subsection{Configuration de base}
+Attention le paquet deb fourni (version 1.5) est loin d'être parfait.
+Une fois l'installation achevé, il faudra rajouté un dossier config
+dans \ipath{/usr/share/elasticsearch} et lui donner les droits qui conviennent.
+\begin{lstlisting}[style=code,label={lst:ajoutdepotconfigchown}]
+chown elasticsearch:elasticsearch
+\end{lstlisting}
+
+Enfin pour qu'Elasticsearch se lance, il faut au préalable renseigner le cluster.name
+et le node.name dans \ipath{/etc/elasticsearch/elasticsearch.yml}.
+
+Pour information tous les indices sont, par défaut, physiquement entreposé dans\\
+\ipath{/usr/share/elasticsearch/data/}.
 
 
-{\huge Acompleter et revoir}
-p24-26
- test
+
+%p24-26
+% test
 
 
 

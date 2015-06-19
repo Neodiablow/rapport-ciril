@@ -1,3 +1,12 @@
+\section{Logstash}
+\begin{lstlisting}[style=code,label={lst:configredis},caption={configuration dans /etc/redis/redis.conf}]
+{
+    daemonize yes
+    bind 100.127.255.1  #adresse de l'interface d'écoute
+
+}
+\end{lstlisting}
+
 \section{Elasticsearch}
 \begin{lstlisting}[style=code,label={lst:mappingresult},caption={Exemple de mapping}]
 {
@@ -106,7 +115,7 @@ PUT /_template/state-log
 }
 }
 \end{lstlisting}
-\label={lst:mappingput2}
+\label{lst:mappingput2}
 
 \section{Code en production}
 \lstinputlisting[style=logstash,label={lst:scriptdelindex},caption={Script de suppression d'index}]{../code/remove.sh}
@@ -116,5 +125,6 @@ Le chemin de l'application est là à titre indicatif, \ipath{/usr/local/bin} es
 indiqué, par exemple.
 
 
-\lstinputlisting[style=logstash,label={lst:scriptfinal},caption={Script de configuration général coté server central}]{../code/logstash/logstashfinal.conf}
+\lstinputlisting[style=logstash,label={lst:scriptfinal},caption={Script de configuration général coté server central (elk2)}]{../code/logstash/logstashfinal.conf}
 
+\lstinputlisting[style=logstash,label={lst:petitscriptfinal},caption={Configuration logstash (elk1)}]{../code/logstash/logstashelk1.conf}

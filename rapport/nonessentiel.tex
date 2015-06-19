@@ -1,4 +1,53 @@
-\subsubsection{Multithread}
+\section{Logstash}
+\subsection{Passage interbloc}
+\label{subsec:passageinterbloc}
+Au niveau du code, le passage d'une phase (bloc) à l'autre, est implémenté via les \emph{SizedQueue} 
+de ruby. Elles sont dimensionnées pour contenir 20 événements\footnote{appelés messages 
+lorsqu'on parle de files de messages (queues en anglais), on parle bien ici 
+des \textbf{événements} Logstash}. Ce paramètre n'est pas modifiable sans altérer 
+le code source. Ces files ne sont pas conçues pour stocker des données à long terme. 
+
+Ce choix technique (pour des raisons de performances), justifie l'utilisation d'un 
+\textit{buffer}, comme \emph{Redis}.
+
+\begin{figure}[H]
+\center
+\textbf{Bloc input $\Rightarrow$ file IF $\Rightarrow$ Bloc filtre $\Rightarrow$  file FO $\Rightarrow$ Bloc output}\\
+{\footnotesize Le bloc filtre est optionnel, dans ce cas la, il n'y a qu'une seule file.}
+\end{figure}
+
+
+\subsection{Tolérance de pannes}
+Les logs sont \textbf{importants}, les traiter efficacement est la raison d'être 
+de Logstash. Il serait dommage d'en perdre à cause d'une défaillance quelconque 
+rendant la destination indisponible\footnote{disque dur plein, problème réseau\ldots}.
+%cf pipeline.rb et base.rb dans github
+
+Tout d'abord : Lors d'une indisponibilité, la plupart des plugins d'outputs tentent 
+de renvoyer les événements vers leur destination. 
+Tant que le transfert de l'évènement échoue, le bloc arrête de lire sa file d'attente
+causant ainsi son remplissage\footnote{dans le cas où le bloc output dispose de  
+multiples plugins, il existe des mécanismes pour pouvoir continuer à traiter les 
+sorties saines mais cela impacte les performances}.
+
+Par effet domino, la file \textit{filtre => output} se remplie jusqu'à ce que le 
+bloc filtre ne puisse plus envoyer de nouveaux messages à cette file. 
+
+Les plugins du bloc filtre vont également retenter d'envoyer ses messages, mais tant
+que le problème ne sera pas débloquer en aval le bloc filtre va lui aussi commencer
+à refuser de lire les nouveaux messages arrivant dans la file \textit{input => filtre}.
+
+Si cette dernière venait également à se remplir c'est le bloc input qui refuserait
+de lire de nouveaux messages. Provoquant l'indisponibilité de notre Logstash.
+Dans le meilleur des mondes, les expéditeurs de données\footnote{chez nous syslog-ng} 
+se comporteraient comme Logstash et attendraient patiemment que le problème se résolve 
+en aval. Malheureusement cela n'est pas toujours possible (un switch n'a pas de place 
+pour stocker ses logs) d'où l'importance d'un Redis afin de faire tampon.\footnote{Il 
+existe d'autres outils que Redis, (dont ce n'est pas la fonction
+principale) pour réaliser ce travail, ils sont plus adapté mais aussi moins documentés
+dans leur utilisation avec Logstash.}
+
+\subsection{Multithread}
 \label{subsec:logstashmultithread}
 {\footnotesize Attention ces informations sont pour le moment, \textit{Jeudi 16 Avril 2015}, correctes 
 mais sont amenées à changer, notamment concernant les outputs.}
@@ -12,6 +61,12 @@ d'augmenter le nombre de threads affectés au traitement des filtres avec le \gl
 
 À l'heure actuelle, le bloc output de logstash ne peut utiliser qu'un seul thread.
 Il lit donc sa queue de façon séquentielle. 
+\subsection{Les codecs}
+\label{subsec:logstashcodec}
+Il existe également un \textit{pseudo-bloc} qui peut s'insérer dans les autres, ce 
+bloc, \emph{codec} permet de gérer la \textit{représentation des données} c'est 
+à dire qu'un codec est capable de lire ou d'écrire dans une syntaxe particulière 
+comme par exemple collectd, ou, bien plus intéressant pour nous, netflow\footnote{Collect d'information sur flux IP }. Pour simplifier c'est une sorte de plugin traduisant les évènements dans un format particulier ou depuis un format particulier, par exemple JSON.
 
 \subsection{Moteur d'expression régulière}
 \label{subsec:logstashregexengine}
@@ -24,6 +79,47 @@ Ruby n'utilise plus Oniguruma depuis la version 2.0 mais son fork Onigmo\footnot
 dixit Wikipédia https://en.wikipedia.org/wiki/Oniguruma}. Mais cette évolution ne
 s'applique pas à Logstash puisque ce dernier est codé en Jruby.
 
+\subsection{Capabilities}
+\paragraph{}
+\label{subsec:logstashcapabilities}
+\textbf{cap\_net\_bind\_service} permet à un utilisateur non privilégié (non root) 
+d'écouter sur les ports privilégiés.
+
+Les informations concernants les autres capabilities existantes sont disponibles dans
+la page de manuel correspondante : \emph{man capabilities}.
+
+\textbf{=+epi} signifie que l'on ajoute une \emph{capapbility} à un fichier. Plus 
+précisement \textbf{=+} signifie que l'on écrase les droits précédents pour les remplacer
+par les nouveaux. \textbf{e, p} et \textbf{i} sont la gradation de droits que l'on peut 
+attribuer à un fichier avec les capabilities\fnu{https://www.kernel.org/pub/linux/libs/security/linux-privs/kernel-2.2/capfaq-0.2.txt}. 
+
+\begin{itemize}
+    \item \textbf{effective}: indique si la capability est utilisée actuellement
+    \item \textbf{permited}: définit quelles capabilities sont autorisées pour un 
+    processus donné
+    \item \textbf{inherited}: permet de transmettre la capability à un autre programme
+\end{itemize}
+\textbf{Note}: par défaut, changer le propriétaire d'un fichier de root, à non root enlève
+les capabilities associées à ce dernier\footnote{\scriptsize{http://stackoverflow.com/questions/17743062/changing-user-ids-for-assigning-additional-capabilities}}.
+
+Pour vérifier les \textit{capabilities} d'un binaire, on utilise la commande 
+\emph{getcap}.
+
+\begin{lstlisting}[style=code,label={lst:getcapabilities}]
+    getcap /bin/ping
+    /bin/ping = cap_net_raw+ep
+\end{lstlisting}
+
+Pour enlever les capabilities, il faut utiliser la commande suivante.
+\begin{lstlisting}[style=code,label={lst:unsetcapabilities}]
+setcap cap_net_bind_service=-epi /usr/lib/jvm/java-1.7.0-openjdk-amd64/jre/bin/java
+\end{lstlisting}
+
+Enfin, il est possible, de donner le droit à un utilisateur non root, l'autorisation
+de modifier certaines capabilities. Pour ce faire, il faut modifier le fichier \\[1mm]
+\ipath{/etc/security/capability.conf}.
+
+\section{Elasticsearch}
 \subsection{Sense}
 \label{subsec:elasticsense}
 Ce module chrome a été développé par Boaz Leskes. Il sert de client à ElasticSearch
@@ -151,6 +247,7 @@ Ce qu'il faut retenir c'est que pour discriminer efficacement, il est aussi poss
 d'utiliser des syntaxe comme +fox, de même on peut faire une recherche avec un bloc
 de deux termes pour être plus efficace : "over the" qui n'existe que dans P1.
 
+\section{Kibana}
 \subsection{Settings}
 \label{subsec:settings}
 Si un doute s'était imissé dans notre esprit, les paramètres de Kibana, concernent

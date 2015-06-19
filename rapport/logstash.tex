@@ -6,24 +6,30 @@
 \section{Présentation de Logstash}
 
 Logstash permet de traiter et/ou de transférer des données en masse. Dans notre 
-projet, nous l'utiliserons essentiellement en conjonction avec Elasticsearch en 
-utilitaire de sortie. Cependant,
-et comme le montre la liste des ses abondants plugins d'output, Logstash est capable
-de fonctionner avec de nombreux autres logiciels.
+projet, nous l'utiliserons essentiellement en conjonction avec Elasticsearch. 
+Cependant, et comme le montre l'abondante liste de ses plugins d'output\footnote{expliqué
+après}, Logstash est capable de fonctionner avec de nombreux autres logiciels et donc
+de s'intégrer à de nombreuses piles logicielles.
+Dans notre projet, c'est lui qui centralisera les \gls{logs} et les traitera (éclatera)
+afin qu'ils soient plus facilement exploitable par Elasticsearch.
+
 
 \subsection{Pourquoi Logstash?}
 Bien qu'un administrateur système compétent soit capable d'analyser de façon rapide 
 et efficace les logs d'une machine (à l'aide de perl,awk,sed,tail,grep\ldots), cette méthode
 est fastidieuse. De plus, face à des dizaines/milliers de machines (virtuelles aussi), 
-cette méthode de travail n'est plus applicable, elle ne peut pas passer à l'échelle.
-De plus Il devient de plus en plus fréquent (cloud, applications multicouches\ldots) 
+cette méthode de travail n'est plus applicable.
+Il devient de plus en plus fréquent (cloud, applications multicouches\ldots) 
 que les logs d'une seule machine ne suffisent pas à diagnostiquer convenablement un 
 problème.
 
-C'est pour centraliser tout types de \gls{logs} que logstash a été créé, nous
+C'est pour centraliser tout types de \gls{logs} que Logstash a été créé, nous
 l'utiliserons surtout pour sa vélocité et sa grande synergie avec Elasticsearch.
 
 \subsection{Fonctionnement interne}
+Logstash est un logiciel développé en Jruby\footnote{sauf mention contraire, on supposera
+dans ce rapport que logstash est développé en ruby} (Jruby est en faite une implémentation
+de ruby 1.8 en Java qui était à l'époque plus rapide que ruby "seul"). 
 L'utilisation de Logstash s'articule autour de 3 \emph{blocs} 
 également appelés \emph{stages} (phase).
 \begin{itemize}
@@ -33,60 +39,28 @@ L'utilisation de Logstash s'articule autour de 3 \emph{blocs}
     \item   Le bloc : \emph{Outputs} envoie les évènements de logstash vers leur 
     prochaine destination.
 \end{itemize}
+Explications sur \textbf{l'implémentation du passage entre les blocs} ainsi que
+\textbf{la tolérance de pannes}, et le\textbf{ multithread} dans Logstash à 
+consulter p\pageref{subsec:passageinterbloc}.\\[2mm]
 
-Logstash est un logiciel développé en Jruby\footnote{sauf mention contraire, on supposera
-dans ce rapport que logstash est développé en ruby} (Jruby est en faite une implémentation
-de ruby 1.8 en Java qui était à l'époque plus rapide que ruby "seul"). 
-Le passage d'une phase à l'autre est implémenté via les \emph{SizedQueue} de ruby. 
-Elles sont dimensionnées pour contenir 20 éléments\footnote{appelés messages lorsqu'on parle de queues, on parle bien ici 
-des \textbf{événements} logstash}, ce n'est pas paramétrable sans modifier le code 
-source, c'est un choix délibéré. Ces queues ne sont pas conçues pour stocker des 
-données à long terme. On verra plus tard que cela justifie l'utilisation d'un 
-\textit{buffer}, comme \emph{Redis}\footnote{voir la sous partie sur la tolérence
-de pannes ainsi que le chapitre consacré à Redis}.
-
-
-Chaque bloc est composé d'une multitude de plugins. Ce sont des modules indépendants
-qui peuvent également fonctionner en conjonction les uns des autres.
+Dans chaque blocs on peut utiliser une multitude de plugins. Ce sont des modules 
+\textbf{indépendants} qui peuvent également fonctionner en \textbf{conjonction} les uns des autres.
 
 Il est, par exemple, possible de configurer le bloc \emph{inputs} pour utiliser 
-plusieurs fois le plugin "file" (on imagine pour des cas d'utilisations différentes) 
+plusieurs fois le plugin "file" (fonctionnement expliqué p\pageref{lst:conflogstashiniteloop}) 
 et de se servir dans le même temps d'un autre plugin du bloc \emph{inputs} : stdin 
 qui prendra typiquement en entrée le clavier.
 
 
 Il est possible d'implémenter de nouveaux plugins en ruby afin de les ajouter à
-notre logstash.
+notre Logstash, c'est expliqué dans la documentation. 
 
-Il existe également un \textit{pseudo-bloc} qui peut s'insérer dans les autres, ce 
-bloc, \emph{codec} permet de gérer la \textit{représentation des données} c'est 
-à dire qu'un codec est capable de lire ou d'écrire dans une syntaxe particulière 
-comme par exemple rubydebug, collectd, ou, bien plus intéressant pour nous, netflow.
+Explications sur les \textbf{codecs} un type de bloc à part p\pageref{subsec:logstashcodec}
 
 
-\subsubsection{Tolérance de pannes}
-Les logs sont \textbf{importants}, les traiter efficacement est la raison d'être 
-de Logstash. Il ne souhaite pas que vous en perdiez le moindre à cause d'un problème 
-réseau ou d'une défaillance quelconque rendant la destination indisponible.
-%cf pipeline.rb et base.rb dans github
-Lors d'une indisponibilité, les plugins outputs tentent de renvoyer les événements 
-vers leur destination. Si ce n'est pas possible le plugin arrête de lire sa queue 
-tant que le message n'a pas pu être envoyé. Par effet domino, une fois la queue 
-\textit{filtre => output} remplie, le bloc filtre, ne pouvant plus envoyer de nouveaux 
-messages à la queue \textit{FO}. Le plugin du bloc filtre va également retenter 
-d'envoyer ses messages, et refuser en attendant de lire les nouveaux arrivant dans 
-la queue \textit{input => filtre}.
-Si cette dernière venait à se remplir c'est le Logstash tout entier qui refuserait de 
-traiter de nouvelles informations. Dans le meilleur des mondes, les expéditeurs de
-données se comporteraient comme logstash et attendraient patiemment que le problème
-se résolve. Malheureusement cela n'est pas toujours possible d'où l'importance d'un 
-Redis en amont (ou en aval) afin de faire tampon.
-\footnote{Il existe d'autres outils que Redis, (dont ce n'est pas la fonction
-principale) pour réaliser ce travail, ils sont plus adapté mais aussi moins documentés
-dans leur utilisation avec Logstash.}\\[2mm] 
 
 
-Consulter la partie sur le \textbf{multithread} p\pageref{subsec:logstashmultithread}
+%Consulter la partie sur le \textbf{multithread} p\pageref{subsec:logstashmultithread}
 
 
 \section{Installation}
@@ -120,7 +94,7 @@ Consulter la partie sur le \textbf{multithread} p\pageref{subsec:logstashmultith
 
 
 
-Sur Debian Jessie, il n'existe pas de paquet officiel logstash maintenu. Il existe,
+Sur Debian Jessie, il n'existe pas de paquet officiel Logstash maintenu. Il existe,
 en revanche, un paquet tiers\fnu{https://download.elastic.co/logstash/logstash/packages/debian/logstash\_1.4.2-1-2c0f5a1\_all.deb}
 fourni par l'éditeur du logiciel. Attention, le paquet nécessite l'ajout de dépendances manuelles\footnote{wget paquet, 
 dpkg -i paquet, apt-get install -f} ainsi qu'un rechargement de 
@@ -167,59 +141,20 @@ setcap cap_net_bind_service=+epi /usr/lib/jvm/java-7-openjdk-amd64/jre/bin/java
 setcap cap_net_bind_service=+epi /usr/lib/jvm/java-1.7.0-openjdk-amd64/jre/bin/java
 \end{lstlisting}
 qui permettent à un processus (thread en faite) de ne pas se soumettre à certaines 
-vérifications de sécurité du noyau.
-
-\textbf{cap\_net\_bind\_service} permet à un utilisateur non privilégié (non root) 
-d'écouter sur les ports privilégiés.
-
-Les informations concernants les autres capabilities existantes sont disponibles dans
-la page de manuel correspondante : \emph{man capabilities}.
-
-\textbf{=+epi} signifie que l'on ajoute une \emph{capapbility} à un fichier. Plus 
-précisement \textbf{=+} signifie que l'on écrase les droits précédents pour les remplacer
-par les nouveaux. \textbf{e, p} et \textbf{i} sont la gradation de droits que l'on peut 
-attribuer à un fichier avec les capabilities\fnu{https://www.kernel.org/pub/linux/libs/security/linux-privs/kernel-2.2/capfaq-0.2.txt}. 
-
-\begin{itemize}
-    \item \textbf{effective}: indique si la capability est utilisée actuellement
-    \item \textbf{permited}: définit quelles capabilities sont autorisées pour un 
-    processus donné
-    \item \textbf{inherited}: permet de transmettre la capability à un autre programme
-\end{itemize}
-\textbf{Note}: par défaut, changer le propriétaire d'un fichier de root, à non root enlève
-les capabilities associées à ce dernier\footnote{\scriptsize{http://stackoverflow.com/questions/17743062/changing-user-ids-for-assigning-additional-capabilities}}.
-
-Pour vérifier les \textit{capabilities} d'un binaire, on utilise la commande 
-\emph{getcap}.
-
-\begin{lstlisting}[style=code,label={lst:getcapabilities}]
-    getcap /bin/ping
-    /bin/ping = cap_net_raw+ep
-\end{lstlisting}
-
-Pour enlever les capabilities, il faut utiliser la commande suivante.
-\begin{lstlisting}[style=code,label={lst:unsetcapabilities}]
-setcap cap_net_bind_service=-epi /usr/lib/jvm/java-1.7.0-openjdk-amd64/jre/bin/java
-\end{lstlisting}
-
-Enfin, il est possible, de donner le droit à un utilisateur non root, l'autorisation
-de modifier certaines capabilities. Pour ce faire, il faut modifier le fichier \\[1mm]
-\ipath{/etc/security/capability.conf}.
-
-
-
-
+vérifications de sécurité du noyau.\\[2mm]
+Des informations plus précise concernant \textbf{la mise en œuvre des capabilities}
+p\pageref{subsec:logstashcapabilities}
 
 \section{Grammaire et conjugaison}
 \subsection{Généralités}
-Dans cette section, nous allons brièvement expliquer le fonctionnement de la syntaxe 
-du fichier de configuration de Logstash.\fnu{http ://logstash.net/docs/1.4.2/configuration}
+Dans cette section, nous expliquerons le fonctionnement de la syntaxe du fichier de 
+configuration de Logstash.\fnu{http ://logstash.net/docs/1.4.2/configuration}
 
-Le ou les fichiers de configuration comportent deux ou trois parties, représentant 
-les blocs dont nous avons parlé au préalable. Le bloc \emph{filter} est optionnel
-et il est important de noter que, s'il est possible de répartir sa configuration
-dans plusieurs fichiers, cette dernière sera concaténée, attention aux boucles infinies
-dans ce cas là.
+Le (ou les fichiers) de configuration comportent deux ou trois parties, représentant 
+les blocs dont nous avons déjà parlé. Le bloc \emph{filter} est optionnel.
+Il est important de noter que, s'il est possible de répartir sa configuration dans
+plusieurs fichiers. Ces fichiers seront concaténés (attention aux boucles infinies
+dans ce cas là).
 
 \begin{lstlisting}[style=logstash,label={lst:conflogstashminimale},caption={Configuration minimale}]
 input {
@@ -234,12 +169,14 @@ output {
 }
 \end{lstlisting}
 
-Ici, on constate l'utilisation des plugins stdin et stdout. Comme leur nom 
-et leur emplacement dans le fichier de configuration peuvent le laisser supposer,
+On utilise dans ce code les plugins stdin et stdout. Comme leur nom et leur emplacement
+dans le fichier de configuration peuvent le laisser supposer,
 Logstash collecte en entrée tout ce qui vient de l'entrée standard, typiquement
 le clavier, et l'envoie sur la sortie standard, typiquement, un terminal.
-Pour pouvoir recevoir l'output, il est d'ailleurs conseillé d'utiliser, le flag -f
-et de ne pas lancer logstash en mode dæmon.
+
+Pour voir le contenu de l'output, il ne faut pas utiliser Logstash en mode dæmon 
+et donc utiliser, l'option flag -f et séléctionner le fichier de configuration.
+
 
 Dans ce second exemple, plus complexe, nous allons présenter une utilisation plus
 vaste des plugins et la logique sous-jacente à leur utilisation.
