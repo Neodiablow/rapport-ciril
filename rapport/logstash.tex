@@ -23,8 +23,8 @@ Il devient de plus en plus fréquent (cloud, applications multicouches\ldots)
 que les logs d'une seule machine ne suffisent pas à diagnostiquer convenablement un 
 problème.
 
-C'est pour centraliser tout types de \gls{logs} que Logstash a été créé, nous
-l'utiliserons surtout pour sa vélocité et sa grande synergie avec Elasticsearch.
+C'est pour centraliser tout types de \gls{logs} que Logstash a été créé. Nous
+l'utiliserons, surtout, pour sa vélocité et sa grande synergie avec Elasticsearch.
 
 \subsection{Fonctionnement interne}
 Logstash est un logiciel développé en Jruby\footnote{sauf mention contraire, on supposera
@@ -39,8 +39,8 @@ L'utilisation de Logstash s'articule autour de 3 \emph{blocs}
     \item   Le bloc : \emph{Outputs} envoie les évènements de logstash vers leur 
     prochaine destination.
 \end{itemize}
-Explications sur \textbf{l'implémentation du passage entre les blocs} ainsi que
-\textbf{la tolérance de pannes}, et le\textbf{ multithread} dans Logstash à 
+Des explications sur \textbf{l'implémentation du passage entre les blocs} ainsi que
+\textbf{la tolérance de pannes}, et le\textbf{ multithread} dans Logstash sont à 
 consulter p\pageref{subsec:passageinterbloc}.\\[2mm]
 
 Dans chaque blocs on peut utiliser une multitude de plugins. Ce sont des modules 
@@ -53,7 +53,7 @@ qui prendra typiquement en entrée le clavier.
 
 
 Il est possible d'implémenter de nouveaux plugins en ruby afin de les ajouter à
-notre Logstash, c'est expliqué dans la documentation. 
+notre Logstash, c'est détailler dans la documentation. 
 
 Explications sur les \textbf{codecs} un type de bloc à part p\pageref{subsec:logstashcodec}
 
@@ -100,8 +100,8 @@ fourni par l'éditeur du logiciel. Attention, le paquet nécessite l'ajout de d�
 dpkg -i paquet, apt-get install -f} ainsi qu'un rechargement de 
 la configuration des services : \emph{systemctl daemon-reload}.
 
-Les dépendances nécessaires sont \emph{jruby} et \emph{openjdk-7-jre}, les mêmes 
-que pour elasticsearch.
+Les dépendances nécessaires sont \emph{jruby} et \emph{openjdk-7-jre}, identiques 
+à celle d'Elasticsearch.
 
 Une autre manière de réaliser l'installation est d'ajouter les dépots logstash à 
 \ipath{/etc/apt/source.list.d/logstash.list.d/logstash.list}
@@ -142,17 +142,17 @@ setcap cap_net_bind_service=+epi /usr/lib/jvm/java-1.7.0-openjdk-amd64/jre/bin/j
 \end{lstlisting}
 qui permettent à un processus (thread en faite) de ne pas se soumettre à certaines 
 vérifications de sécurité du noyau.\\[2mm]
-Des informations plus précise concernant \textbf{la mise en œuvre des capabilities}
+Des informations plus précises concernant \textbf{la mise en œuvre des capabilities}
 p\pageref{subsec:logstashcapabilities}
 
 \section{Grammaire et conjugaison}
 \subsection{Généralités}
-Dans cette section, nous expliquerons le fonctionnement de la syntaxe du fichier de 
+Dans cette section, nous décrirons le fonctionnement de la syntaxe du fichier de 
 configuration de Logstash.\fnu{http ://logstash.net/docs/1.4.2/configuration}
 
-Le (ou les fichiers) de configuration comportent deux ou trois parties, représentant 
-les blocs dont nous avons déjà parlé. Le bloc \emph{filter} est optionnel.
-Il est important de noter que, s'il est possible de répartir sa configuration dans
+Le (ou les fichiers) de configuration comportent deux ou trois blocs. 
+Le bloc \emph{filter} est optionnel.
+Il est important de noter, que, s'il est possible de répartir sa configuration dans
 plusieurs fichiers. Ces fichiers seront concaténés (attention aux boucles infinies
 dans ce cas là).
 
@@ -174,19 +174,24 @@ dans le fichier de configuration peuvent le laisser supposer,
 Logstash collecte en entrée tout ce qui vient de l'entrée standard, typiquement
 le clavier, et l'envoie sur la sortie standard, typiquement, un terminal.
 
-Pour voir le contenu de l'output, il ne faut pas utiliser Logstash en mode dæmon 
-et donc utiliser, l'option flag -f et séléctionner le fichier de configuration.
+Pour voir le contenu de l'output, il \textbf{ne faut pas} utiliser Logstash en mode dæmon 
+et donc utiliser, l'option flag -f et séléctionner le fichier de configuration  
+(plus d'informations p\pageref{subsec:logstashflag}).\\[4mm]
+
+Le bloc filter sert à modifier les données reçues en input, c'est l'endroit préféré
+pour ajouter, supprimer ou modifier des champs ou bien les compter, etc\ldots
 
 
 Dans ce second exemple, plus complexe, nous allons présenter une utilisation plus
 vaste des plugins et la logique sous-jacente à leur utilisation.
 
-\begin{lstlisting}[style=logstash,label={lst:conflogstashiniteloop},caption={Infinite loop}]
-#mail.conf
+\begin{lstlisting}[style=logstash,label={lst:conflogstashexample1},caption={Exemple de conf pour mail}]
+#shipping.conf
 input {
     file {
-        path => ["/home/fdupont/testmail"]
+        path => ["/home/fdupont/testmail", "/var/log/secure"]
     }
+
 }
 
 filter{
@@ -201,7 +206,20 @@ filter{
 
 output {
     stdout{ }
-    if "contenu" not in [tags]{
+    redis {
+        host => "100.127.255.1"
+        data_type => "list"
+        key => "logstash"
+    }
+
+#mail.conf
+input{
+    file {
+        path => ["/var/mail/ldidry"]
+    }
+}
+output{
+    if "contenu" in [tags]{
         email{
             to => "fdupont@localhost"
             from => "logstash@%{host}"
@@ -209,48 +227,38 @@ output {
             body => "Ceci est un test sur l'hote %{host}\n avec pour message : %{message}"
         }
     }
-}
 
-#shipping.conf
-input {
-    file {
-        path => ["/var/log/secure", "/var/log/messages", "/var/log/*.log","/var/mail/fdupont"]
-        exclude => ["*.gz"]
-    }
-    file {
-        path => ["/var/mail/ldidry"]
-    }
-}
-
-
-output {
-    stdout{ }
-    redis {
-        host => "100.127.255.1"
-        data_type => "list"
-        key => "logstash"
-    }
 }
 \end{lstlisting}
 
-Cet exemple de code ne doit pas être utilisé : c'est une boucle infinie.
-Il permet en revanche, d'expliquer de nombreux points de fonctionnement de la syntaxe
-du fichier de configuration de Logstash.
+%Cet exemple de code ne doit pas être utilisé : c'est une boucle infinie.
+%Il permet en revanche, de montrer de nombreux points de fonctionnement de la syntaxe
+%du fichier de configuration de Logstash.
 Ce code représente, en fait, {\bfseries 2 fichiers}, mail.conf et shipping.conf, tous
 deux situés dans le répertoire par défaut des fichiers de configuration de Logstash
-\ipath{/etc/logstash/conf.d/}. Ils sont lus par ordre alphabétique et concaténés 
-(comprendre que les inputs ainsi que les outputs sont fusionnés, il faut donc être
-rigoureux dans leur écriture afin de ne pas créer d'effets de bord indésirables).
+\ipath{/etc/logstash/conf.d/}. Ils sont lus par ordre lexicographique et concaténés 
+(comprendre que les inputs ainsi que les outputs sont fusionnés), il faut donc être
+rigoureux dans l'écriture des fichiers afin de ne pas créer d'effets de bord indésirables.
+
 Une bonne pratique consiste, à utiliser la convention de nommage suivante : \textit{
-00-description, 01-description} etc \ldots
+00-description, 01-description} etc\ldots
 
 
 Chacun possède un bloc input, output et l'un d'entre eux : filter.
 Dans chacun des blocs, on trouve un ou plusieurs {\bfseries plugins} comme email, 
-file, redis ou d'autres. 
-Chacun de ces plugins possède son propre paramétrage, réglable au travers de 
-directives, mais avec une syntaxe commune.
+file,throttle ou d'autres. 
+Les plugins standards suivent un syntaxe commune. Ce n'est pas toujours le cas des
+plugins tiers. 
 
+Dans notre exemple de code \ref{lst:conflogstashexample1}, la structure conditionnelle
+est utilisé pour faire le trie en utilisant les \emph{tags}.
+
+
+%REFAIRE DES TRUCS DES EXEMPLES EXPLIQUER DES PLUGINS
+
+Remarque : les directives \textbf{path}, disponibles par exemple dans
+le plugin file, prennent en compte le globbing et le globbing récursif 
+(\ipath{le/chemin/*/.*log}).
 
 \begin{lstlisting}[style=logstash,label={lst:conflogstashsyntaxe1},caption={Syntaxe}]
     directive => int
@@ -258,8 +266,7 @@ directives, mais avec une syntaxe commune.
     directive => ["membre", "de", "l'array"]
 \end{lstlisting}
 
-La plupart des directives de plugins se comportent ainsi, pas toutes. Nous
-verrons quelques exemples dans des configurations plus avancées. Dans tout les cas, il
+La plupart des directives de plugins se comportent ainsi. Dans tout les cas, il
 est indispensable de se référer à la documentation pour toute première utilisation d'un
 plugin.
 
@@ -270,14 +277,7 @@ De nombreux opérateurs sont également supportés: ==, !=, <, >, <=, >=, mais a
 les expressions régulières (syntaxe ruby) =$\sim$, $\sim$! et enfin : in, not in,and,nand,
 or,xor et !. 
 
-Dans notre exemple de code \ref{lst:conflogstashiniteloop}, la structure conditionnelle
-est utilisé pour faire le trie en utilisant les \emph{tags}.
-
-Il est à noter, également, que les directives \textbf{path}, disponibles par exemple dans
-le plugin file, prennent en compte le globbing et le globbing récursif 
-(\ipath{le/chemin/*/.*log}).
-
-\subsubsection{Autopsie d'une la boucle infinie}
+\subsubsection{Autopsie d'une boucle infinie}
 La configuration \ref{lst:conflogstashiniteloop}, qui ne fonctionne pas
 correctement, n'a pas été mise là par hasard. Cette erreur, permet de bien comprendre 
 le fonctionnement des fichiers de configuration de Logstash.
@@ -288,7 +288,6 @@ un résultat similaire à :
 
 
 \begin{lstlisting}[style=logstash,label={lst:conflogstashiniteloop2},caption={Infinite loop concaténé}]
-#mail.conf
 input {
     file {
         path => ["/home/fdupont/testmail"]
@@ -344,6 +343,9 @@ dans un fichier de log. Ce mail envoyé dans /var/mail/fdupont sera renvoyé dan
 même adresse. Le contenu de l'événement se modifiera en permanence puisque le message
 sera encapsulé dans son prédécesseur \ldots
 
+
+%FIN MODIFICATIONS
+
 \subsection{Expressions régulières et patterns}
 
 \subsubsection{Les expressions régulières de Grok}
@@ -392,6 +394,7 @@ paramétrant ces patterns. Ils sont par défaut situés dans \ipath{/opt/logstas
 
 
 \subsection{Les flags}
+\label{subsec:logstashflag}
 Les \emph{flags} sont les noms donnés aux paramètres que l'on peut donner au binaire
 de Logstash.
 
@@ -408,7 +411,7 @@ de Logstash.
 Par défaut Logstash utilisera les fichiers de configuration présents dans \\ 
 \ipath{/etc/logstash/conf.d/}, ils seront ouverts par ordre alphabétique.
 
-
+%MODIFICATION pour fin
 \section{Utilisation}
 Logstash peut s'intégrer dans une architecture simple ou très compliquée. En fonction
 du cas il peut être utilisé dans plusieurs modes.
@@ -500,4 +503,4 @@ sentir, il est possible avec des changements de configuration minimes de d'ajout
 des machines dans nos couches. Il devient possible d'augmenter sans jamais l'éteindre 
 complètement la capacité de traitement de notre infrstructure. C'est la base de la
 haute disponibilité.
-
+%fin modification
