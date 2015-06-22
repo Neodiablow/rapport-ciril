@@ -238,7 +238,9 @@ Ce code représente, en fait, {\bfseries 2 fichiers}, mail.conf et shipping.conf
 deux situés dans le répertoire par défaut des fichiers de configuration de Logstash
 \ipath{/etc/logstash/conf.d/}. Ils sont lus par ordre lexicographique et concaténés 
 (comprendre que les inputs ainsi que les outputs sont fusionnés), il faut donc être
-rigoureux dans l'écriture des fichiers afin de ne pas créer d'effets de bord indésirables.
+rigoureux dans l'écriture des fichiers afin de ne pas créer d'effets de bord indésirables
+(comme une boucle infinie\footnote{assez facile à déclancher, il suffit qu'un plugin
+du bloc input écoute un plugin du bloc output (ca va vite, surtout avec des mails)}).
 
 Une bonne pratique consiste, à utiliser la convention de nommage suivante : \textit{
 00-description, 01-description} etc\ldots
@@ -249,16 +251,6 @@ Dans chacun des blocs, on trouve un ou plusieurs {\bfseries plugins} comme email
 file,throttle ou d'autres. 
 Les plugins standards suivent un syntaxe commune. Ce n'est pas toujours le cas des
 plugins tiers. 
-
-Dans notre exemple de code \ref{lst:conflogstashexample1}, la structure conditionnelle
-est utilisé pour faire le trie en utilisant les \emph{tags}.
-
-
-%REFAIRE DES TRUCS DES EXEMPLES EXPLIQUER DES PLUGINS
-
-Remarque : les directives \textbf{path}, disponibles par exemple dans
-le plugin file, prennent en compte le globbing et le globbing récursif 
-(\ipath{le/chemin/*/.*log}).
 
 \begin{lstlisting}[style=logstash,label={lst:conflogstashsyntaxe1},caption={Syntaxe}]
     directive => int
@@ -275,76 +267,98 @@ Comme montré dans le code \ref{lst:conflogstashsyntaxe1} il est également poss
 d'utiliser des structures conditionnelles (les if, else, else if, en faite).
 De nombreux opérateurs sont également supportés: ==, !=, <, >, <=, >=, mais aussi
 les expressions régulières (syntaxe ruby) =$\sim$, $\sim$! et enfin : in, not in,and,nand,
-or,xor et !. 
-
-\subsubsection{Autopsie d'une boucle infinie}
-La configuration \ref{lst:conflogstashiniteloop}, qui ne fonctionne pas
-correctement, n'a pas été mise là par hasard. Cette erreur, permet de bien comprendre 
-le fonctionnement des fichiers de configuration de Logstash.
-
-Rappels : Il y a dans cette configuration, 2 fichiers de configuration. Les fichiers,
-sont concaténés au lancement de Logstash de telle sorte que virtuellement cela donnerait 
-un résultat similaire à :
+or,xor et !.\\[4mm]
+Dans notre exemple de code \ref{lst:conflogstashexample1}, la structure conditionnelle
+est utilisé pour faire le trie en utilisant les \emph{tags}.
 
 
-\begin{lstlisting}[style=logstash,label={lst:conflogstashiniteloop2},caption={Infinite loop concaténé}]
-input {
-    file {
-        path => ["/home/fdupont/testmail"]
-    }
-    file {
-        path => ["/var/log/secure", "/var/log/messages", "/var/log/*.log","/var/mail/fdupont"]
-        exclude => ["*.gz"]
-    }
-    file {
-        path => ["/var/mail/ldidry"]
-    }
-}
+%REFAIRE DES TRUCS DES EXEMPLES EXPLIQUER DES PLUGINS
 
-filter{
-    throttle{
-        before_count => 2
-        after_count => 4
-        period => 120
-        key => "%{message}"
-        add_tag => "contenu"
-    }
-}
+Il y a deux fichiers différents, leur existence n'a d'intérêt que pour faciliter la
+lecture\footnote{il est possible de lancer un test avec un second fichier de configuration
+sans impacter le Logstash en production, cf flags, mais ce n'est pas idéal}. Il est
+possible d'utiliser plusieurs fois le plugin file dans le bloc input (idem pour les 
+autres blocs).
 
-output {
-    stdout{ }
-    if "contenu" not in [tags]{
-        email{
-            to => "fdupont@localhost"
-            from => "logstash@%{host}"
-            subject => "%{message}"
-            body => "Ceci est un test sur l'hote %{host}\n avec pour message : %{message}"
-        }
-    }
-    redis {
-        host => "100.127.255.1"
-        data_type => "list"
-        key => "logstash"
-    }
-}
-\end{lstlisting}
-
-Ici, le problème semble plus évident l'output et l'input sont "liés". Des messages
-peuvent être détectés et envoyés par mail à l'adresse \ipath{fdupont@localhost} (soit
-l'équivalent de \ipath{/var/mail/fdupont}). Ce fichier est également écouté, ainsi que la 
-plupart de fichiers de logs. Voilà la source des boucles infinies, assez facilement
-reproductible si l'on n'est pas suffisamment rigoureux, et surtout si l'on travail 
-sur plusieurs fichiers à la fois.
-
-L'autre erreur majeure de ce fichier se situe à la ligne 27. Si le terme contenu 
-n'est pas présent dans "tags" alors on envoie un mail. Le fonctionnement est l'inverse 
-de celui suggérer par throttle. Ici, un mail est envoyé dès qu'un événement se produit
-dans un fichier de log. Ce mail envoyé dans /var/mail/fdupont sera renvoyé dans cette
-même adresse. Le contenu de l'événement se modifiera en permanence puisque le message
-sera encapsulé dans son prédécesseur \ldots
+Remarque : les directives \textbf{path}, disponibles par exemple dans
+le plugin file, prennent en compte le globbing et le globbing récursif 
+(\ipath{le/chemin/*/.*log}).
 
 
-%FIN MODIFICATIONS
+%\subsubsection{Autopsie d'une boucle infinie}
+%La configuration \ref{lst:conflogstashiniteloop2}, qui ne fonctionne pas
+%correctement, n'a pas été mise là par hasard. Cette erreur, permet de bien comprendre 
+%le fonctionnement des fichiers de configuration de Logstash.
+%
+%Rappels : Il y a dans cette configuration, 2 fichiers de configuration. Les fichiers,
+%sont concaténés au lancement de Logstash de telle sorte que virtuellement cela donnerait 
+%un résultat similaire à :
+%Nous allons analyser plus en détail \ref{lst:conflogstashiniteloop2}, ce fichier 
+%de configuration fonctionne mal (boucle infinie), comprendre pourquoi est intéressant
+%et permet de mieux comprendre le fonctionnement de Logstash. Pour faciliter la lecture,
+%nous avons concaténé les fichiers de configurations. Cela facilite la compréhension des
+%erreurs, elle sont beaucoup plus difficile à détecter lorsque les fichiers sont séparés.
+%
+%\begin{lstlisting}[style=logstash,label={lst:conflogstashiniteloop2},caption={Infinite loop concaténé}]
+%input {
+%    file {
+%        path => ["/home/fdupont/testmail"]
+%    }
+%    file {
+%        path => ["/var/log/secure", "/var/log/messages", "/var/log/*.log","/var/mail/fdupont"]
+%        exclude => ["*.gz"]
+%    }
+%    file {
+%        path => ["/var/mail/ldidry"]
+%    }
+%}
+%
+%filter{
+%    throttle{
+%        before_count => 2
+%        after_count => 4
+%        period => 120
+%        key => "%{message}"
+%        add_tag => "contenu"
+%    }
+%}
+%
+%output {
+%    stdout{ }
+%    if "contenu" not in [tags]{
+%        email{
+%            to => "fdupont@localhost"
+%            from => "logstash@%{host}"
+%            subject => "%{message}"
+%            body => "Ceci est un test sur l'hote %{host}\n avec pour message : %{message}"
+%        }
+%    }
+%    redis {
+%        host => "100.127.255.1"
+%        data_type => "list"
+%        key => "logstash"
+%    }
+%}
+%\end{lstlisting}
+%
+%Le problème semble évident l'output et l'input sont "liés". 
+%Les messages passant 
+%Des messages peuvent 
+%être détectés et envoyés par mail à l'adresse \ipath{fdupont@localhost} (soit
+%l'équivalent de \ipath{/var/mail/fdupont}). Ce fichier est également écouté, ainsi que la 
+%plupart de fichiers de logs. Voilà la source des boucles infinies, assez facilement
+%reproductible si l'on n'est pas suffisamment rigoureux, et surtout si l'on travail 
+%sur plusieurs fichiers à la fois.
+%
+%L'autre erreur majeure de ce fichier se situe à la ligne 27. Si le terme contenu 
+%n'est pas présent dans "tags" alors on envoie un mail. Le fonctionnement est l'inverse 
+%de celui suggérer par throttle. Ici, un mail est envoyé dès qu'un événement se produit
+%dans un fichier de log. Ce mail envoyé dans /var/mail/fdupont sera renvoyé dans cette
+%même adresse. Le contenu de l'événement se modifiera en permanence puisque le message
+%sera encapsulé dans son prédécesseur \ldots
+%
+%
+%%FIN MODIFICATIONS
 
 \subsection{Expressions régulières et patterns}
 
@@ -359,7 +373,7 @@ pour cela que nous prenons le temps de présenter son système d'expression rég
 
 
 \begin{lstlisting}[style=logstash,label={lst:grokregex1},caption={Named group}]
-(?<nom_du_champ>Pattern) 
+(?<nom_du_champ>ExpressionsRégulières) 
 (?<username> [a-zA-Z0-9._-]+)
 \end{lstlisting}
 
