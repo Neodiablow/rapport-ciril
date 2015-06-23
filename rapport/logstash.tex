@@ -47,7 +47,7 @@ Dans chaque blocs on peut utiliser une multitude de plugins. Ce sont des modules
 \textbf{indépendants} qui peuvent également fonctionner en \textbf{conjonction} les uns des autres.
 
 Il est, par exemple, possible de configurer le bloc \emph{inputs} pour utiliser 
-plusieurs fois le plugin "file" (fonctionnement expliqué p\pageref{lst:conflogstashiniteloop}) 
+plusieurs fois le plugin "file" (fonctionnement expliqué p\pageref{lst:conflogstashsyntaxe1}) 
 et de se servir dans le même temps d'un autre plugin du bloc \emph{inputs} : stdin 
 qui prendra typiquement en entrée le clavier.
 
@@ -235,7 +235,7 @@ output{
 %Il permet en revanche, de montrer de nombreux points de fonctionnement de la syntaxe
 %du fichier de configuration de Logstash.
 Ce code représente, en fait, {\bfseries 2 fichiers}, mail.conf et shipping.conf, tous
-deux situés dans le répertoire par défaut des fichiers de configuration de Logstash
+deux situés dans le répertoire par défaut des fichiers de configuration de Logstash\\
 \ipath{/etc/logstash/conf.d/}. Ils sont lus par ordre lexicographique et concaténés 
 (comprendre que les inputs ainsi que les outputs sont fusionnés), il faut donc être
 rigoureux dans l'écriture des fichiers afin de ne pas créer d'effets de bord indésirables
@@ -264,15 +264,13 @@ plugin.
 
 
 Comme montré dans le code \ref{lst:conflogstashsyntaxe1} il est également possible 
-d'utiliser des structures conditionnelles (les if, else, else if, en faite).
+d'utiliser des structures conditionnelles (if, else, else if).
 De nombreux opérateurs sont également supportés: ==, !=, <, >, <=, >=, mais aussi
 les expressions régulières (syntaxe ruby) =$\sim$, $\sim$! et enfin : in, not in,and,nand,
 or,xor et !.\\[4mm]
 Dans notre exemple de code \ref{lst:conflogstashexample1}, la structure conditionnelle
-est utilisé pour faire le trie en utilisant les \emph{tags}.
+est utilisé pour faire le tri en utilisant les \emph{tags}.
 
-
-%REFAIRE DES TRUCS DES EXEMPLES EXPLIQUER DES PLUGINS
 
 Il y a deux fichiers différents, leur existence n'a d'intérêt que pour faciliter la
 lecture\footnote{il est possible de lancer un test avec un second fichier de configuration
@@ -416,9 +414,9 @@ de Logstash.
 \begin{itemize}
     \item -f : file, désigne le fichier de configuration à utiliser;
     \item -e : permet d'utiliser une chaine de caractères (depuis la console) pour
-    pour configurer Logstash, à utiliser pour faire des tests de configuration simples;
-    \item -w : filterworkers, comme expliqué plus haut, permet d'affecter plusieurs
-    threads à la gestion des filtres. (par défaut 1);
+    configurer Logstash, à utiliser pour faire des tests de configuration simples;
+    \item -w : filterworkers, permet d'affecter plusieurs threads à la gestion des 
+    filtres. (par défaut 1);
     \item - -configtest : associé à -f \ipath{path/to/conffile} vérifie la syntaxe 
     du fichier de configuration.
 \end{itemize}
@@ -492,7 +490,7 @@ redis pour alimenter Elasticsearch.
 
 Ici logstash sert donc à trier et centraliser le flux. Cette tâche pourrait théoriquement 
 être réalisé par ELK1 (serveur Elasticsearch).
-Mais on prendrai cependant de gros risque à envoyer tous nos logs d'un coup sur une machine
+Mais on prendrait cependant de gros risque à envoyer tous nos logs d'un coup sur une machine
 dont le but est de les analyser.
 
 On risque des problèmes d'I/O, ainsi qu'une surutilisation ponctuelle du processeur
@@ -500,7 +498,8 @@ On risque des problèmes d'I/O, ainsi qu'une surutilisation ponctuelle du proces
 De plus, cela empecherait la scalabilité à plus long terme. 
 Si la machine intermédiaire, le serveur central, ne peut plus encaiser la charge, 
 il suffit actuellement d'en déployer un autre et de diviser le flux des syslogs (
-et autres) entre ces deux serveurs \textit{centraux}.
+et autres) entre ces deux serveurs \textit{centraux}. Manœvre plus délicate si 
+il n'y a plus de serveur central en amont.
 
 Configurations de notre infrastructure disponibles p\pageref{sec:codeprod}
 
