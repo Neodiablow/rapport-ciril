@@ -70,11 +70,12 @@ Pour information tous les indices sont, par défaut, physiquement entreposé dan
 {%\huge A compléter}
 
 %\subsection{Approximation et comparaison avec le modèle relationnel}
-La comparaison entre Elasticsearch et une base de données n'est pas forcement heureuse,
-c'est un moteur de recherche (d'indexation), pas une base de données. 
+La comparaison entre Elasticsearch et un SGBD (système de gestion de base de données) 
+n'est pas forcement heureuse, c'est un moteur de recherche (d'indexation), pas une 
+base de données. 
 %Il utilise donc la notion d'index qu'on peut cependant assez facilement comparer au modèle relationnel.
 
-Elasticsearch s'organise autour d'index que l'on peut comparer aux bases (de données)
+Cependant Elasticsearch s'organise autour d'index que l'on peut comparer aux bases (de données)
 dans le modèle relationnel, un index peut utiliser plusieurs types\footnote{Dans 
 notre projet \textbf{nous n'avons pas fait ce choix} pour pouvoir plus facilement 
 modifier les mappings sans supprimer toutes les données. Il aurait été envisageable
@@ -85,7 +86,7 @@ Chaque enregistrement d'Elasticsearch est effectué sous forme document. Les doc
 sont nécessairement rangé dans un type, éventuellement type par défaut. Le document 
 peut être comparé à une ligne (row). 
 
-Ces lignes sont constitués de colonnes, appellées champs (ou fields) dans Elasticsearch.
+Ces lignes sont constituées de colonnes, appellées champs (ou fields) dans Elasticsearch.
 
 \begin{figure}[H]
 \textbf{BDD Relationnelle $\Rightarrow$ Base de données $\Rightarrow$ Tables $\Rightarrow$ Ligne $\Rightarrow$ Colonnes\\
@@ -97,24 +98,25 @@ Elasticsearch \hspace{7mm} $\Rightarrow$ \hspace{8mm }Index \hspace{8mm} $\Right
 Dans cette partie nous allons expliquer comment fonctionne Elasticsearch à plus bas 
 niveau. Nous allons parler de noeuds, de shards, d'instances\ldots
 
-Comprendre cette partie est nécessaire pour pouvoir paramétrer une installation simple 
-nous expliquerons briêvement les enjeux pour un cluster plus imposant.
+Comprendre cette partie est nécessaire pour pouvoir paramétrer une installation simple.
+Nous expliquerons également les enjeux pour un cluster plus imposant.
 \subsection{La base}
+\label{subsec:labase}
 \subsubsection{Grappes et nœuds}
 Chaque instance d'Elasticsearch fonctionne nécessairement dans une entité abstraite 
 appelé cluster (grappe), c'est son groupe. On peut avoir un cluster d'une seule instance.
 Les clusters son identifiés par des noms.
 
 Une instance est appelé \emph{node} (nœuds). Il est possible de lancer plusieurs nodes  
-par machines mais c'est déconseillé (cf partie tuning).
+par machines mais c'est déconseillé (cf partie tuning p\pageref{subsec:elastictuning}).
 
 Les nodes partagent leurs données et la charge de travail au sein du cluster. Le 
 cluster est capable automatiquement de répartir équitablement ses données entre 
 les nodes, et ce même lors de l'ajout ou la suppression d'un node.
 
-Il existe un/footnote{dans de grosses infrastructure il est possible d'en avoir plus
+Il existe un\footnote{dans de grosses infrastructure il est possible d'en avoir plus
 pour aider à la gestion du cluster} master node qui est élu au sein du cluster. 
-Ce node est chargé de la gestion du cluster ajout ou suppression des des nodes, des  
+Ce node est chargé de la gestion du cluster l'ajout/suppression des des nodes ou des  
 index. Si le trafic dans le cluster augmente suffisamment le master node peut n'être 
 dédié qu'à cette tache.
 
@@ -142,9 +144,10 @@ pas être changé au cours de la vie de l'index. Il est en revanche tout à fait
 d'ajouter ou de supprimer des shards répliqués.
 
 \subsubsection{Redondances et montées à l'échelle}
-Dans cette partie en plus du fonctionnement du cluster et de la répartition des shards
-nous évoquerons sa santé. Un cluster est considérer en bonne santé lorsque tous ses
-shards sont répliqués au moins une fois (\textit{failover}).
+Dans cette partie, en plus du fonctionnement du cluster et de la répartition des shards,
+nous évoquerons la santé du cluster. Un cluster est considéré en bonne santé\footnote{comment 
+voir la santé d'un cluster p\pageref{lst:elastichealth}} lorsque tous ses
+shards sont \textbf{répliqués au moins une fois} (\textit{failover}).
 
 Nous prendrons ici l'exemple d'un index \emph{blog} possédant 3 shards primaires. 
 \footnote{Exemple inspiré et images tirées de \textit{A definitive guide to Elasticsearch}}
@@ -178,62 +181,9 @@ Nous allons maintenant rajouté un node, sans changer notre configuration.
 
 On constate que notre cluster est maintenant redondé, le node master possède les 
 shards primaires, le second node les shards répliqués. Ces actions sont effectuées
-automatiquement à l'ajout du node.
+automatiquement à l'ajout du node.\\[2mm]
 
-La santé de notre cluster est maintenant considéré comme bonne, il peut supporter 
-une panne.
-
-Nous allons maintenant rajouter encore un node et ainsi répartir mieux la charge
-
-\begin{figure}[H]
-\center
-\includegraphics[width=1\textwidth]{elasticsearch/clustershard3.png}
-\label{fig:clustershard3}
-\caption{Cluster, 3 node, 1 index}
-\end{figure}
-
-Cette configuration fonctionne plus efficacement que la précédente puisqu'elle a 
-accès à plus de ressource et que Elasticsearch répartie intelligemment la ses ressources
-et donc la charge de travail sur les différents nodes.
-
-Remarque, si l'on perdait un node maintenant, nous nous retrouverions dans la configuration
-numéro 2 (avec le failover), quitte à devoir réélir un master node. Notre état de santé,
-serait toujours bon.
-
-Pour voir des choses plus intéressantes, nous allons ajouter un shard répliqué (donc 3).
-
-\begin{figure}[H]
-\center
-\includegraphics[width=1\textwidth]{elasticsearch/clustershard4.png}
-\label{fig:clustershard4}
-\caption{Cluster, 3 node, 1 index, mais plus de shards répliqués!}
-\end{figure}
-
-
-Rien de particulièrement notable.
-
-Mais si nous enlevons le node 1\ldots
-
-\begin{figure}[H]
-\center
-\includegraphics[width=1\textwidth]{elasticsearch/clustershard5.png}
-\label{fig:clustershard5}
-\caption{Cluster, 2 node, 1 index encore\ldots ou pas}
-\end{figure}
-
-Au moment précis de la coupure notre cluster est passé en mauvaise santé, car il 
-n'avait plus de node master, et surtout des shards primaire étaient manquants.
-
-Si une recherche avait été effectué sur cet index à ce moment précis, des résultats partiels
-auraient été obtenus, ainsi qu'un avertissement du fait que toutes les données n'étaient
-pas disponibles.
-
-On constate qu'une élection de master node a eu lieu. En constatant que deux shards 
-primaires sont manquant il a immédiatement promu les sards répliqués au rang de 
-shard primaires.
-
-La santé de notre cluster est maintenant considéré comme moyenne, puisque tous ses
-shards répliqués ne peuvent pas être affectés.
+Pour plus d'informations sur la \textbf{gestion de cluster}, se référer p\pageref{subsec:elasticcluster}\\[2mm]
 
 
 Cette partie permet de résoudre les problèmes qui pourraient survenir (meme sur
@@ -241,6 +191,7 @@ un cluster d'une seule machine) et permet surtout de mieux comprendre le fonctio
 interne de Elasticsearch.
 
 \subsection{Le tuning}
+\label{subsec:elastictuning}
 Voici quelques conseils applicables dans pratiquement toutes les situations et 
 permettant d'optimiser le fonctionnement d'Elasticsearch.
 
@@ -254,9 +205,9 @@ disque dur afin de libérer de l'espace pour d'autres applications, la swap est
 également utilisé lorsque l'on met un ordinateur en veille \ldots
 
 La situation n'est pas la même sur un serveur. Ici nous sommes relativement maitre
-de notre environnement, et de plus nous voulons que le service Elasticsearch soit 
-le plus véloce possible, pour se faire il faut au contraire l'empêcher au maximum 
-d'utiliser la partition de swap (forcément plus lente).
+de notre environnement et nous voulons que le service Elasticsearch soit 
+le plus véloce possible. Pour se faire il faut au contraire l'empêcher au maximum 
+d'utiliser la partition de swap (forcément plus lente que la RAM).
 
 Il existe plusieurs façon de faire (y compris ne pas utiliser de partition de swap).
 Celle que j'ai choisie d'utiliser est de modifier la variable \ipath{vm.swapiness}
@@ -281,15 +232,15 @@ parti très efficacement du cache des système de fichiers (probablement ext4 si
 vous utilisez Debian), qui sont en définitif, gérer par le 
 noyau\footnote{https://www.elastic.co/guide/en/elasticsearch/guide/current/\_limiting\_memory\_usage.html}.
 Il est conseillé par la documentation de donner au maximum 50\% de la mémoire RAM
-disponible à Elasticsearch, le reste étant dévouer à lucène et au bon fonctionnement
+disponible à Elasticsearch, le reste étant dédié à lucène et au bon fonctionnement
 du système.
-Dans notre installation dont nous parlerons plus en détail ultérieurement, nous 
-avons choisi de nous réserver une bonne marge de manœuvre puisqu'un redis et un Logstash
-minimalistes tournent en sus sur la machine hébergeant Elasticsearch.
+%Dans notre installation dont nous parlerons plus en détail ultérieurement, nous 
+%avons choisi de nous réserver une bonne marge de manœuvre puisqu'un redis et un Logstash
+%minimalistes tournent en sus sur la machine hébergeant Elasticsearch.
 
 Cependant cette valeur de 50\% n'a de sens que si Elasticsearch consomme moins de 
-32Go de RAM, en effet, en allouer plus devient contreproductif puisque jusqu'à 32Go
-la machine virtuelle Java (JVM) \textit{compresse} les adresses des pointeurs, 
+32Go de RAM. En allouer plus devient contreproductif. Jusqu'à 32Go
+la machine virtuelle Java (JVM) \textit{compresse} les adresses des pointeurs 
 (tant qu'on reste sous la limite des 32Go de RAM on peut continuer à utiliser les 
 adresses mémoires sur 4 octets), après, la consommation de mémoire explose et le
 \textit{garbage collector} devient bien moins efficace.
@@ -301,8 +252,7 @@ noeuds d'Elasticsearch dessus (attention aux entrées sortie et à l'utilisation
 \subsection{Faire du nettoyage régulièrement}
 Plus Elasticsearch agrège des données plus il s'empâte, ce phénomène est inévitable 
 sur le long terme. Les contre-mesures sont de scale-out (monter à l'échelle horizontalement)
-en rajoutant de nouveaux nœuds à notre cluster elastic search. On s'appliquera à 
-manager les shards de façon optimisé bref à faire du fine tuning.
+en rajoutant de nouveaux nœuds au cluster. 
 
 Pour éviter ce ralentissement la solution la plus radicale reste de supprimer les 
 données. Justement, dans le cadre de notre projet, nous n'avons pas besoin de conserver 
@@ -315,8 +265,8 @@ plus bas. Pour indication, les index de firewall son supprimés tous les 4 jours
 (une requête judiciaire/alerte sécurité arrive en général en moins de 3 jours).\\ 
 Les logs sont de toute façon également conservés ailleurs pour se soumettre aux 
 imperatifs judiciaires. Les index d'état (intéressants pour établir des statistiques)
-sont conservés 1 mois.\\
-Remarque sur la commande curl et son utilisation dans cron
+sont conservés 1 mois.\\[2mm]
+Zoom sur la commande curl et son utilisation dans cron
 
 \begin{lstlisting}[style=code,label={lst:curlexemple},caption={Extrait de notre script \ref{lst:scriptdelindex}}]
 curl -sS -XDELETE $blade:$port/$target-$d
@@ -337,7 +287,6 @@ consiste à les enregistrer dans des fichiers séparés (output Logstash) et de 
 faire ingérer à un cluster Elasticsearch dimesinonné en conséquence le moment venu.
 
 
-
 \section{Les API Elasticsearch}
 Elasticsearch est énorme, mais peut être assez facilement utilisable par le 
 plus grand nombre grâce aux \gls{API} \emph{optimisées} pour chaque tâches qui ont été implémentées.\\[2mm]
@@ -349,7 +298,7 @@ cet outil est présenté p\pageref{subsec:elasticsense}
 Cette API sert à la communication avec Elastisearch, comme toutes les API REST elle
 utilise les méthodes HTTP, ici : GET, POST, PUT et DELETE et s'appuie ensuite sur l'architecture d'Elasticsearch.
 
-\textbf{{\color{grey}http://host:port}/[{\color{red}index}]/[{\color{cyan}type}]/[{\color{yellow}\_action/id}]}\\[5mm]
+\textbf{{\color{grey}http://host:port}/[{\color{red}index}]/[{\color{cyan}type}]/[{\color{yellow}\_action/id}]}\\[4mm]
 Imaginons que dans un projet fictif, nous souhaitions référencer des tweets.
 On pourrait procéder comme suit pour ajouter le premier.
 
@@ -368,7 +317,7 @@ PUT /twitter/tweet/1
 Voici la syntaxe que nous obtiendrions en utilisant Sense, puisque notre serveur 
 et notre port sont déjà renseignés. Nous utiliserons par convention cette syntaxe plus courte.
 
-La directive \textbf{PUT} est utilisé pour renseigner de nouvelles informations dans Elasticsearch.\\[3mm]
+La directive \textbf{PUT} est utilisé pour renseigner de nouvelles informations dans Elasticsearch.\\[2mm]
 Dans notre projet d'analyse de logs, il est fréquent que nous dussions supprimer 
 des index, notamment dans le cas du paramétrage des \emph{mappings}, mais également
 pour soulager notre infrastructure du poids des logs de firewall (~20-30Go/jours).\\
@@ -385,7 +334,7 @@ La directive \textbf{DELETE} est utilisé pour supprimer des informations d'Elas
 
 La directive \textbf{GET} sert à récupérer des information à tout niveaux: index,
 type, mapping\ldots Il faut par contre avoir l'identifiant exact de la ressource à laquelle on souhaite accéder pour utiliser cette directive.
-Ce n'est pas un outils de recherche\footnote{Outils de recherche abordé dans la section suivante}.\\[3mm]
+Ce n'est pas un outils de recherche\footnote{Outils de recherche abordé dans la section suivante}.\\[2mm]
 \textbf{GET  {\color{grey} http://100.127.255.1:9200}/{\color{red}twitter}/{\color{cyan}tweet}/{\color{yellow}1}}\\
 
 Les réponses d'Elasticsearch sont en \textbf{JSON}. 
@@ -516,6 +465,13 @@ forcément les plus pertinents (ceux qui présente le score le plus élevé).\\
 
 \begin{lstlisting}[style=code,label={lst:APIsearchemptyexample4},caption={Pagination}]
 GET /_search?size=5&from=10
+\end{lstlisting}
+
+Maintenant que nous savons utiliser les requêtes dans Sense, voilà celle que l'on
+utilise pour connaitre la santé de son cluster (notion abordé p\pageref{subsec:labase})
+
+\begin{lstlisting}[style=code,label={lst:elastichealth},caption={Santé du cluster}]
+GET /_cluster/health
 \end{lstlisting}
 
 

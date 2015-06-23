@@ -379,7 +379,8 @@ pour cela que nous prenons le temps de présenter son système d'expression rég
 
 Grok créera rangera automatiquement une chaine de caractères, satisfaisant la contrainte 
 \ipath{/[a-zA-Z0-9.\_-]+/}  dans un champ  username. 
-Ce champ pourra être réutiliser ultérieurement par Logstash ou même Elasticsearch.
+Ce \textbf{champ pourra être réutiliser ultérieurement}\footnote{J'insiste, les 
+champs, c'est important} par Logstash ou même Elasticsearch.
 
 \subsubsection{Les patterns de Grok}
 Logstash\footnote{certains patterns sont bien utilisables en dehors de grok} met en place un système très utile et très facile à utiliser de patterns 
@@ -425,22 +426,21 @@ de Logstash.
 Par défaut Logstash utilisera les fichiers de configuration présents dans \\ 
 \ipath{/etc/logstash/conf.d/}, ils seront ouverts par ordre alphabétique.
 
-%MODIFICATION pour fin
 \section{Utilisation}
-Logstash peut s'intégrer dans une architecture simple ou très compliquée. En fonction
-du cas il peut être utilisé dans plusieurs modes.
+Logstash peut s'intégrer dans une architecture simple ou très compliquée. 
+%En fonction du cas il peut être utilisé dans plusieurs modes.
 
 
 \subsection{La base}
 Pour fonctionner Logstash doit recevoir des données en input, et les envoyer sur 
 une destination d'output.
 La configuration la plus simple consiste à lire l'input d'un clavier et à diriger 
-son output sur la sortie standard. Cela à été montré dans une partie 
-\hyperref[lst:conflogstashminimale]{précédente}.
-Dans ce cas, une seule machine est impliquée, cela n'a d'utilité que pour une démonstration
-et éventuellement des tests.
+son output sur la sortie standard. Cela à été montré p\pageref{lst:conflogstashminimale}.
+Dans ce cas, une seule machine est impliquée. 
 
-Logstash est parfois utilisé pour centralisé les logs en un seul point en attendant
+
+
+Logstash peut être utilisé pour centraliser les logs en un seul point en attendant
 une sauvegarde du fichier nouvellement créé.
 
 
@@ -462,20 +462,27 @@ output {
 }
 \end{lstlisting}
 Ce genre de configuration bien qu'un peu exotique peut s'envisager dans le cas de
-de petites infrastructures avec une simple réplication des logs pour la sauvegarde.
+de petites infrastructures avec, une simple réplication des logs, pour la sauvegarde.
 Ici on tirerai principalement avantage de la capacité de traitement de Logstash grace
 à son bloc filtre.
 
-Mais le plus souvent on utilise Logstash comme un serveur central, parfois pour d'autres
-Logstash.
-\subsection{Mon serveur central}
-Notre configuration sera présentée dans la troisième partie, mais c'est ce genre 
-de montage que nous utilisons pour le projet.
+On peut aussi imaginer simplement tirer avantage du plugin de mail de Logstash, 
+comme \textit{monitoring du pauvre}.\\[4mm]
 
-Ici l'idée est de faire pointer les syslogs configurés sur tous les équipements vers
-un serveur, faisant tourné une instance de Logstash. Cette instance renvera ensuite 
-le flux \textit{utile} vers sa destination, ici un Elasticsearch (après une préalable
-mise en tampon dans un redis).
+Le plus souvent, on utilise Logstash comme un serveur central (parfois pour 
+des agents Logstash cf documentation).
+
+\subsection{Mon serveur central}
+C'est le genre de configuration que nous utilisons pour notre projet. Nous profiterons
+donc de cette partie pour expliquer un peu plus en détail le fonctionnement de notre
+infrastructure.
+
+Ici l'idée est de faire pointer les flux de \gls{logs} (chez nous des syslogs configurés 
+sur tous les équipements réseau) vers un seul serveur, utilisant Logstash. Cette 
+instance de Logstash renvera ensuite le flux \textit{utile} vers sa destination, 
+ici un Elasticsearch (après une préalable mise en tampon dans un redis).
+On remarque également la présence d'un Logstash sur ELK1, qui sert a vider le tampon
+redis pour alimenter Elasticsearch.
 \begin{figure}[H]
 \center
 \includegraphics[width=1\textwidth]{stacksimple.png}
@@ -483,13 +490,19 @@ mise en tampon dans un redis).
 \caption{Pile ELK}
 \end{figure}
 
-Ici logstash sert donc à trié et centralisé le flux il n'est strictosensus pas indispensable
-on prend cependant de gros risque à envoyer tous nos logs d'un coup sur une machine
-dont le but est d'analyser des logs, pas d'encaisser le flux. 
-Ne pas utiliser ce genre d'infrastructure poserait probablement des problèmes I/O,
-et empecherait la scalabilité à plus long terme. si la machine intermédiaire, le 
-serveur central, ne peut plus encaiser la charge, il suffit d'en déployer un autre
-et de diviser le flux des syslogs (et autres) entre ces deux serveurs \textit{centraux}.
+Ici logstash sert donc à trier et centraliser le flux. Cette tâche pourrait théoriquement 
+être réalisé par ELK1 (serveur Elasticsearch).
+Mais on prendrai cependant de gros risque à envoyer tous nos logs d'un coup sur une machine
+dont le but est de les analyser.
+
+On risque des problèmes d'I/O, ainsi qu'une surutilisation ponctuelle du processeur
+(empêchant d'effectuer des recherches dans un temps acceptable).
+De plus, cela empecherait la scalabilité à plus long terme. 
+Si la machine intermédiaire, le serveur central, ne peut plus encaiser la charge, 
+il suffit actuellement d'en déployer un autre et de diviser le flux des syslogs (
+et autres) entre ces deux serveurs \textit{centraux}.
+
+Configurations de notre infrastructure disponibles p\pageref{sec:codeprod}
 
 
 \subsection{Monter à l'échelle}
@@ -514,7 +527,14 @@ plus grande \textit{scalabilité} horizontale.
 
 Autrement dit, si le besoin s'en fait
 sentir, il est possible avec des changements de configuration minimes de d'ajouter
-des machines dans nos couches. Il devient possible d'augmenter sans jamais l'éteindre 
-complètement la capacité de traitement de notre infrstructure. C'est la base de la
+des machines dans nos couches. Il devient possible d'augmenter, sans jamais l'éteindre
+complètement, la capacité de traitement de notre infrstructure. C'est la base de la
 haute disponibilité.
-%fin modification
+
+
+\section{Conclusion}
+Dans cette partie nous avons montrer le fonctionnement interne Logstash, suffisamment, 
+pour être capable de ranger des données pour Elasticsearch qui sera chargé de les stocker
+et de les rechercher.
+
+

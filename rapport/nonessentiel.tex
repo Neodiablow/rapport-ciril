@@ -52,7 +52,7 @@ dans leur utilisation avec Logstash.}
 {\footnotesize Attention ces informations sont pour le moment, \textit{Jeudi 16 Avril 2015}, correctes 
 mais sont amenées à changer, notamment concernant les outputs.}
 
-Chaque plugin input utilise un \gls{thread}. Cela permet d'éviter les engorgements si  
+Chaque plugin input utilise un thread. Cela permet d'éviter les engorgements si  
 certaines entrées sont plus longues à traiter que d'autres.
 
 Le bloc filtre entier utilise, par défaut, un seul thread. Mais, il est possible 
@@ -120,6 +120,66 @@ de modifier certaines capabilities. Pour ce faire, il faut modifier le fichier \
 \ipath{/etc/security/capability.conf}.
 
 \section{Elasticsearch}
+\subsection{Cluster ElasticSearch}
+\label{subsec:elasticcluster}
+
+La santé de notre cluster est maintenant considéré comme bonne, il peut supporter 
+une panne.
+
+Nous allons maintenant rajouter encore un node et ainsi répartir mieux la charge
+
+\begin{figure}[H]
+\center
+\includegraphics[width=1\textwidth]{elasticsearch/clustershard3.png}
+\label{fig:clustershard3}
+\caption{Cluster, 3 node, 1 index}
+\end{figure}
+
+Cette configuration fonctionne plus efficacement que la précédente puisqu'elle a 
+accès à plus de ressource et que Elasticsearch répartie intelligemment la ses ressources
+et donc la charge de travail sur les différents nodes.
+
+Remarque, si l'on perdait un node maintenant, nous nous retrouverions dans la configuration
+numéro 2 (avec le failover), quitte à devoir réélir un master node. Notre état de santé,
+serait toujours bon.
+
+Pour voir des choses plus intéressantes, nous allons ajouter un shard répliqué (donc 3).
+
+\begin{figure}[H]
+\center
+\includegraphics[width=1\textwidth]{elasticsearch/clustershard4.png}
+\label{fig:clustershard4}
+\caption{Cluster, 3 node, 1 index, mais plus de shards répliqués!}
+\end{figure}
+
+
+Rien de particulièrement notable.
+
+Mais si nous enlevons le node 1\ldots
+
+\begin{figure}[H]
+\center
+\includegraphics[width=1\textwidth]{elasticsearch/clustershard5.png}
+\label{fig:clustershard5}
+\caption{Cluster, 2 node, 1 index encore\ldots ou pas}
+\end{figure}
+
+Au moment précis de la coupure notre cluster est passé en mauvaise santé, car il 
+n'avait plus de node master, et surtout des shards primaire étaient manquants.
+
+Si une recherche avait été effectué sur cet index à ce moment précis, des résultats partiels
+auraient été obtenus, ainsi qu'un avertissement du fait que toutes les données n'étaient
+pas disponibles.
+
+On constate qu'une élection de master node a eu lieu. En constatant que deux shards 
+primaires sont manquant il a immédiatement promu les sards répliqués au rang de 
+shard primaires.
+
+La santé de notre cluster est maintenant considéré comme moyenne, puisque tous ses
+shards répliqués ne peuvent pas être affectés.
+
+
+
 \subsection{Sense}
 \label{subsec:elasticsense}
 Ce module chrome a été développé par Boaz Leskes. Il sert de client à ElasticSearch

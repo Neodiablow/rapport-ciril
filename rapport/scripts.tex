@@ -1,11 +1,4 @@
-\section{Logstash}
-\begin{lstlisting}[style=code,label={lst:configredis},caption={configuration dans /etc/redis/redis.conf}]
-{
-    daemonize yes
-    bind 100.127.255.1  #adresse de l'interface d'écoute
-
-}
-\end{lstlisting}
+%\section{Logstash}
 
 \section{Elasticsearch}
 \begin{lstlisting}[style=code,label={lst:mappingresult},caption={Exemple de mapping}]
@@ -118,6 +111,7 @@ PUT /_template/state-log
 \label{lst:mappingput2}
 
 \section{Code en production}
+\label{sec:codeprod}
 \lstinputlisting[style=logstash,label={lst:scriptdelindex},caption={Script de suppression d'index}]{../code/remove.sh}
 
 \lstinputlisting[style=logstash,label={lst:scriptkibanaservice},caption={Service simple pour kibana}]{../code/kibana/kibana.service}
@@ -128,3 +122,11 @@ indiqué, par exemple.
 \lstinputlisting[style=logstash,label={lst:scriptfinal},caption={Script de configuration général coté server central (elk2)}]{../code/logstash/logstashfinal.conf}
 
 \lstinputlisting[style=logstash,label={lst:petitscriptfinal},caption={Configuration logstash (elk1)}]{../code/logstash/logstashelk1.conf}
+
+\begin{lstlisting}[style=code,label={lst:configredis},caption={configuration dans /etc/redis/redis.conf}]
+{
+    daemonize yes
+    bind 100.127.255.1  #adresse de l'interface d'écoute
+
+}
+\end{lstlisting}
