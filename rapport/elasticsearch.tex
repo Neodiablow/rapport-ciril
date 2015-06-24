@@ -11,22 +11,22 @@
 %C'est lui qui est capable d'analyser la masse de donnée
 
 \section{Présentation de Elasticsearch}
-Elasticsearch est moteur de recherche et d'analyse en temps réel. Il permet l'exploration
+Elasticsearch est un moteur de recherche et d'analyse en temps réel. Il permet l'exploration
 de données de façon très rapide par des recherches, que ce soit par des recherches
-\gls{fulltext}, ou bien des recherches structurées.
+en texte intégral (\gls{fulltext}), ou bien des recherches structurées.
 
 Elasticsearch est depuis peu développé par la société \emph{Elastic}. C'était, à 
-la base, un projet du développeur Shay Banon, qui souhaitait concevoir une API simplifié
+la base, un projet du développeur Shay Banon, qui souhaitait concevoir une API simplifiée
 pour la bibliothèque de moteur de recherche : Apache Lucene\fnu[Page du projet Lucene ]{https://lucenenet.apache.org/}.
 
-Elasticsearch et la stack ELK est en passe de devenir un standard dans l'industrie.
+Elasticsearch et la stack ELK sont en passe de devenir un standard dans l'industrie.
 En effet le logiciel à une utilisation assez versatile, de l'aide à la prise de 
-décision en temps réelle à l'analyse de code source. Et à l'heure actuelle, la capacité 
+décision en temps réel à l'analyse de code source. Et à l'heure actuelle, la capacité 
 à exploiter les masses de données et de méta données accumulées chaque jour devient 
 un enjeu économique majeur. Enfin l'un des principaux 
 atouts d'Elasticsearch réside dans son aptitude à pouvoir passer à l'échelle simplement.
 
-\footnotesize{\emph{Attention, ce chapitre ne sera qu'une présentation très succinte des possibilités 
+{\footnotesize\emph{Attention, ce chapitre ne sera qu'une présentation très succinte des possibilités 
 du logiciel Elasticsearch, tout détailler nécessiterait \emph{sans doutes} des milliers
 de pages, le résumé officiel\footnote{Elasticsearch : The Definitive Guide, disponible 
 chez Pearson et Github}
@@ -35,19 +35,19 @@ en fait déjà \emph{plus de 950} \ldots}}
 \section{Installation}
 Avant même de regarder les différentes dépendances nécessaires à l'utilisation de
 Elasticsearch il est recommandé de vérifier que l'on utilise bien la même version
-que son compère Logstash (vérifier la compatibilité dans la documentation si les
-versions de Logstash et Elasticsearch ont un numéro différent).
+que son compère Logstash (vérifier leurs compatibilité dans la documentation si les
+versions de Logstash et Elasticsearch ont des numéros différents).
 
 Son installation est sensiblement la même que son comparse logstash puisque ce logiciel 
 nécessite également l'installation des dépendances \emph{jruby} et \emph{openjdk-7-jre}
 à noter qu'il fonctionne également sur openjdk-8-jre.
 
-Là aussi les paquets debian officiels n'existant pas on utilisera celui fourni par 
+Là aussi le paquet debian officiel n'existant pas on utilisera celui fourni par 
 \hyperref[https://download.elastic.co/elasticsearch/elasticsearch/elasticsearch-1.5.1.deb]{elastic.co}.
 
 \subsection{Configuration de base}
-Attention le paquet deb fourni (version 1.5) est loin d'être parfait.
-Une fois l'installation achevé, il faudra rajouté un dossier config
+Attention le paquet \textit{deb} fourni (version 1.5) est loin d'être parfait.
+Une fois l'installation achevé, il faudra rajouter un dossier config
 dans \ipath{/usr/share/elasticsearch} et lui donner les droits qui conviennent.
 \begin{lstlisting}[style=code,label={lst:ajoutdepotconfigchown}]
 chown elasticsearch:elasticsearch
@@ -56,7 +56,7 @@ chown elasticsearch:elasticsearch
 Enfin pour qu'Elasticsearch se lance, il faut au préalable renseigner le cluster.name
 et le node.name dans \ipath{/etc/elasticsearch/elasticsearch.yml}.
 
-Pour information tous les indices sont, par défaut, physiquement entreposé dans\\
+Pour information tous les indices sont, par défaut, physiquement entreposés dans\\
 \ipath{/usr/share/elasticsearch/data/}.
 
 
@@ -83,10 +83,10 @@ par exemple de différencier les logs firewall des logs \textit{states} en utili
 les types. Cf partie 3}, ils s'apparentent aux tables dans le modèle relationnel. 
 
 Chaque enregistrement d'Elasticsearch est effectué sous forme document. Les documents
-sont nécessairement rangé dans un type, éventuellement type par défaut. Le document 
+sont nécessairement rangés dans un type, éventuellement le type par défaut. Le document 
 peut être comparé à une ligne (row). 
 
-Ces lignes sont constituées de colonnes, appellées champs (ou fields) dans Elasticsearch.
+Ces lignes sont constituées de colonnes, appelées champs (ou fields) dans Elasticsearch.
 
 \begin{figure}[H]
 \textbf{BDD Relationnelle $\Rightarrow$ Base de données $\Rightarrow$ Tables $\Rightarrow$ Ligne $\Rightarrow$ Colonnes\\
@@ -104,10 +104,10 @@ Nous expliquerons également les enjeux pour un cluster plus imposant.
 \label{subsec:labase}
 \subsubsection{Grappes et nœuds}
 Chaque instance d'Elasticsearch fonctionne nécessairement dans une entité abstraite 
-appelé cluster (grappe), c'est son groupe. On peut avoir un cluster d'une seule instance.
-Les clusters son identifiés par des noms.
+appelée cluster (grappe), c'est son groupe. On peut avoir un cluster d'une seule instance.
+Les clusters sont identifiés par des noms.
 
-Une instance est appelé \emph{node} (nœuds). Il est possible de lancer plusieurs nodes  
+Une instance est appelée \emph{node} (nœuds). Il est possible de lancer plusieurs nodes  
 par machines mais c'est déconseillé (cf partie tuning p\pageref{subsec:elastictuning}).
 
 Les nodes partagent leurs données et la charge de travail au sein du cluster. Le 
@@ -116,34 +116,34 @@ les nodes, et ce même lors de l'ajout ou la suppression d'un node.
 
 Il existe un\footnote{dans de grosses infrastructure il est possible d'en avoir plus
 pour aider à la gestion du cluster} master node qui est élu au sein du cluster. 
-Ce node est chargé de la gestion du cluster l'ajout/suppression des des nodes ou des  
+Ce node est chargé de la gestion du cluster et de l'ajout/suppression des nodes ou des  
 index. Si le trafic dans le cluster augmente suffisamment le master node peut n'être 
 dédié qu'à cette tache.
 
 \subsubsection{Shards}
-On a vu précédemment que les index sont l'endroit où sont stocké les données. Un 
+On a vu précédemment que l'index est l'endroit où est stocké les données. Un 
 index est un \textit{namespace logique} qui pointe vers un ou plusieurs shards.
 
 Un shard (éclat) contient une fraction de toutes les données de  son index. Dans 
-le cas ou index n'aurait qu'un seul shard (il en a 5 par défaut), ce shard contiendrait
+le cas où l'index n'aurait qu'un seul shard (il en a 5 par défaut), ce shard contiendrait
 l'index entier.
 Chaque shard est une instance de Apache lucene. Chaque shard est un moteur de recherche
-complet, mais ne possedant qu'une fraction des données d'un index entier.
+complet, mais ne possédant qu'une fraction des données d'un index entier.
 
-Les applications utilisant Elasticsearch (comme Kibana) ne dialogue qu'avec les index
-la couche d'abstraction au dessus des shards, justement parce que les informations 
-d'un shard sont parcellaire.
+Les applications utilisant Elasticsearch (comme Kibana) ne dialoguent qu'avec les 
+index, la couche d'abstraction au dessus des shards, justement parce que les informations 
+d'un shard sont parcellaires.
 
 Il existe deux types de shards les shards primaires, et les shards répliqués.
 Les shards répliqués sont des copies de shards primaires, ils servent à accélérer
 le traitement des requêtes Elasticsearch, ils peuvent également servir de \emph{failover} 
 en cas de défaillance d'une machine.
 
-Le nombre de shards \textbf{primaire} attribué à chaque index est fixe et ne peut 
+Le nombre de shards \textbf{primaires} attribués à chaque index est fixe et ne peut 
 pas être changé au cours de la vie de l'index. Il est en revanche tout à fait possible
 d'ajouter ou de supprimer des shards répliqués.
 
-\subsubsection{Redondances et montées à l'échelle}
+\subsubsection{Redondances et passage à l'échelle}
 Dans cette partie, en plus du fonctionnement du cluster et de la répartition des shards,
 nous évoquerons la santé du cluster. Un cluster est considéré en bonne santé\footnote{comment 
 voir la santé d'un cluster p\pageref{lst:elastichealth}} lorsque tous ses
@@ -164,13 +164,13 @@ façon: "number\_of\_shards":3, "number\_of\_replica":1.
 \caption{Cluster minimal, 1 node, 1 index}
 \end{figure}
 
-La santé de notre serveur est ici considéré comme moyenne, il peut parfaitement 
-fonctionner, mais touts ses shards répliqués ne sont pas  actifs. En faite aucun 
+La santé de notre serveur est ici considérée comme moyenne, il peut parfaitement 
+fonctionner, mais tous ses shards répliqués ne sont pas  actifs. En fait aucun 
 shard répliqué n'est actif. Cela n'aurait pas d'intérêt d'ajouter les shards répliqués
 sur ce node, car cela n'améliorera pas le traitement des données et ne protégera pas
-notre cluster contre la perte de données, en cas défaillance de son unique node.
+notre cluster contre la perte de données en cas défaillance de son unique node.
 
-Nous allons maintenant rajouté un node, sans changer notre configuration.
+Nous allons maintenant rajouter un node, sans changer notre configuration.
 
 \begin{figure}[H]
 \center
@@ -195,14 +195,14 @@ interne de Elasticsearch.
 Voici quelques conseils applicables dans pratiquement toutes les situations et 
 permettant d'optimiser le fonctionnement d'Elasticsearch.
 
-\subsubsection{Ne pas utiliser la swap}
+\subsubsection{Ne pas utiliser la partition de swap}
 Il est très fréquent (et souvent nécessaire) de formater une partition de swap pour
 que le système puisse optimiser son fonctionnement. C'est très pratique pour ne pas
 saturer la mémoire RAM de nos machines de bureau, notamment quand on voit la consommation
-pantagruélique de certains navigateurs internet récents. Les fichiers qui ne sont 
+pantagruélique de certains navigateurs internet récents. Les fichiers qui sont 
 susceptibles de ne pas être utilisés avant un long moment sont parfois stockés sur le
-disque dur afin de libérer de l'espace pour d'autres applications, la swap est
-également utilisé lorsque l'on met un ordinateur en veille \ldots
+disque dur afin de libérer de l'espace pour d'autres applications, la partition de swap est
+également utilisé lorsque l'on met un ordinateur en veille\ldots
 
 La situation n'est pas la même sur un serveur. Ici nous sommes relativement maitre
 de notre environnement et nous voulons que le service Elasticsearch soit 
@@ -212,7 +212,7 @@ d'utiliser la partition de swap (forcément plus lente que la RAM).
 Il existe plusieurs façon de faire (y compris ne pas utiliser de partition de swap).
 Celle que j'ai choisie d'utiliser est de modifier la variable \ipath{vm.swapiness}
 dans le fichier \ipath{/etc/sysctl.conf}. La swapiness représente le pourcentage
-de mémoire RAM restant à partir duquel on commence à envoyer de informations en
+de mémoire RAM restant à partir duquel on commence à envoyer des informations en
 swap.
 
 \begin{lstlisting}[style=code,label={lst:configswapiness},caption={Configuration swapiness}]
@@ -222,14 +222,14 @@ swapon -a
 \end{lstlisting}
 Il existe deux méthodes pour que le changement de swapiness soit pris en compte :
 redémarrer la machine ou bien désactiver puis réactiver la swap, via les commandes
-swapon, swapoff. Utiliser la commande swapoff est également une mesure radicale à 
-notre problème.
+swapon, swapoff. Utiliser la commande swapoff est également une solution radicale 
+à notre problème.
 
-\subsubsection{Utiliser une quantité de RAM raisonné}
+\subsubsection{Utiliser une quantité de RAM raisonnée}
 Elasticsearch est limité par Java. Avant de parler de ces limites, il faut rappeler 
 que Elasticsearch est un front-end à Apache Lucene. Lucene est conçu pour tirer 
 parti très efficacement du cache des système de fichiers (probablement ext4 si 
-vous utilisez Debian), qui sont en définitif, gérer par le 
+vous utilisez Debian), qui sont en définitif, gérés par le 
 noyau\footnote{https://www.elastic.co/guide/en/elasticsearch/guide/current/\_limiting\_memory\_usage.html}.
 Il est conseillé par la documentation de donner au maximum 50\% de la mémoire RAM
 disponible à Elasticsearch, le reste étant dédié à lucène et au bon fonctionnement
@@ -257,23 +257,23 @@ en rajoutant de nouveaux nœuds au cluster.
 Pour éviter ce ralentissement la solution la plus radicale reste de supprimer les 
 données. Justement, dans le cadre de notre projet, nous n'avons pas besoin de conserver 
 toutes les données sur le long terme. Nous avons donc décider de supprimer les logs 
-de changement d'état des par-feu tous les 4 jours. Ces logs peuvent représenter 
+de changement d'état des pare-feu tous les 4 jours. Ces logs peuvent représenter 
 jusqu'à 30Go de données journalières. 
-Pour ce faire nous utiliserons un tâche \textbf{cron} couplé à un script bash 
+Pour ce faire nous utiliserons une tâche \textbf{cron} couplée à un script bash 
 \ref{lst:scriptdelindex} tirant parti de l'API d'Elasticsearch dont nous parlerons 
-plus bas. Pour indication, les index de firewall son supprimés tous les 4 jours, 
-(une requête judiciaire/alerte sécurité arrive en général en moins de 3 jours).\\ 
+plus loin. Pour information, les index de firewall sont supprimés tous les 4 jours, 
+(une requête judiciaire ou une alerte sécurité arrive en général en moins de 3 jours).\\ 
 Les logs sont de toute façon également conservés ailleurs pour se soumettre aux 
 imperatifs judiciaires. Les index d'état (intéressants pour établir des statistiques)
-sont conservés 1 mois.\\[2mm]
-Zoom sur la commande curl et son utilisation dans cron
+sont conservés 1 mois.%\\[2mm]
+\subsubsection{Zoom sur la commande curl et son utilisation dans cron}
 
 \begin{lstlisting}[style=code,label={lst:curlexemple},caption={Extrait de notre script \ref{lst:scriptdelindex}}]
 curl -sS -XDELETE $blade:$port/$target-$d
 \end{lstlisting}
 
 On remarque ici l'utilisation de l'option -sS pour \textit{silent, Show errors}.
-Ainsi cron n'est pas importuné par les retour sur la sortie standard cela permet
+Ainsi cron n'est pas importuné par les retours sur la sortie standard cela permet
 également, en ajoutant la directive \textbf{MAILTO: mail@example.fr} de renvoyer
 la sortie d'erreur vers mail@example.fr. Cela nécessite évidemment d'avoir configurer
 un serveur mail sur notre machine, par défaut sur Debian, Exim (dpkg-reconfigure 
@@ -346,8 +346,9 @@ Les réponses d'Elasticsearch sont en \textbf{JSON}.
 %de son propre langage d'interrogation le QueryDSL. C'est loin d'être un cas unique,
 %par exemple Puppet dispose également de son propre langage de configuration.
 
-Il existe plusieurs API (ou méthodes) de recherche dans Elasticsearch nous les  
-détaillerons plus en détail l'API searchLite après avoir expliqué le fonctionnement général d'une recherche dans Elasticsearch.
+Il existe plusieurs API (ou méthodes) de recherche dans Elasticsearch. Nous détaillerons,
+plus en détail, l'API searchLite, après avoir expliqué le fonctionnement général 
+d'une recherche dans Elasticsearch.
 
 La recherche dans Elasticsearch est particulièrement efficace, car Elasticsearch 
 indexe tout le contenu de ses documents (il indexe chaque champ, en fonction d'un
@@ -481,7 +482,7 @@ Comme expliqué avant il existe deux formes d'API de recherche. L'API lite avec 
 en chaine de caractères \textit{(string query)} et l'API \textit{"full body request"},
 qui nécessite comme corps de la requête, du JSON\footnote{Voir la documentation}.
 
-Utiliser la recherche SearchLite, nécessite simple d'ajouter à notre
+Utiliser la recherche SearchLite, nécessite simplement d'ajouter à notre
 empty search \emph{?q=} puis la requête. 
 \emph{Attention, si vous utilisez cette API avec 
 curl, \emph{il pourrait être nécessaire d'utiliser la syntaxe http} (\%2B pour + par exemple)}.
@@ -491,7 +492,7 @@ GET /_search?q=epinal
 GET /state-2015.05.22/_search?q=epinal
 \end{lstlisting}
 
-Ici on cherche le terme \emph{epinal} dans tous les champs, c'est par fois utile,
+Ici on cherche le terme \emph{epinal} dans tous les champs, c'est parfois utile,
 mais dans de nombreux cas nous connaissons déjà le nom du champ (cf \hyperref[lst:grokregex1]{Logstash}) dans
 lequel nous souhaitons avoir le terme. 
 
@@ -508,7 +509,7 @@ suivant.
 GET /_search?q=+logsource:*epinal* -logsource:sw*
 \end{lstlisting}
 
-Dans l'exemple précédant on souhaite chercher les équipement réseaux situés à epinal
+Dans l'exemple précédant on souhaite chercher les équipements réseaux situés à epinal
 mais pas les switchs.
 L'utilisation des + et - change vraiment le sens de la requête, dans la précédante
 sans les symboles, la présence ou non augmentait la pertinence des réponses contenant
@@ -531,7 +532,7 @@ parenthèses (qui servent simplement à faire des groupes).
 GET /_search?q=+logsource:*epinal* -logsource:sw* (timestamp:May)^10 Power
 \end{lstlisting}
 Dans cette requête nous cherchons toujours des équipements non switch situés à Epinal.
-Nous somme cette fois ci très intéressés par ce qui s'est passé en Mai et d'autant
+Nous sommes cette fois ci très intéressés par ce qui s'est passé en Mai et d'autant
 plus si cela concerne un problème d'alimentation éléctrique.
 
 Concernant la gestion du temps, et des timestamp, nous allons voir une propriété 
@@ -556,10 +557,10 @@ dont l'utilisation est assez évidante \ldots
 +IPoutside:"8.8.8.8" +IPnat:"8.8.4.4" +(portnat:"37657" OR portnat:"19474")
 \end{lstlisting}
 
-Il faut faire attention à l'utilisation des symboles -, :, /," qui on une signification.
+Il faut faire attention à l'utilisation des symboles -, :, /," qui ont une signification.
 
 
-Remarque générale, les syntaxes présentées jusqu'à présent son utilisables telles
+Remarque générale, les syntaxes présentées jusqu'à présent sont utilisables telles
 quelles dans Sense, et en retirant \ipath{GET /\_search?q=} dans Kibana.
 
 
@@ -637,7 +638,7 @@ PUT /firewall-2015.05.07/
 }
 \end{lstlisting}
 
-La requête entière est trop longue pour être affiché, donne une idée de la forme.
+La requête entière est trop longue pour être affichée, cet extrait donne une idée de la forme.
 Une méthode efficace pour générer la sienne est d'utiliser le mapping créé par Elasticsearch
 par défaut puis modeler notre requête à notre convenance à partir de ce squelette.
 
@@ -645,11 +646,13 @@ Cette méthode est pratique pour faire des tests mais elle ne concerne qu'un seu
 index. Dans le projet nous travaillons avec de multiples index, il sera plus pratique
 d'utiliser les templates pour que le même modèle s'applique partout où nous le souhaitons.
 
-Autre remarque, \textbf{si vous faites la manipulation ci-dessus dans un environnement de 
-production, il y a toutes les chanches pour qu'Elasticsearch vous renvoie une erreur}.
-Par défaut Logstash créé de nouveaux index si rien n'existe pour accueillir les logs qu'il envoie à Elasticsearch. Ainsi, si on supprime l'index du jour (on perd les données), mais un autre index du même nom sera recréer avecle template par défaut presque 
+Autre remarque, \textbf{si vous réalisez la manipulation décrite ci-dessus dans un environnement de 
+production. Il y a toutes les chances pour qu'Elasticsearch vous renvoie une erreur}.
+Par défaut, Logstash créé de nouveaux index si rien n'existe pour accueillir les logs 
+qu'il envoie à Elasticsearch. Ainsi, si on supprime l'index du jour (on perd les données).
+Mais un autre index, du même nom, sera recréer avec le template par défaut presque 
 instantanément puisque Logstash reçoit (dans notre cas) environ \textbf{500logs/s}. 
-Pendant les tests il peut être judicieu d'éteindre Logstash.
+Pendant les tests il peut être judicieux d'éteindre Logstash.
 
 
 Un template sera ici le mapping par défaut utilisé par une certaine forme d'index, une sorte de modèle.
@@ -685,13 +688,13 @@ Il existe trois niveaux d'indexation:
     peut se révéler essentielle pour réaliser des graphiques efficaces.} 
     \footnotesize{Il faut parfois savoir comment on veut exploiter ses données pour
     pouvoir les traiter en conséquence.}
-    \item \textbf{no}, n'index pas ce champ, il n'est pas cherchable. Je ne me suis
+    \item \textbf{no}, n'indexe pas ce champ, il n'est pas cherchable. Je ne me suis
     jamais servis de cette propriété, peut sans doute avoir une utilité pour l'optimisation
     de performances.
 \end{itemize}
 
 \subsubsection{Fonctionnement de l'analyse}
-L'analyse consiste en deux grandes étapes, découper une chaine de charactère en termes
+L'analyse consiste en deux grandes étapes, découper une chaine de caractère en termes
 recherchable, puis assainissement de ces termes en enlevant par exemple les majuscules
 ou en retirant les termes non pertinents (le, la, les, des \ldots), voir même en 
 remplaçant des synonymes.
@@ -700,13 +703,13 @@ En fait le processus compte trois étapes. Tout d'abord le \emph{filtrage de car
 (faire disparaitre les / ou transformer \& en et. La tokenization (\textit{termisation}
 en traduction approximative), créer un terme pour chaque chaine de caractère séparer
 par un espace, une virgule, un point, \ldots{} (paramétrable cf doc). Enfin le filtre
-de termes, (décris dans l'assainissement au dessus).\\[2mm]
+de termes, (décrit au dessus).\\[2mm]
 
 Le fonctionnement des \textbf{recherches full text} est expliqué plus en détail p\pageref{subsec:elasticfulltext}
 
 
 \section{Conclusion}
-Nous savons maintenant ranger nos données de façon efficace dans Elasticsearch cela va nous permettre de créer des index faciles à analyser et à \textit{requêter} avec Kibana. Cette partie est probablement la pluscomplexe et la plus importante mais aussi la moins user-friendly. 
+Nous savons maintenant ranger nos données de façon efficace dans Elasticsearch cela va nous permettre de créer des index faciles à analyser et à \textit{requêter} avec Kibana. Cette partie est probablement la plus complexe et la plus importante mais aussi la moins facile à appréhender. 
 Construire un mapping n'est pas facile et nécessite de bien comprendre anticiper l'exploitation que l'on souhaite faire de ses données.
 
 

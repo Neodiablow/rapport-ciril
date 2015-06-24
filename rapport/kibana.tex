@@ -8,9 +8,9 @@ Kibana est un front-end à Elasticsearch permettant de présenter les données s
 
 C'est l'outil de visualisation officiel d'Elasticsearch, il est assez ergonomique 
 et donc plutôt facile d'utilisation. Sa barre de recherche utilise la syntaxe 
-search Lite présenté plus haut dans le chapitre traitant d'Elasticsearch\footnote{voir p\pageref{subsec:elasticsearchlite}}.
+search Lite présentée plus haut dans le chapitre traitant d'Elasticsearch\footnote{voir p\pageref{subsec:elasticsearchlite}}.
 Son utilisation pour réaliser des tableaux, dashboard (tableaux de bord) et autre 
-camemberts est assez aisé une fois les principes de bases assimilés.
+camemberts est assez aisée une fois les principes de bases assimilés.
 
 
 
@@ -23,7 +23,7 @@ depuis un tmux ou un screen (ou un quelconque multiplexeur de terminal). Il est
 également facile de réaliser son propre service systemd.
 
 \subsection{Paramétrage}
-Afin de pouvoir se connecter à Elasticsearch il faut tout de même renseigner 
+Afin de pouvoir se connecter à Elasticsearch il faut tout de même renseigner\\
 \ipath{path/config/kibana.yml} notamment : \emph{port} (par défaut 5601), \emph{host} (ip d'écoute)
 et surtout \emph{elasticsearch\_url}.
 Dans des circonstances normales c'est tout ce que vous aurez à paramétrer (hors 
@@ -86,7 +86,7 @@ de recherche}.
 \end{figure}
 Lorsque l'on effectue une recherche avec Kibana il est possible de choisir de façon
 très flexible son intervalle de temps (bouton de temps en haut à droite).
-Il est tout d'abord possible de de choisir les possibilités du menu rapide, affichées
+Il est tout d'abord possible de choisir les possibilités du menu rapide, affichées
 dans l'image ci-dessus. Le choix est déjà assez exhaustif, mais il est également 
 possible de se positionner relativement par rapport à maintenant. Par exemple rechercher 
 parmi les 30 dernières secondes, ou bien les deux derniers mois (de la seconde à 
@@ -128,33 +128,17 @@ add à droite} de chaque champ) et bien sure de combiner les deux dernières "te
 
 \subsection{Visualization}
 Nous allons maintenant parler de la visualisation (en francais) des données, il s'agit là encore
-que de donner un très bref aperçu des possibilités.
-
-Voir la page de garde des visualisations p\pageref{fig:kibanatuto7}
-
+seulement de donner un très bref aperçu des possibilités.\\[2mm]
+Voir \textbf{la page de garde des visualisations} p\pageref{fig:kibanatuto7}\\[2mm]
 Voilà les différents types de visualisations parmi lesquelles nous pouvons faire 
-notre choix. Toute ne conviennent pas, le meilleur choix est affaire d'expérience.
-
-
-\begin{figure}[H]
-\center
-\includegraphics[width=1\textwidth]{kibanatuto/rap/13.png}
-\label{fig:kibanatuto8}
-\caption{Camembert de répartition des logs sur la dernière semaine}
-\end{figure}
-Voici un camembert très simple, réalisable en moins d'une minute. Il agrège les logs
+notre choix,  toutes ne conviennent pas. Le meilleur choix est affaire d'expérience.\\[2mm]
+Voir \textbf{le premier camembert} p\pageref{fig:kibanatuto8}\\[2mm]
+C'est un camembert très simple, réalisable en moins d'une minute. Il agrège les logs
 sur une semaine en les classant par date d'émission, groupés par jour. 
 Il est évidémment possible de faire des choses plus compliquées avec plus ou moins
-données/de traitement.
-
-
-\begin{figure}[H]
-\center
-\includegraphics[width=1\textwidth]{kibanatuto/rap/15.png}
-\label{fig:kibanatuto9}
-\caption{Camembert de répartition des logs sur sur 3 semaines}
-\end{figure}
-Il s'agit grosso modo des mêmes informations mais cette fois ci groupé par semaine
+données/de traitement.\\[2mm]
+Voir \textbf{les seconds camemberts} p\pageref{fig:kibanatuto9}\\[2mm]
+Il s'agit presque des mêmes informations mais cette fois ci groupés par semaine
 par camembert, par jour dans le camembert interne, et par tranche de 3h sur l'anneau
 externe. Ces camemberts sont interactifs, on le verra dans la partie suivante sur 
 les dashboards.
@@ -162,18 +146,18 @@ les dashboards.
 
 \subsection{Dashboard}
 Présentons maintenant les dashboards. Sorte de tableaux virtuels, ils servent à rassembler
-les informations. Ces informations ont normalement plus de sens une fois mises cote 
-à cote ou permette une analyse plus rapide d'une situation donnée.
+les informations. Ces informations ont normalement plus de sens une fois mises côte 
+à côte ou permettent une analyse plus rapide d'une situation donnée.
 
-La création de ces dashboards est également très simple, on en créer un nouveau en 
-appuyant sur le plus à droite.
+La création de ces dashboards est également très simple, appuyer sur le \textit{plus}
+en haut à droite.
 
 Il suffit ensuite de choisir les visualisation et ou les recherches enregistrées 
 que l'on souhaite voir affiché.\\[2mm]
 
-    Voir l'image des \textbf{recherches et de la visualisation} p\pageref{fig:kibanatuto10}\\[2mm]
+Voir l'image des \textbf{recherches et de la visualisation} p\pageref{fig:kibanatuto10}\\[2mm]
 Comme expliqué plus haut les visualisations ainsi que les tableaux sont interactifs.
-Il est par exemple possible de façon assez intuitive faire une recherche limitée ségréguée.
+Il est par exemple possible de façon assez intuitive d'effectuer une recherche limitée ségréguée.
 Ici il suffit de cliquer sur le quartier désiré de la visualisation. Cela aura pour 
 effet de faire apparaitre la barre verte (contextuelle) et de ne faire apparaitre 
 dans le tableau de résultat à droite que les logs correspondants. Ici les logs ayant

@@ -17,7 +17,7 @@
 \usepackage{eurosym}
 \usepackage{float}
 %\usepackage[bottom=2.5cm,left=2.5cm,right=2.5cm]{geometry}
-\usepackage[bottom=2.8cm]{geometry}
+\usepackage[bottom=2.8cm,]{geometry}
 \usepackage{graphicx}
 \usepackage{xcolor}
 \usepackage[acronym]{glossaries}
@@ -111,10 +111,10 @@ La gestion de \gls{logs} est une problématique commune à presque tous les serv
 tous les fournisseurs de services et plus globalement, toute personne gérant une infrastructure 
 informatisée.
 
-Les \gls{logs} sont précieux car ils sont un des éléments indispensables au dépannage, 
-au monitoring. Ils permettent d'anticiper des problèmes inhérents à l'exploitation 
+Les \gls{logs} sont précieux car ils sont l'un des éléments indispensables au dépannage 
+et au monitoring. Ils permettent d'anticiper des problèmes inhérents à l'exploitation 
 des infrastructures, et  de constater de potentielles tentatives d'intrusions.
-À ces aspects pratiques relatifs au bon fonctionnement des systèmes s'ajoute également
+À ces aspects pratiques, relatifs au bon fonctionnement des systèmes, s'ajoute également
 une problématique judiciaire. Il est souvent nécessaire de garder des logs pour un 
 temps défini  dans la loi. Ces logs doivent évidemment être consultables de manière
 diligente.
@@ -123,7 +123,7 @@ Avec des milliers de lignes de logs par seconde, il est devenu impossible de nav
 "au hasard" dans les fichiers pour regarder si tout se passe bien.
 
 Cependant, \emph{de nombreuses structures continuent encore aujourd'hui d'analyser 
-plus ou moins "manuellement" leurs \emph{\gls{logs}}}. Cette méthode reste envisageable 
+plus ou moins "manuellement" leurs \textit{\gls{logs}}}. Cette méthode reste envisageable 
 si on cherche quelque chose de précis, comme une IP dans un intervalle de quelques 
 secondes, mais impossible pour des recherches moins ciblées.
 
@@ -142,15 +142,18 @@ Pour réaliser ce projet il a été décidé d'utiliser la pile ELK\footnote{Ela
 \subsection{Limites}
 Pour des raisons de disponibilité matérielle mais, aussi, d'intérêt par rapport au sujet,
 je n'ai pas travaillé sur les clusters Elasticsearch de façon pratique (une seule 
-instance du logiciel tourne actuellement dans la cluster de salle machine). Elasticsearch
-est un logiciel hautement parallélisable, et qui donc \textit{scale} très bien à 
-l'horizontal. 
+instance du logiciel tourne actuellement dans le cluster de salle machine). Elasticsearch
+est reconnu et apprécié comme un logiciel hautement parallélisable, mais nous n'utiliserons
+pas cette spécificité.
+
+%et qui donc \textit{scale} très bien à 
+%l'horizontal. 
 
 %Ce rapport se concentre sur l'exploration et l'exploitation des logs. Elasticsearch 
 %est que ce qui est présenté dans ce rapport.
 
 Lors de notre étude de Logstash nous nous concentrerons sur l'exploitation de syslogs. 
-Il est possible de faire d'autres choses avec ce logiciel, notamment concernant, 
+Il est possible de faire d'autres choses avec ce logiciel, notamment, 
 l'exploitation des logs d'apache. 
 Ce qui sera présenté fournira tout de même une base solide des possibilités offertes
 par Logstash.
@@ -163,7 +166,7 @@ présentation des objectifs.
 La seconde partie présente l'utilisation et le fonctionnement des principaux logiciels
 utilisés dans le projet. Pour des raisons de lisibilité certains passages moins 
 essentiels ont été déplacés en Annexe. C'est à la fin de la partie sur Logstash que
-sera présenté notre infrastructure.
+sera présentée notre infrastructure.
 
 Enfin, la troisième partie, qui conclura ce rapport,  présente la solution retenue 
 pour la mise en production. Elle sert également à faire le bilan du projet ainsi 
@@ -177,7 +180,7 @@ du Numérique\footnote{La Direction du Numérique est chargée de la stratégie 
 mise en place d'une politique numérique à l'université. Ses missions s'étendent du maintien 
 des infrastructures systèmes et réseaux à la promotion des usages du numérique en passant
 par le développement d'applications spécifiques} de l'Université de Lorraine. Son rôle est 
-d'opérer le réseau des établissements scolaires et de recherche de la région Lorraine, le 
+d'opérer le réseau des établissements d'enseignement et de recherche de la région Lorraine, le 
 réseau Lothaire.
 \section{Réseau Lothaire}
 \begin{figure}[H]
@@ -201,10 +204,10 @@ en annexes)
 
 Avant la création de \emph{l'Université de Lorraine} au 1er Janvier 2012, l'équipe
 réseau Lothaire était attachée au CIRIL (Centre Interuniversitaire de Ressources Informatiques
-de Lorraine). Depuis, l'organisme a été absorbé par la Sous Direction des Infrastructures
-de l'université.
+de Lorraine). Depuis, l'équipe a été intégré par la Sous Direction des Infrastructures
+de l'Université de Lorraine.
 
-En plus d’opérer les infrastructures du réseau Régional, l’ équipe réseau Lothaire 
+En plus d’opérer les infrastructures du réseau Régional, l’équipe réseau Lothaire 
 assure un ensemble de services auprès de la Communauté de l’Enseignement Supérieur 
 et de la Recherche de Lorraine :
 
@@ -240,8 +243,8 @@ installation de logiciels\ldots), mais n'était évidemment pas capable d'ingurg
 tous les logs réseau des établissements d'enseignement en Lorraine. On a donc mis 
 à ma disposition (dans le Datacenter du bâtiment) 2 serveurs qui serviront, après 
 la fin du stage, de machines de production. Un Dell R520 (12 cœurs, 12Go de RAM),
-la machine qui fera tourner Elasticsearch et un Dell 2950 (4 coeurs 4 Go de RAM)
-la machine qui accueillera le Logstash qui traitant tous les logs.
+la machine qui fera tourner Elasticsearch et un Dell 2950 (4 coeurs 4 Go de RAM),
+la machine qui accueillera le Logstash traitant tous les logs.
 
 Par cohérence avec le reste de l'infrastructure, il a été décidé d'installer une 
 Debian Jessie, nouvellement stable au moment de l'installation.
@@ -293,11 +296,11 @@ sous-estimées.
 Réaliser ce projet m'a permis de mettre en pratique de nombreuses connaissances vues 
 en licence ASRALL, d'approfondir des notions de système, parfois assez pointues, 
 comme les capabilities. Mais aussi d'en apprendre plus sur un outil dont nous avions
-juste gratter la surface en cours : les expressions régulières. Ce stage m'a surtout 
+juste gratté la surface en cours : les expressions régulières. Ce stage m'a surtout 
 permis d'appréhender et de mettre en place deux outils que je ne connaissais pas 
 Elasticsearch et Logstash. Ces logiciels sont en ce moment à la mode et ils semblent,
 au moins concernant Elasticsearch, être partis pour rester. C'est donc pour moi une chance
-d'avoir pu acquérir de l'expérience sur ces technologies, me seront utile dans mon 
+d'avoir pu acquérir de l'expérience sur ces technologies qui me seront utile dans mon 
 prochain emploi.
 
 %J'ai beaucoup apprécié la souplesse d'organisation qui m'a été laissé par mon tuteur

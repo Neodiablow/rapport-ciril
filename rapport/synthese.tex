@@ -61,7 +61,7 @@
 \chapter{Synthèse}
 \section{Analyse des performances}
 Globalement en fin de stage, l'infrastructure ELK fonctionne comme demandé.
-Cependant, la marge de manœuvre n'est pas très importante.
+Mais, la marge de manœuvre sur l'infrastructure, n'est pas très importante.
 
 ELK2 fonctionne très bien, nous pourrions même ajouter plus de trafic et/ou faire
 un tri plus drastique (consommateur en CPU) sur les logs. 
@@ -78,7 +78,7 @@ importantes, notamment en fonction de l'utilisation de Redis. Voir p\pageref{fig
 
 Le disque dur malgré, ses 15000tr/min est également un goulot d'étranglement. Lors
 d'une grosse recherche avec Kibana, les temps d'accès sont souvent la cause de ralentissements.
-Ces effets étant très ponctuels Munin ne les détectent pas.
+Ces effets étant très ponctuels Munin ne les détecte pas.
 
 On pourrait penser en voyant le graphique processeur p\pageref{fig:elk1cpu}, que 
 l'on dispose d'une très large marge, mais il s'agit d'un effet d'optique. 
