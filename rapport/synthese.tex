@@ -94,7 +94,7 @@ quelques dizaines de millions de \gls{logs} envoyés par jours, comme c'est le c
 \section{Améliorations}
 \subsection{Sécurité et déploiement}
 Je n'ai pas particulièrement mis en place de dispositifs pour sécuriser 
-l'accès à l'infrastructure. Les machines sont à jour et isolé sur un VLAN. 
+l'accès à l'infrastructure. Les machines sont à jour et isolés sur un VLAN. 
 
 Mais il est possible de faire mieux au niveau des applications comme par exemple 
 ajouter un proxy SSL devant Kibana.
@@ -104,15 +104,15 @@ Il est possible de communiquer de syslog-ng vers Logstash par SSL.
 Enfin concernant la sécurisation de Redis un bon début est de commencer par écouter 
 une seule IP et non pas  0.0.0.0 (toutes).
 
-Concernant Elasticsearch pas de solutions possibles\footnote{la société semble avoir récemment développer
+Concernant Elasticsearch il n'y a pas d'alternative\footnote{la société semble avoir récemment développer
 le produit payant : Shield, qui apporterait une couche de sécurtité} il faut l'isoler au maximum du 
 reste du réseau.
 
-L'installation n'a pas été automatisé, il faudra le faire, avec Saltstak, logiciel
+L'installation n'a pas été automatisée, il faudra le faire, avec Saltstak, logiciel
 utilisé par l'équipe Lothaire.
 \subsection{Tuning Elasticsearch}
-Les possibilités d'optimisations avec Elasticsearch sont nombreuses tout n'a pas été
-étudié. Voici une liste non exhaustive des pistes envisageables : Limiter le nombre de shards (ce qui pourrait
+Les possibilités d'optimisations avec Elasticsearch sont nombreuses et toutes n'ont pas été
+étudiées. Voici une liste non exhaustive des pistes envisageables : Limiter le nombre de shards (ce qui pourrait
 augmenter les performances, notamment les accès), diminuer le nombre de champs et/ou 
 d'informations enregistrées afin de diminuer la taille de nos index.
 

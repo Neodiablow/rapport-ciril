@@ -1,7 +1,7 @@
 \section{Logstash}
 \subsection{Passage interbloc}
 \label{subsec:passageinterbloc}
-Au niveau du code, le passage d'une phase (bloc) à l'autre, est implémenté via les \emph{SizedQueue} 
+Au niveau du code, le passage d'une phase (bloc) à l'autre est implémenté via les \emph{SizedQueue} 
 de ruby. Elles sont dimensionnées pour contenir 20 événements\footnote{appelés messages 
 lorsqu'on parle de files de messages (queues en anglais), on parle bien ici 
 des \textbf{événements} Logstash}. Ce paramètre n'est pas modifiable sans altérer 
@@ -13,9 +13,8 @@ Ce choix technique (pour des raisons de performances), justifie l'utilisation d'
 \begin{figure}[H]
 \center
 \textbf{Bloc input $\Rightarrow$ file IF $\Rightarrow$ Bloc filtre $\Rightarrow$  file FO $\Rightarrow$ Bloc output}\\
-{\footnotesize Le bloc filtre est optionnel, dans ce cas la, il n'y a qu'une seule file.}
 \end{figure}
-
+{\footnotesize Le bloc filtre est optionnel, dans ce cas là, il n'y a qu'une seule file.}
 
 \subsection{Tolérance de pannes}
 Les logs sont \textbf{importants}, les traiter efficacement est la raison d'être 
@@ -23,22 +22,22 @@ de Logstash. Il serait dommage d'en perdre à cause d'une défaillance quelconqu
 rendant la destination indisponible\footnote{disque dur plein, problème réseau\ldots}.
 %cf pipeline.rb et base.rb dans github
 
-Tout d'abord : Lors d'une indisponibilité, la plupart des plugins d'outputs tentent 
+Tout d'abord : lors d'une indisponibilité, la plupart des plugins d'outputs tentent 
 de renvoyer les événements vers leur destination. 
 Tant que le transfert de l'évènement échoue, le bloc arrête de lire sa file d'attente
 causant ainsi son remplissage\footnote{dans le cas où le bloc output dispose de  
 multiples plugins, il existe des mécanismes pour pouvoir continuer à traiter les 
 sorties saines mais cela impacte les performances}.
 
-Par effet domino, la file \textit{filtre => output} se remplie jusqu'à ce que le 
+Par effet domino, la file \textit{filtre => output} se remplit jusqu'à ce que le 
 bloc filtre ne puisse plus envoyer de nouveaux messages à cette file. 
 
 Les plugins du bloc filtre vont également retenter d'envoyer ses messages, mais tant
-que le problème ne sera pas débloquer en aval le bloc filtre va lui aussi commencer
-à refuser de lire les nouveaux messages arrivant dans la file \textit{input => filtre}.
+que le problème ne sera pas débloqué en aval le bloc filtre va lui aussi 
+refuser de lire les nouveaux messages arrivant dans la file \textit{input => filtre}.
 
 Si cette dernière venait également à se remplir c'est le bloc input qui refuserait
-de lire de nouveaux messages. Provoquant l'indisponibilité de notre Logstash.
+de lire de nouveaux messages, provoquant l'indisponibilité de notre Logstash.
 Dans le meilleur des mondes, les expéditeurs de données\footnote{chez nous syslog-ng} 
 se comporteraient comme Logstash et attendraient patiemment que le problème se résolve 
 en aval. Malheureusement cela n'est pas toujours possible (un switch n'a pas de place 
@@ -49,8 +48,8 @@ dans leur utilisation avec Logstash.}
 
 \subsection{Multithread}
 \label{subsec:logstashmultithread}
-{\footnotesize Attention ces informations sont pour le moment, \textit{Jeudi 16 Avril 2015}, correctes 
-mais sont amenées à changer, notamment concernant les outputs.}
+{\footnotesize Attention ces informations sont pour le moment, \textit{(Jeudi 16 
+Avril 2015)}, correctes mais sont amenées à changer, notamment concernant les outputs.}
 
 Chaque plugin input utilise un thread. Cela permet d'éviter les engorgements si  
 certaines entrées sont plus longues à traiter que d'autres.
@@ -60,13 +59,13 @@ d'augmenter le nombre de threads affectés au traitement des filtres avec le \gl
 -w lors du démarrage de Logstash.
 
 À l'heure actuelle, le bloc output de logstash ne peut utiliser qu'un seul thread.
-Il lit donc sa queue de façon séquentielle. 
+Il lit donc sa file de façon séquentielle. 
 \subsection{Les codecs}
 \label{subsec:logstashcodec}
 Il existe également un \textit{pseudo-bloc} qui peut s'insérer dans les autres, ce 
 bloc, \emph{codec} permet de gérer la \textit{représentation des données} c'est 
 à dire qu'un codec est capable de lire ou d'écrire dans une syntaxe particulière 
-comme par exemple collectd, ou, bien plus intéressant pour nous, netflow\footnote{Collect d'information sur flux IP }. Pour simplifier c'est une sorte de plugin traduisant les évènements dans un format particulier ou depuis un format particulier, par exemple JSON.
+comme par exemple collectd, ou, bien plus intéressant pour nous, netflow\footnote{Collecte d'information sur flux IP }. Pour simplifier c'est une sorte de plugin traduisant les évènements dans un format particulier ou depuis un format particulier, par exemple JSON.
 
 \subsection{Moteur d'expression régulière}
 \label{subsec:logstashregexengine}
@@ -91,8 +90,7 @@ la page de manuel correspondante : \emph{man capabilities}.
 \textbf{=+epi} signifie que l'on ajoute une \emph{capapbility} à un fichier. Plus 
 précisement \textbf{=+} signifie que l'on écrase les droits précédents pour les remplacer
 par les nouveaux. \textbf{e, p} et \textbf{i} sont la gradation de droits que l'on peut 
-attribuer à un fichier avec les capabilities\fnu{https://www.kernel.org/pub/linux/libs/security/linux-privs/kernel-2.2/capfaq-0.2.txt}. 
-
+attribuer à un fichier avec les capabilities\footnote{\scriptsize{https://www.kernel.org/pub/linux/libs/security/linux-privs/kernel-2.2/capfaq-0.2.txt}}.
 \begin{itemize}
     \item \textbf{effective}: indique si la capability est utilisée actuellement
     \item \textbf{permited}: définit quelles capabilities sont autorisées pour un 
@@ -115,7 +113,7 @@ Pour enlever les capabilities, il faut utiliser la commande suivante.
 setcap cap_net_bind_service=-epi /usr/lib/jvm/java-1.7.0-openjdk-amd64/jre/bin/java
 \end{lstlisting}
 
-Enfin, il est possible, de donner le droit à un utilisateur non root, l'autorisation
+Enfin, il est possible de donner à un utilisateur non root, l'autorisation
 de modifier certaines capabilities. Pour ce faire, il faut modifier le fichier \\[1mm]
 \ipath{/etc/security/capability.conf}.
 
@@ -123,7 +121,7 @@ de modifier certaines capabilities. Pour ce faire, il faut modifier le fichier \
 \subsection{Cluster ElasticSearch}
 \label{subsec:elasticcluster}
 
-La santé de notre cluster est maintenant considéré comme bonne, il peut supporter 
+La santé de notre cluster est maintenant considérée comme bonne, il peut supporter 
 une panne.
 
 Nous allons maintenant rajouter encore un node et ainsi répartir mieux la charge
@@ -136,7 +134,7 @@ Nous allons maintenant rajouter encore un node et ainsi répartir mieux la charg
 \end{figure}
 
 Cette configuration fonctionne plus efficacement que la précédente puisqu'elle a 
-accès à plus de ressource et que Elasticsearch répartie intelligemment la ses ressources
+accès à plus de ressource et que Elasticsearch répartie intelligemment ses ressources
 et donc la charge de travail sur les différents nodes.
 
 Remarque, si l'on perdait un node maintenant, nous nous retrouverions dans la configuration
@@ -153,7 +151,7 @@ Pour voir des choses plus intéressantes, nous allons ajouter un shard répliqu�
 \end{figure}
 
 
-Rien de particulièrement notable.
+Les shards se répartissent de manière assez intuitivent.
 
 Mais si nous enlevons le node 1\ldots
 
@@ -167,15 +165,15 @@ Mais si nous enlevons le node 1\ldots
 Au moment précis de la coupure notre cluster est passé en mauvaise santé, car il 
 n'avait plus de node master, et surtout des shards primaire étaient manquants.
 
-Si une recherche avait été effectué sur cet index à ce moment précis, des résultats partiels
+Si une recherche avait été effectuée sur cet index à ce moment précis, des résultats partiels
 auraient été obtenus, ainsi qu'un avertissement du fait que toutes les données n'étaient
 pas disponibles.
 
 On constate qu'une élection de master node a eu lieu. En constatant que deux shards 
-primaires sont manquant il a immédiatement promu les sards répliqués au rang de 
+primaires sont manquant il a immédiatement promu les shards répliqués au rang de 
 shard primaires.
 
-La santé de notre cluster est maintenant considéré comme moyenne, puisque tous ses
+La santé de notre cluster est maintenant considérée comme moyenne, puisque tous ses
 shards répliqués ne peuvent pas être affectés.
 
 
@@ -229,7 +227,7 @@ de l'instance Elasticsearch sur laquelle on souhaite travailler.
 
 Le panneau de gauche correspond au \textbf{panneau de requête}. On utilise l'API 
 REST d'Elasticsearch pour envoyer des requêtes (recherches, modifications\ldots 
-une présentation de l'API est réalisé ultérieurement). Il est à noté que le panneau 
+une présentation de l'API est réalisé précédemment). Il est à noté que le panneau 
 de gauche est doté d'une autocomplétion pour les fonctions et les éléments standards 
 d'Elasticsearch.
 
@@ -238,19 +236,26 @@ nous parviennent en JSON.
 
 \subsection{Full text}
 \label{subsec:elasticfulltext}
-Le full text s'oppose aux valeurs exacts.
-Les champs non analysés sont traités comme des valeurs exacts.
-Comme expliqué plus haut, les chiffres, les booléens, les dates, sont des valeurs 
-exacts. Il est possible qu'une chaine de caractère en soit une aussi.
+%Le full text s'oppose aux valeurs exacts.
+%Les champs dans lesquels on peut effectuer des recherches fulltext ont été au préalable 
+%analysés (analyzed).
+%Les champs non analysés sont traités comme des valeurs exacts.
+%Certains types ne peuvent pas être analysé comme les chiffres, les booléens ou les dates.
+%Il est possible de aussi possible de ne pas analyser une chaine de caractère.
 
-\textbf{"Le chien"} est différent de \textbf{"le chien"} ou encore de \textbf{"Lechien"}.
+Dans Elasticsearch la recherche full text désigne la recherche sur les champs analysés
+(analyzed). Elle tire avantage du découpage (tokenisation) effectué au moment de 
+l'indexation du champ.
 
-Pour le full text la notion d'index et d'analyseur est primordiale. L'analyseur va
-décidé de comment les différents membres de la chaine de caractère vont être considérés.
-Après cette étape ces membres vont être indexés et une recherche les renverra par 
-popularité décroissante.
+Il faut tout d'abord bien comprendre que \textbf{"Le chien"} est différent de \textbf{"le chien"} 
+ou encore de \textbf{"Lechien"}.
 
-Puisqu'un exemple vaut mieux qu'un long discours, je vais m'inspiré de ceux donnés
+Il faut ensuite se rappeler la notion d'index et d'analyseur. L'analyseur va
+décider de la façon dont les différents membres de la chaine de caractères vont être 
+considérés. Après cette étape les membres vont être indexés et une recherche les 
+renverra par popularité décroissante.
+
+Puisqu'un exemple vaut mieux qu'un long discours, je vais m'inspirer de ceux donnés
 dans \textit{"The Definitive guide to Elasticsearch"}.
 
 
@@ -307,12 +312,22 @@ Ce qu'il faut retenir c'est que pour discriminer efficacement, il est aussi poss
 d'utiliser des syntaxe comme +fox, de même on peut faire une recherche avec un bloc
 de deux termes pour être plus efficace : "over the" qui n'existe que dans P1.
 
+
+\subsubsection{Recherches exactes}
+Si dans notre mapping nous avons choisi de ne pas indexer certains champs (not\_analyzed)
+ces champs ne seront pas cherchable en full text. Cela signifie que la valeur du 
+champ devra correspondre exactement à celle de notre recherche. C'est notamment 
+utile pour limiter le nombre de réponses.
+
+
+
+
 \section{Kibana}
 \subsection{Settings}
 \label{subsec:settings}
-Si un doute s'était imissé dans notre esprit, les paramètres de Kibana, concernent
+Les paramètres de Kibana, concernent
 uniquement Kibana, et pas Elasticsearch,\hyperref[fig:kibanatuto14]{ certaines informations} 
-sont cependant affichées pour aider l'utilisation de Kibana mais pas de possibilité 
+sont cependant affichées pour aider l'utilisation de Kibana mais il n'est pas possible 
 de les modifier.
 
 En revanche, il faut bien avouer que leurs consultations est plus agréable depuis 

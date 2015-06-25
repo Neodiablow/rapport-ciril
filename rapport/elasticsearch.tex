@@ -95,8 +95,8 @@ Elasticsearch \hspace{7mm} $\Rightarrow$ \hspace{8mm }Index \hspace{8mm} $\Right
 
 
 \section{L'infrastructure}
-Dans cette partie nous allons expliquer comment fonctionne Elasticsearch à plus bas 
-niveau. Nous allons parler de noeuds, de shards, d'instances\ldots
+Dans cette partie nous allons expliquer comment fonctionne Elasticsearch à un plus 
+bas niveau. Nous allons parler de noeuds, de shards, d'instances\ldots
 
 Comprendre cette partie est nécessaire pour pouvoir paramétrer une installation simple.
 Nous expliquerons également les enjeux pour un cluster plus imposant.
@@ -275,30 +275,34 @@ curl -sS -XDELETE $blade:$port/$target-$d
 On remarque ici l'utilisation de l'option -sS pour \textit{silent, Show errors}.
 Ainsi cron n'est pas importuné par les retours sur la sortie standard cela permet
 également, en ajoutant la directive \textbf{MAILTO: mail@example.fr} de renvoyer
-la sortie d'erreur vers mail@example.fr. Cela nécessite évidemment d'avoir configurer
+la sortie d'erreur vers mail@example.fr. Cela nécessite évidemment d'avoir configuré
 un serveur mail sur notre machine, par défaut sur Debian, Exim (dpkg-reconfigure 
 exim-config).
 
 Concernant -XDELETE c'est une utilisation de l'API REST décrite plus bas.
 
-Une des stratégies préconisé dans le cas où l'on souhaite conserver des données sur
-le long terme alors qu'on en a seulement un besoin d'accès et d'analyse ponctuel ;
+Une des stratégies préconisée dans le cas où l'on souhaite conserver des données sur
+le long terme alors qu'on en a seulement un besoin d'accès et d'analyse ponctuel
 consiste à les enregistrer dans des fichiers séparés (output Logstash) et de les 
-faire ingérer à un cluster Elasticsearch dimesinonné en conséquence le moment venu.
+faire ingérer à un cluster Elasticsearch dimensionné en conséquence le moment venu.
 
 
 \section{Les API Elasticsearch}
 Elasticsearch est énorme, mais peut être assez facilement utilisable par le 
 plus grand nombre grâce aux \gls{API} \emph{optimisées} pour chaque tâches qui ont été implémentées.\\[2mm]
-Pour faciliter l'utilisation des différentes APIs il est conseillé d'utiliser \textbf{Sense},
-cet outil est présenté p\pageref{subsec:elasticsense}
+Pour faciliter l'utilisation des différentes APIs il est conseillé d'utiliser \textbf{Sense}
+(cet outil est présenté p\pageref{subsec:elasticsense}).
 
 
 \subsection{API REST}
 Cette API sert à la communication avec Elastisearch, comme toutes les API REST elle
 utilise les méthodes HTTP, ici : GET, POST, PUT et DELETE et s'appuie ensuite sur l'architecture d'Elasticsearch.
 
-\textbf{{\color{grey}http://host:port}/[{\color{red}index}]/[{\color{cyan}type}]/[{\color{yellow}\_action/id}]}\\[4mm]
+\textbf{{\color{grey}http://host:port}/[{\color{red}index}]/[{\color{cyan}type}]/[{\color{yellow}\_action/id}]}
+
+
+\subsubsection{La directive PUT}
+Elle est utilisée pour renseigner de nouvelles informations dans Elasticsearch.
 Imaginons que dans un projet fictif, nous souhaitions référencer des tweets.
 On pourrait procéder comme suit pour ajouter le premier.
 
@@ -310,29 +314,31 @@ curl -XPUT http://100.127.255.1:9200/twitter/tweet/1
 %Voici le résultat en utilisant curl, directement en ligne de commande, par 
 %navigateur, \ldots
 
+Voici la syntaxe que nous obtiendrions en utilisant Sense, puisque notre serveur 
+et notre port sont déjà renseignés. Nous utiliserons par convention cette syntaxe plus courte.
 \begin{lstlisting}[style=code,label={lst:RESTexemple1sense},caption={Avec Sense}]
 PUT /twitter/tweet/1
 \end{lstlisting}
 
-Voici la syntaxe que nous obtiendrions en utilisant Sense, puisque notre serveur 
-et notre port sont déjà renseignés. Nous utiliserons par convention cette syntaxe plus courte.
 
-La directive \textbf{PUT} est utilisé pour renseigner de nouvelles informations dans Elasticsearch.\\[2mm]
-Dans notre projet d'analyse de logs, il est fréquent que nous dussions supprimer 
-des index, notamment dans le cas du paramétrage des \emph{mappings}, mais également
-pour soulager notre infrastructure du poids des logs de firewall (~20-30Go/jours).\\
+%La directive \textbf{PUT} est utilisé pour renseigner de nouvelles informations dans Elasticsearch.\\[2mm]
 
+\subsubsection{La directive DELETE}
+Elle est utilisée pour supprimer des informations d'Elasticsearch.\\
 \textbf{DELETE  {\color{grey} http://100.127.255.1:9200}/{\color{red}twitter}/}\\
 
 Si nous avions un index twitter journalier il serait possible d'utiliser une commande
 très similaire pour supprimer tous les index d'un seul coup :\\
-
 \textbf{DELETE  {\color{grey} http://100.127.255.1:9200}/{\color{red}twitter*}}\\
 
-La directive \textbf{DELETE} est utilisé pour supprimer des informations d'Elasticsearch.\\
+%La directive \textbf{DELETE} est utilisé pour supprimer des informations d'Elasticsearch.\\
+Dans notre projet d'analyse de logs, il est fréquent que nous dussions supprimer 
+des index, notamment dans le cas du paramétrage des \emph{mappings}, mais également
+pour soulager notre infrastructure du poids des logs de firewall (~20-30Go/jours).
 
 
-La directive \textbf{GET} sert à récupérer des information à tout niveaux: index,
+\subsubsection{La directive \textbf{GET}} 
+Elle sert à récupérer des information à tout niveau: index,
 type, mapping\ldots Il faut par contre avoir l'identifiant exact de la ressource à laquelle on souhaite accéder pour utiliser cette directive.
 Ce n'est pas un outils de recherche\footnote{Outils de recherche abordé dans la section suivante}.\\[2mm]
 \textbf{GET  {\color{grey} http://100.127.255.1:9200}/{\color{red}twitter}/{\color{cyan}tweet}/{\color{yellow}1}}\\
@@ -346,8 +352,8 @@ Les réponses d'Elasticsearch sont en \textbf{JSON}.
 %de son propre langage d'interrogation le QueryDSL. C'est loin d'être un cas unique,
 %par exemple Puppet dispose également de son propre langage de configuration.
 
-Il existe plusieurs API (ou méthodes) de recherche dans Elasticsearch. Nous détaillerons,
-plus en détail, l'API searchLite, après avoir expliqué le fonctionnement général 
+Il existe plusieurs API (ou méthodes) de recherche dans Elasticsearch. Nous détaillerons
+l'API searchLite, après avoir expliqué le fonctionnement général 
 d'une recherche dans Elasticsearch.
 
 La recherche dans Elasticsearch est particulièrement efficace, car Elasticsearch 
@@ -357,7 +363,7 @@ mapping particulier\footnote{explication sur le mapping p\pageref{sec:mappingeta
 
 \subsubsection{Empty Search}
 C'est la forme la plus basique de l'API de recherche, on ne spécifie pas de requête
-spécifique. Comprendre le fonctionnement et les possiblité de cette API basique 
+spécifique. Comprendre le fonctionnement et les possibilités de cette API basique 
 permettra d'utiliser plus efficacement SearchLite, qui en est l'évolution directe.
 
 
@@ -365,7 +371,7 @@ permettra d'utiliser plus efficacement SearchLite, qui en est l'évolution direc
 GET /_search
 \end{lstlisting}
 
-Cette requête retourne tous les documents, de tous les index du cluster duquel nous
+Cette requête retourne tous les documents, de tous les index du cluster dont nous
 sommes membre.
 
 \begin{lstlisting}[style=code,label={lst:APIsearchemptyexample2},caption={Réponse type à notre requête précédente}]
@@ -410,38 +416,40 @@ nombre total de documents indexés: 353585048.
 Cela signifie qu'il y avait environ 353 millions de lignes
 de logs indexés dans notre Elasticsearch au moment de la requête.
 
-Les réponses à la requête nous sont renvoyées dans l'array \textit{hits}, par défaut
-seul les 10 premiers documents satisfaisant notre requête nous sont renvoyés 
-(comme il n'y avait pas de requête, simplement les 10 premiers documents).
+Les réponses à la requête nous sont renvoyées dans le tableau \textit{hits}, 
+par défaut seuls les 10 premiers documents satisfaisant notre requête nous sont renvoyés 
+(ici notre requête est vide, on nous renvoie donc simplement les 10 premiers documents).
 
-Les documents renvoyés dans l'array sont classés en fonction de leur \_score, une 
+Les documents renvoyés dans le tableau sont classés en fonction de leur \_score, une 
 fois encore, puisque nous n'avons rien précisé dans notre requête, tous les résultats 
 nous sont renvoyés avec le score 1.
 
-On notera que le \ipath{max\_score}, score maximum obtenu lors de la requête.
+%On notera le \ipath{max\_score}, score maximum obtenu lors de la requête.
 
 Enfin on remarque que le source (tous les champs indexés) de chaque document est présent
 dans la réponse à la requête.
 
 \paragraph{took}
-Took est le temps en millisecondes pris pour effectué cette requête, ici 798ms
+Took est le temps en millisecondes pris pour effectuer cette requête, ici 798ms
 
 \paragraph{shard}
-L'élément \_shards, nous indique le nombre de shards utilisé lors de la requête. 
+L'élément \_shards, nous indique le nombre de shards utilisés lors de la requête. 
 Dans combien de shards tout c'est bien passé, dans combien il y a eu des erreurs.
 Les erreurs sont très peu probables, cela se produit généralement sur un cluster 
 de plusieurs machines, alors que plusieurs d'entre elles sont inacessibles (il faut 
-que les primary et replica d'un shard soient inaccessible en même temps). Cela peut aussi produire sur un serveur surchargé (les temps d'accèstrop long feront croire à Elasticsearch que le shard est inaccessible).
+que les primary et replica d'un shard soient inaccessible en même temps). Cela peut 
+aussi se produire sur un serveur surchargé (les temps d'accès trop long feront croire 
+à Elasticsearch que le shard est inaccessible).
 
 \paragraph{timeout}
 Il est possible d'effectuer une recherche \textit{par timeout}, cela signifie que 
 Elasticsearch va effectuer sa recherche de façon classique, mais que lorsque le temps
-autorisé pour la recherche est dépassé, il renvera les informations 
-qu'il a eu le temps de rassembler. Toujours dans l'ordre qui lui semble le plus pertinant
-(ordonné par score). Attention cependant, cela ne nous absouds pas pour autant du
-coût de la recherche. Si les shards renvoient bien les résultats pertinents au moment
+autorisé pour la recherche sera dépassé, il renvera les informations 
+qu'il a eu le temps de rassembler, toujours dans l'ordre qui lui semble le plus pertinant
+(ordonné par score). Si les shards renvoient bien les résultats pertinents au moment
 souhaité, cela n'arrête pas pour autant la requête qui finira de s'executer en arrière
 plan même si les résultats ne sont pas pris en compte.
+%Attention cependant, cela ne nous absouds pas pour autant du coût de la recherche. 
 
 \begin{lstlisting}[style=code,label={lst:APIsearchemptyexample3},caption={Une recherche "vide" avec timeout}]
 GET /_search?timeout=10ms
@@ -458,15 +466,17 @@ GET /gb,us/user,tweet/_search
 \end{lstlisting}
 
 \paragraph{Pagination}
-Par défaut lors d'une requête Elasticsearch renvoit seulement les 10$^{ers}$ résultats.
-Il est biensure possible de paramétrer cela, pour afficher plus de résultats, et pas
-forcément les plus pertinents (ceux qui présente le score le plus élevé).\\
+Par défaut lors d'une requête Elasticsearch renvoit seulement les 10 premiers résultats.
+Il est bien sûr possible de paramétrer cela, pour afficher plus de résultats, et pas
+forcément les plus pertinents (ceux qui présentent le score le plus élevé).\\
 \textbf{size} permet d'indiquer le nombre de résultats souhaités\\
-\textbf{from} permet d'indiquer le nombre de résultats que l'on souhaite sauter.
+\textbf{from} permet d'indiquer le nombre de résultats que l'on souhaite ignorer.
 
 \begin{lstlisting}[style=code,label={lst:APIsearchemptyexample4},caption={Pagination}]
 GET /_search?size=5&from=10
 \end{lstlisting}
+
+\subsubsection{Health Check}
 
 Maintenant que nous savons utiliser les requêtes dans Sense, voilà celle que l'on
 utilise pour connaitre la santé de son cluster (notion abordé p\pageref{subsec:labase})
@@ -478,9 +488,9 @@ GET /_cluster/health
 
 \subsubsection{Search Lite}
 \label{subsec:elasticsearchlite}
-Comme expliqué avant il existe deux formes d'API de recherche. L'API lite avec requête
+Comme nous l'avons déjà expliqué il existe deux formes d'API de recherche. L'API lite avec requête
 en chaine de caractères \textit{(string query)} et l'API \textit{"full body request"},
-qui nécessite comme corps de la requête, du JSON\footnote{Voir la documentation}.
+qui nécessite du JSON\footnote{Voir la documentation} comme corps de la requête .
 
 Utiliser la recherche SearchLite, nécessite simplement d'ajouter à notre
 empty search \emph{?q=} puis la requête. 
@@ -501,15 +511,17 @@ Pour se faire il suffit d'utiliser la syntaxe suivante :
 GET /_search?q=logsource:epinal
 \end{lstlisting}
 
-Bien plus intéressant, il est possible d'imposer des conditions à remplir ie: doit
-contenir le terme suivant, ou au contraire ne doit \textbf{pas} contenir le terme 
-suivant.
+%Bien plus intéressant, il est possible d'imposer des conditions à remplir ie: doit
+%contenir le terme suivant, ou au contraire ne doit \textbf{pas} contenir le terme 
+%suivant.
+Le critère de recherche peut être composé d'expression préfixés par + qui indique 
+une conjonction (et) ou - critère d'exclusion (sauf).
 
 \begin{lstlisting}[style=code,label={lst:APIsearchliteexample3},caption={Conditions must (not) match}]
 GET /_search?q=+logsource:*epinal* -logsource:sw*
 \end{lstlisting}
 
-Dans l'exemple précédant on souhaite chercher les équipements réseaux situés à epinal
+Dans l'exemple précédente on souhaite chercher les équipements réseaux situés à epinal
 mais pas les switchs.
 L'utilisation des + et - change vraiment le sens de la requête, dans la précédante
 sans les symboles, la présence ou non augmentait la pertinence des réponses contenant
@@ -518,13 +530,13 @@ Avec ces symboles, on exclu les réponses qui ne se conforment pas à nos exigen
 
 
 La présence des \textbf{*} est une sorte de globbing, nécessaire lorsque l'on fait
-une recherche fulltext 
+une recherche \textit{fulltext}. 
 
 
 Il existe un autre moyen d'influencer la pertinence des résultats (de faire remonter
 en haut de liste ce qui nous intéresse le plus).
 Cela est particulièrement pratique dans les longues requêtes.
-Il s'agit de l'opérateur \textbf{\^} qu'on n'utilise en général en conjonction de
+Il s'agit de l'opérateur \textbf{\^} qu'on n'utilise en général avec
 parenthèses (qui servent simplement à faire des groupes).
 
 
@@ -536,7 +548,7 @@ Nous sommes cette fois ci très intéressés par ce qui s'est passé en Mai et d
 plus si cela concerne un problème d'alimentation éléctrique.
 
 Concernant la gestion du temps, et des timestamp, nous allons voir une propriété 
-intéressante d'Elasticsearch lorsque le mapping de l'index est bien réalisé.
+intéressante d'Elasticsearch lorsque le mapping  de l'index (voir section \ref{sec:mappingetanalys}) est bien réalisé.
 Il est capable de \textit{s'orienter} dans le temps à partir d'un champ texte.
 Cela n'est pas forcément très utile si l'on utilise Kibana, puisque son interface
 nous permet très facilement d'être plus précis, mais cela laisse imaginer les possiblités
@@ -572,11 +584,11 @@ quelles dans Sense, et en retirant \ipath{GET /\_search?q=} dans Kibana.
 \subsection{Mapping}
 Le mapping est \textbf{comparable au schéma d'une base, dans le modèle relationnel}.
 Le mapping définit donc le "type" de nos "champs". Attention on fait rentrer dans 
-le mapping plus, que dans le schéma d'une base (analyse, indexation, \ldots).
+le mapping plus que dans le schéma d'une base (analyse, indexation, \ldots).
 
-Il y'a un mapping différent par index (il existe aussi des templates, applicable 
-à plusieurs index). Pour accéder au mapping d'un index il suffit dans Sense de lancer
-la requête suivante.
+Il y a un mapping différent par index (il existe aussi des modèles (templates), 
+applicables à plusieurs index). Pour accéder au mapping d'un index il suffit dans 
+Sense de lancer la requête suivante.
 
 \begin{lstlisting}[style=code,label={lst:mappingget1},caption={Obtenir un mapping}]
 GET /firewall-2015.05.07/_mapping
@@ -596,7 +608,7 @@ Types par défaut :
 \begin{itemize}
     \item   boolean: true/false
     \item   long: nombres entiers
-    \item   double: nombres à virgule
+    \item   double: nombres à réels
     \item   string: chaine de charactères
     \item   date:   une date valide, (voir la doc pour les normes acceptées)
 \end{itemize}
@@ -647,7 +659,7 @@ index. Dans le projet nous travaillons avec de multiples index, il sera plus pra
 d'utiliser les templates pour que le même modèle s'applique partout où nous le souhaitons.
 
 Autre remarque, \textbf{si vous réalisez la manipulation décrite ci-dessus dans un environnement de 
-production. Il y a toutes les chances pour qu'Elasticsearch vous renvoie une erreur}.
+production. Il y a toutes les chances pour qu'Elasticsearch vous retourne une erreur}.
 Par défaut, Logstash créé de nouveaux index si rien n'existe pour accueillir les logs 
 qu'il envoie à Elasticsearch. Ainsi, si on supprime l'index du jour (on perd les données).
 Mais un autre index, du même nom, sera recréer avec le template par défaut presque 
@@ -671,7 +683,7 @@ Du point de vue mapping on peut noter que integer est également un type valable
 exhaustive dans la documentation), on constate aussi que le type date (un type particulier
 de string), qui \textbf{ne peut pas} être analysé, supporte plusieurs formats, définis
 d'après la \hyperref[http://joda-time.sourceforge.net/api-release/org/joda/time/format/DateTimeFormat.html]{norme JAVA}\footnote{http://joda-time.sourceforge.net/api-release/org/joda/time/format/DateTimeFormat.html}.
-Avec quelques types prédéfinis \hyperref[https://www.elastic.co/guide/en/elasticsearch/reference/1.5/mapping-date-format.html]{ici}\footnote{https://www.elastic.co/guide/en/elasticsearch/reference/1.5/mapping-date-format.html}.
+Quelques types sont prédéfinis \hyperref[https://www.elastic.co/guide/en/elasticsearch/reference/1.5/mapping-date-format.html]{ici}\footnote{https://www.elastic.co/guide/en/elasticsearch/reference/1.5/mapping-date-format.html}.
 
 
 \subsection{Analyse}
@@ -684,24 +696,24 @@ Il existe trois niveaux d'indexation:
     \item   \textbf{Analyzed}, signifie que la chaine de caractère est analysé puis indexé,
     donc cherchable en \textit{full text}.
     \item   \textbf{not\_analyzed}, le champ est toujours cherchable, mais puisqu'il n'a pas 
-    été analysé, on ne peut le trouvé qu'avec sa valeur exact. \emph{Cette propriété
+    été analysé, on ne peut le trouver qu'avec sa valeur exact. \emph{Cette propriété
     peut se révéler essentielle pour réaliser des graphiques efficaces.} 
     \footnotesize{Il faut parfois savoir comment on veut exploiter ses données pour
     pouvoir les traiter en conséquence.}
     \item \textbf{no}, n'indexe pas ce champ, il n'est pas cherchable. Je ne me suis
-    jamais servis de cette propriété, peut sans doute avoir une utilité pour l'optimisation
-    de performances.
+    jamais servi de cette propriété qui peut sans doute avoir une utilité pour 
+    l'optimisation de performances.
 \end{itemize}
 
 \subsubsection{Fonctionnement de l'analyse}
-L'analyse consiste en deux grandes étapes, découper une chaine de caractère en termes
+L'analyse consiste en deux grandes étapes, découper une chaine de caractères en termes
 recherchable, puis assainissement de ces termes en enlevant par exemple les majuscules
-ou en retirant les termes non pertinents (le, la, les, des \ldots), voir même en 
+ou en retirant les termes non pertinents (le, la, les, des \ldots), voire en 
 remplaçant des synonymes.
 
 En fait le processus compte trois étapes. Tout d'abord le \emph{filtrage de caractères}
 (faire disparaitre les / ou transformer \& en et. La tokenization (\textit{termisation}
-en traduction approximative), créer un terme pour chaque chaine de caractère séparer
+en traduction approximative), créer un terme pour chaque chaine de caractères séparés
 par un espace, une virgule, un point, \ldots{} (paramétrable cf doc). Enfin le filtre
 de termes, (décrit au dessus).\\[2mm]
 
@@ -709,8 +721,11 @@ Le fonctionnement des \textbf{recherches full text} est expliqué plus en détai
 
 
 \section{Conclusion}
-Nous savons maintenant ranger nos données de façon efficace dans Elasticsearch cela va nous permettre de créer des index faciles à analyser et à \textit{requêter} avec Kibana. Cette partie est probablement la plus complexe et la plus importante mais aussi la moins facile à appréhender. 
-Construire un mapping n'est pas facile et nécessite de bien comprendre anticiper l'exploitation que l'on souhaite faire de ses données.
+Nous savons maintenant ranger nos données de façon efficace dans Elasticsearch cela 
+va nous permettre de créer des index faciles à analyser et à \textit{requêter} avec 
+Kibana. Cette partie est probablement la plus complexe et la plus importante mais 
+aussi la moins facile à appréhender. Construire un mapping n'est pas facile et nécessite 
+de bien comprendre et anticiper l'exploitation que l'on souhaite faire de ses données.
 
 
 

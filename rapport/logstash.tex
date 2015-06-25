@@ -531,8 +531,13 @@ haute disponibilité.
 
 
 \section{Conclusion}
-Dans cette partie nous avons montré le fonctionnement interne Logstash, suffisamment, 
-pour être capable de ranger des données pour Elasticsearch qui sera chargé de les stocker
-et de les rechercher.
+La fonction de Logstash est comparable à celle de \textit{syslog-ng}, récupérer les 
+logs puis les envoyer vers leurs destination, ici Elasticsearch. Mais ce n'est que 
+depuis très récemment que \textit{syslog-ng} est capable d'envoyer ses données à 
+Elasticsearch, cette version récente n'est pas installée sur tous les équipements. 
+
+Nous avons montré le fonctionnement interne de Logstash, suffisamment, 
+pour être capable de ranger des données pour qu'Elasticsearch puisse les stocker
+et les rechercher.
 
 
