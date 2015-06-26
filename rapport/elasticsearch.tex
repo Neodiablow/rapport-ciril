@@ -721,12 +721,16 @@ Le fonctionnement des \textbf{recherches full text} est expliqué plus en détai
 
 
 \section{Conclusion}
-Nous savons maintenant ranger nos données de façon efficace dans Elasticsearch cela 
-va nous permettre de créer des index faciles à analyser et à \textit{requêter} avec 
-Kibana. Cette partie est probablement la plus complexe et la plus importante mais 
-aussi la moins facile à appréhender. Construire un mapping n'est pas facile et nécessite 
-de bien comprendre et anticiper l'exploitation que l'on souhaite faire de ses données.
-
-
+Elasticsearch est le cœur d'ELK. C'est l'élément le plus complexe et le plus difficile
+à appréhender de cette pile logicielle. Optimiser une infrastructure pour Elasticsearch
+est un travail de longue haleine dont les aspects sont multiples, le schéma (mapping) 
+des index est dépendant à la fois de la configuration des Logstash en amont (découpage
+en champs) et à la fois de la façon dont on souhaite traiter les données dans Kibana 
+en aval (l'information qu'on cherche à en extraire). De plus, l'optimisation d'Elasticsearch 
+dans une infrastructure distribuée est également un sujet passionnant que nous avons à peine 
+abordé, mais qui est là aussi une affaire de spécialistes.
+Grâce aux informations distillées dans cette partie, nous pouvons ranger 
+nos données de façon efficace. Ce qui va nous permettre de créer des index plus simple 
+à analyser et à \textit{requêter} avec Kibana, le \textit{client officiel} d'Elasticsearch. 
 
 %\section{Plus d'information }
